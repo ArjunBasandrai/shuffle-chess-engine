@@ -48,10 +48,10 @@ const U64 not_hg_file = 4557430888798830399ULL;
 const U64 not_ab_file = 18229723555195321596ULL;
 
 U64 pawn_attacks[2][64];
+U64 knight_attacks[64];
 
 U64 mask_pawn_attacks(int square, int side) {
     U64 attacks = 0ULL;
-
     U64 bitboard = 0ULL;
     set_bit(bitboard,square);
 
@@ -68,17 +68,38 @@ U64 mask_pawn_attacks(int square, int side) {
     return attacks;
 }
 
+U64 mask_knight_attacks(int square){
+    U64 attacks = 0ULL;
+    U64 bitboard = 0ULL;
+    set_bit(bitboard,square);
+
+    if ((bitboard >> 17) & not_h_file) attacks |= (bitboard >> 17);
+    if ((bitboard >> 15) & not_a_file) attacks |= (bitboard >> 15);
+    if ((bitboard >> 10) & not_hg_file) attacks |= (bitboard >> 10);
+    if ((bitboard >> 6) & not_ab_file) attacks |= (bitboard >> 6);
+
+    if ((bitboard << 17) & not_a_file) attacks |= (bitboard << 17);
+    if ((bitboard << 15) & not_h_file) attacks |= (bitboard << 15);
+    if ((bitboard << 10) & not_ab_file) attacks |= (bitboard << 10);
+    if ((bitboard << 6) & not_hg_file) attacks |= (bitboard << 6);
+
+    return attacks;
+}
+
 void init_leaper_attacks() {
     for(int square = 0; square < 64; square++){
         pawn_attacks[white][square] = mask_pawn_attacks(square,white);
         pawn_attacks[black][square] = mask_pawn_attacks(square,black);
+
+        knight_attacks[square] = mask_knight_attacks(square);
     }
 }
 
 // Main driver
 int main(){
     init_leaper_attacks();
-    for(int square = 0; square < 64; square++)
-        print_bitboard(pawn_attacks[black][square]);
+    for (int square = 0; square < 64; square++){
+        print_bitboard(knight_attacks[square]);
+    }
     return 0;
 }
