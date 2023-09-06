@@ -9,6 +9,17 @@
 #define get_bit(bitboard, square) (bitboard & (1ULL << square))
 #define pop_bit(bitboard,square) (get_bit(bitboard,square) ? bitboard ^= (1ULL << square) : 0)
 
+static inline int count_bits(U64 bitboard){
+    int count = 0;
+
+    while (bitboard) {
+        count++;
+        bitboard &= (bitboard - 1);
+    }
+
+    return count;
+}
+
 // enum board squares
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
@@ -208,7 +219,6 @@ int main(){
     set_bit(block,d2);
     set_bit(block,b4);
     set_bit(block,g4);
-    // print_bitboard(block);
-    print_bitboard(rook_attacks(d4,block));
+    printf("%d",count_bits(block));
     return 0;
 }
