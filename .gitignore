@@ -1,1 +1,8 @@
+# .exe executable
 chess.exe
+
+#backup folder
+backups
+
+# VS Code settings and configurations
+.vscode
