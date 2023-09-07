@@ -20,6 +20,15 @@ static inline int count_bits(U64 bitboard){
     return count;
 }
 
+
+static inline int get_lsb_index(U64 bitboard){
+    if (bitboard){
+        return count_bits((bitboard & -bitboard) - 1);
+    } else {
+        return -1;
+    }
+}
+
 // enum board squares
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
@@ -35,6 +44,17 @@ enum {
 enum {
     white,
     black
+};
+
+const char *sqaure_to_coordinate[] = {
+    "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
+    "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+    "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+    "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+    "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+    "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+    "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+    "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
 };
 
 // Bit manipulations
@@ -211,14 +231,26 @@ U64 rook_attacks(int square, U64 block){
     return attacks;
 }
 
+U64 set_occupancy(int index, int bits_in_mask, U64 attack_mask) {
+    U64 occupancy = 0ULL;
+
+    for (int count = 0; count < bits_in_mask; count++){
+        int square = get_lsb_index(attack_mask);
+        pop_bit(attack_mask,square);
+        if (index & (1ULL << count)) {
+            occupancy |= (1ULL << square);
+        }
+    }
+
+    return occupancy;
+}
+
 // Main driver
 int main(){
     init_leaper_attacks();
-    U64 block = 0ULL;
-    set_bit(block,d5);
-    set_bit(block,d2);
-    set_bit(block,b4);
-    set_bit(block,g4);
-    printf("%d",count_bits(block));
+    for(int index=0;index< 10;index++){
+        print_bitboard(set_occupancy(index,count_bits(mask_rook_attacks(a1)),mask_rook_attacks(a1)));
+        getchar();
+    }
     return 0;
 }
