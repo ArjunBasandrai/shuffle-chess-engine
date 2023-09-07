@@ -1,1 +1,1 @@
-# chess-bot-ai
+# c-chess-engine
