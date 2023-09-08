@@ -6,17 +6,45 @@ enum {
     a4, b4, c4, d4, e4, f4, g4, h4,
     a3, b3, c3, d3, e3, f3, g3, h3,
     a2, b2, c2, d2, e2, f2, g2, h2,
-    a1, b1, c1, d1, e1, f1, g1, h1
+    a1, b1, c1, d1, e1, f1, g1, h1, no_sq
 };
 
 enum {
     white,
-    black
+    black,
+    both
 };
 
 enum {
     rook,
     bishop
+};
+
+enum {
+    wk = 1, wq = 2,
+    bk = 4, bq = 8
+};
+
+enum {
+    P, N, B, R, Q, K,
+    p, n, b, r, q, k
+};
+
+char ascii_pieces[12] = "PNBRQKpnbrqk";
+char *unicode_pieces[12] = {"♙", "♘", "♗", "♖", "♕", "♔", "♟︎", "♞", "♝", "♜", "♛", "♚"};
+int char_pieces[] = {
+    ['P'] = P,
+    ['N'] = N,
+    ['B'] = B,
+    ['R'] = R,
+    ['Q'] = Q,
+    ['K'] = K,
+    ['p'] = p,
+    ['n'] = n,
+    ['b'] = b,
+    ['r'] = r,
+    ['q'] = q,
+    ['k'] = k
 };
 
 const char *sqaure_to_coordinate[] = {

@@ -9,9 +9,9 @@
 
 
 // bit macros
-#define set_bit(bitboard,square) (bitboard |= (1ULL << square))
-#define get_bit(bitboard, square) (bitboard & (1ULL << square))
-#define pop_bit(bitboard,square) (get_bit(bitboard,square) ? bitboard ^= (1ULL << square) : 0)
+#define set_bit(bitboard,square) ((bitboard) |= (1ULL << (square)))
+#define get_bit(bitboard, square) ((bitboard) & (1ULL << (square)))
+#define pop_bit(bitboard,square) (get_bit((bitboard),(square)) ? (bitboard) ^= (1ULL << (square)) : 0)
 
 static inline int count_bits(U64 bitboard){
     int count = 0;
