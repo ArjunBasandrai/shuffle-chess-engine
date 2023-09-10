@@ -57,23 +57,17 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen(start_position);
-    print_board();
-    print_bitboard(occupancies[white]);
-    print_bitboard(occupancies[black]);
-    print_bitboard(occupancies[both]);
+    U64 occupancy = 0ULL;
+    set_bit(occupancy,b6);
+    set_bit(occupancy,d6);
+    set_bit(occupancy,f6);
+    set_bit(occupancy,b4);
+    set_bit(occupancy,g4);
+    set_bit(occupancy,c3);
+    set_bit(occupancy,d3);
+    set_bit(occupancy,e3);
 
-    parse_fen(tricky_position);
-    print_board();
-    print_bitboard(occupancies[white]);
-    print_bitboard(occupancies[black]);
-    print_bitboard(occupancies[both]);
-
-    parse_fen(custom_position);
-    print_board();
-    print_bitboard(occupancies[white]);
-    print_bitboard(occupancies[black]);
-    print_bitboard(occupancies[both]);
+    print_bitboard(get_queen_attacks(d4,occupancy));
 
     return 0;
 }

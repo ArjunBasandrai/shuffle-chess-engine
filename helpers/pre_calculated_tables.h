@@ -69,3 +69,23 @@ static inline U64 get_rook_attacks(int square, U64 occupancy) {
 
     return rook_attacks[square][occupancy];
 }
+
+static inline U64 get_queen_attacks(int square, U64 occupancy) {
+    U64 queen_attacks = 0ULL;
+    U64 bishop_occupancies = occupancy;
+    U64 rook_occupancies = occupancy;
+    
+    bishop_occupancies &= bishop_masks[square];
+    bishop_occupancies *= bishop_magic_numbers[square];
+    bishop_occupancies >>= (64 - bishop_relevant_bits[square]);
+
+    queen_attacks |= bishop_attacks[square][bishop_occupancies];
+
+    rook_occupancies &= rook_masks[square];
+    rook_occupancies *= rook_magic_numbers[square];
+    rook_occupancies >>= (64 - rook_relevant_bits[square]);
+
+    queen_attacks |= rook_attacks[square][rook_occupancies];
+
+    return queen_attacks;
+}
