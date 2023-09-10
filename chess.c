@@ -73,7 +73,7 @@ static inline int is_square_attacked(int square, int side) {
     return 0;
 }
 
-void print_attacked_sqaures(int side) {
+void print_attacked_squares(int side) {
     printf("\n");
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
@@ -97,7 +97,7 @@ int main(){
 
     parse_fen(tricky_position);
     print_board();
-    print_attacked_sqaures(white);
+    print_attacked_squares(white);
 
     return 0;
 }
