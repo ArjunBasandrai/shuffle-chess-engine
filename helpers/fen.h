@@ -34,7 +34,7 @@ void parse_fen(char *fen) {
 
                 set_bit(bitboards[piece],square);
 
-                *fen++;
+                fen++;
             }
             if (*fen >= '0' && *fen <= '9') {
                 int offset = *fen - '0';
@@ -49,14 +49,14 @@ void parse_fen(char *fen) {
                     file--;
                 }
                 file+=offset;
-                *fen++;
+                fen++;
             }
             if (*fen == '/') {
-                *fen++;
+                fen++;
             }
         }
     }
-    *fen++;
+    fen++;
     side = (*fen=='w') ? white : black;
     fen += 2;
 
@@ -81,10 +81,10 @@ void parse_fen(char *fen) {
             case '-':
             break;
         }
-        *fen++;
+        fen++;
     }
 
-    *fen++;
+    fen++;
     if (*fen != '-') {
         int file = fen[0] - 'a';
         int rank = 8 - (fen[1] - '0');
