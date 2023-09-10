@@ -12,8 +12,6 @@
 #define U64 unsigned long long
 #endif
 
-
-
 U64 mask_pawn_attacks(int square, int side) {
     U64 attacks = 0ULL;
     U64 bitboard = 0ULL;
