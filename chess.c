@@ -43,10 +43,10 @@
 #include "helpers/fen.h"
 #include "helpers/movegen.h"
 
-
 #ifndef U64
 #define U64 unsigned long long
 #endif
+
 
 void init_all() {
     init_leaper_attacks();
@@ -55,15 +55,14 @@ void init_all() {
     // init_magic_numbers();
 }
 
-
-
 // Main driver
 int main(){
     init_all();
 
-    parse_fen(tricky_position);
+    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBpPP/R3K2R b KQkq - 0 1 ");
     print_board();
-    print_attacked_squares(white);
+
+    generate_moves();
 
     return 0;
 }

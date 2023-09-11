@@ -55,3 +55,60 @@ void print_attacked_squares(int side) {
     printf("\n   a b c d e f g h\n\n");
 
 }
+
+static inline void generate_moves() {
+    int source_square, target_square;
+
+    U64 bitboard, attacks;
+
+    for (int piece = P; piece <= k; piece++) {
+        bitboard = bitboards[piece];
+
+        if (side == white) {
+            if (piece == P) {
+                while (bitboard)
+                {
+                    source_square = get_lsb_index(bitboard);
+                    target_square = source_square - 8;
+
+                    if (!(target_square < a8) && !(get_bit(occupancies[both],target_square))) {
+                        if (source_square >= a7 && source_square <= h7) {
+                            printf("white pawn promotion: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        } else {
+                            printf("white pawn push: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+
+                            if ((source_square >= a2 && source_square <= h2) && !(get_bit(occupancies[both],target_square - 8))) {
+                                printf("white double pawn push: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square - 8]);
+                            }
+                        }
+                    }
+
+                    pop_bit(bitboard,source_square);
+                }
+            }
+        } else {
+            if (piece == p) {
+                while (bitboard)
+                {
+                    source_square = get_lsb_index(bitboard);
+                    target_square = source_square + 8;
+
+                    if (!(target_square > h1) && !(get_bit(occupancies[both],target_square))) {
+                        if (source_square >= a2 && source_square <= h2) {
+                            printf("black pawn promotion: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        } else {
+                            printf("black pawn push: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+
+                            if ((source_square >= a7 && source_square <= h7) && !(get_bit(occupancies[both],target_square + 8))) {
+                                printf("black double pawn push: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square + 8]);
+                            }
+                        }
+                    }
+
+                    pop_bit(bitboard,source_square);
+                }
+                
+            }
+        }
+    }
+}
