@@ -59,7 +59,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBpPP/R3K2R b KQkq - 0 1 ");
+    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/Pp2P3/2N2Q1p/1PPBBPpP/R3K2R b KQkq a3 0 1 ");
     print_board();
 
     generate_moves();
