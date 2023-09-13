@@ -38,7 +38,7 @@ static inline int is_square_attacked(int square, int side) {
 }
 
 void print_attacked_squares(int side) {
-    
+
     printf("\n");
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
@@ -64,9 +64,10 @@ static inline void generate_moves() {
     for (int piece = P; piece <= k; piece++) {
         bitboard = bitboards[piece];
 
+        if (side == white) {
+
         // white pawn moves
 
-        if (side == white) {
             if (piece == P) {
                 while (bitboard)
                 {
@@ -116,11 +117,34 @@ static inline void generate_moves() {
                 }
             }
 
+            if (piece == K) {
+                if (castle & wk) {
+                    // checking if squares in between are unoccupied
+                    if (!get_bit(occupancies[both], f1) && !get_bit(occupancies[both], g1)) {
+                        // checking if king square and f1 are not attacked
+                        if (!is_square_attacked(e1,black) && !is_square_attacked(f1,black)) {
+                            printf("white kingside castle: e1->g1\n");
+                        }
+                    }
+                }
+
+                if (castle & wq) {
+                    // checking if squares in between are unoccupied
+                    if (!get_bit(occupancies[both], d1) && !get_bit(occupancies[both], c1) && !get_bit(occupancies[both], b1)) {
+                        // checking if king square and d1 are not attacked
+                        if (!is_square_attacked(e1,black) && !is_square_attacked(d1,black)) {
+                            printf("white queenside castle: e1->g1\n");
+                        }
+                    }
+                }
+            }
+
         } 
         
+        else {
+
         // black pawn moves
 
-        else {
             if (piece == p) {
                 while (bitboard)
                 {
@@ -170,6 +194,29 @@ static inline void generate_moves() {
                 }
                 
             }
+        
+            if (piece == k) {
+                if (castle & bk) {
+                    // checking if squares in between are unoccupied
+                    if (!get_bit(occupancies[both], f8) && !get_bit(occupancies[both], g8)) {
+                        // checking if king square and f8 are not attacked
+                        if (!is_square_attacked(e8,white) && !is_square_attacked(f8,white)) {
+                            printf("black kingside castle: e8->g8\n");
+                        }
+                    }
+                }
+
+                if (castle & bq) {
+                    // checking if squares in between are unoccupied
+                    if (!get_bit(occupancies[both], d8) && !get_bit(occupancies[both], c8) && !get_bit(occupancies[both], b8)) {
+                        // checking if king square and d8 are not attacked
+                        if (!is_square_attacked(e8,white) && !is_square_attacked(d8,white)) {
+                            printf("black queenside castle: e8->c8\n");
+                        }
+                    }
+                }
+            }
+
         }
     }
 }
