@@ -48,7 +48,6 @@
 #define U64 unsigned long long
 #endif
 
-
 void init_all() {
     init_leaper_attacks();
     init_sliders_attacks(bishop);
@@ -60,16 +59,15 @@ void init_all() {
 int main(){
     init_all();
 
-    int move = encode_move(d7,d8,P,Q,0,0,0,0);
-    printf("%s\n", sqaure_to_coordinate[get_move_source(move)]);
-    printf("%s\n", sqaure_to_coordinate[get_move_target(move)]);
-    printf("%c\n", ascii_pieces[get_move_piece(move)]);
-    printf("%c\n", ascii_pieces[get_move_promoted(move)]);
-    printf("%d\n", get_move_capture(move) ? 1 : 0);
-    printf("%d\n", get_move_double(move) ? 1 : 0);
-    printf("%d\n", get_move_enpassant(move) ? 1 : 0);
-    printf("%d\n", get_move_castling(move) ? 1 : 0);
+    moves move_list[1];
+    move_list->count = 0;
 
+    add_move(move_list,encode_move(d7,d8,P,Q,0,0,0,0));
+    add_move(move_list,encode_move(d7,d8,P,R,0,0,0,0));
+    add_move(move_list,encode_move(d7,d8,P,B,0,0,0,0));
+    add_move(move_list,encode_move(d7,d8,P,N,0,0,0,0));
+
+    print_move_list(move_list);
 
     return 0;
 }
