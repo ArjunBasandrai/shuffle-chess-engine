@@ -5,3 +5,6 @@ all:
 debug:
 	gcc chess.c -o chess.exe
 	./chess.exe
+
+compile:
+	gcc chess.c -o chess.exe
