@@ -42,6 +42,7 @@
 
 #include "helpers/fen.h"
 #include "helpers/movegen.h"
+#include "helpers/moves.h"
 
 #ifndef U64
 #define U64 unsigned long long
@@ -59,10 +60,16 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 ");
-    print_board();
+    int move = encode_move(d7,d8,P,Q,0,0,0,0);
+    printf("%s\n", sqaure_to_coordinate[get_move_source(move)]);
+    printf("%s\n", sqaure_to_coordinate[get_move_target(move)]);
+    printf("%c\n", ascii_pieces[get_move_piece(move)]);
+    printf("%c\n", ascii_pieces[get_move_promoted(move)]);
+    printf("%d\n", get_move_capture(move) ? 1 : 0);
+    printf("%d\n", get_move_double(move) ? 1 : 0);
+    printf("%d\n", get_move_enpassant(move) ? 1 : 0);
+    printf("%d\n", get_move_castling(move) ? 1 : 0);
 
-    generate_moves();
 
     return 0;
 }
