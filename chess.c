@@ -40,9 +40,13 @@
 #include "helpers/board.h"
 #endif
 
+#ifndef MOVES_H_
+#define MOVES_H_
+#include "helpers/moves.h"
+#endif
+
 #include "helpers/fen.h"
 #include "helpers/movegen.h"
-#include "helpers/moves.h"
 
 #ifndef U64
 #define U64 unsigned long long
@@ -59,13 +63,13 @@ void init_all() {
 int main(){
     init_all();
 
+    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R b KQkq a3 0 1 ");
+    print_board();
+
     moves move_list[1];
     move_list->count = 0;
 
-    add_move(move_list,encode_move(d7,d8,P,Q,0,0,0,0));
-    add_move(move_list,encode_move(d7,d8,P,R,0,0,0,0));
-    add_move(move_list,encode_move(d7,d8,P,B,0,0,0,0));
-    add_move(move_list,encode_move(d7,d8,P,N,0,0,0,0));
+    generate_moves(move_list);
 
     print_move_list(move_list);
 

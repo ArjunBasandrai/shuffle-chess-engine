@@ -13,7 +13,7 @@
     (piece << 12) | (promoted << 16) | \
     (capture << 20) | (double << 21) | \
     (enpassant << 22) | (castling << 23)
-    
+
 typedef struct {
     int moves[256];
     int count;
@@ -53,18 +53,24 @@ void print_move(int move) {
 }
 
 void print_move_list(moves *move_list) {
+
+    if (!move_list->count) {
+        printf("\n    No moves in move list!\n\n");
+        return;
+    }
+
     printf("\n    move   piece  capture  double  enpassant  castling\n\n");
     for (int move_count = 0; move_count < move_list->count; move_count++) {
         int move = move_list->moves[move_count];
 
         printf("    %s%s%c  %c      %d        %d       %d          %d\n",sqaure_to_coordinate[get_move_source(move)],
-                            sqaure_to_coordinate[get_move_target(move)],
-                            promoted_pieces[get_move_promoted(move)],
-                            ascii_pieces[get_move_piece(move)],
-                            get_move_capture(move) ? 1 : 0,
-                            get_move_double(move) ? 1 : 0,
-                            get_move_enpassant(move) ? 1 : 0,
-                            get_move_castling(move) ? 1 : 0);
+                                                                        sqaure_to_coordinate[get_move_target(move)],
+                                                                        get_move_promoted(move) ? promoted_pieces[get_move_promoted(move)] : ' ',
+                                                                        ascii_pieces[get_move_piece(move)],
+                                                                        get_move_capture(move) ? 1 : 0,
+                                                                        get_move_double(move) ? 1 : 0,
+                                                                        get_move_enpassant(move) ? 1 : 0,
+                                                                        get_move_castling(move) ? 1 : 0);
     }
 
     printf("\n    Total number of moves: %d\n",move_list->count);
