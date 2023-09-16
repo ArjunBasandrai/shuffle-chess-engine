@@ -20,8 +20,20 @@
 
 #ifndef MOVES_H_
 #define MOVES_H_
-#include "moves.h"
+#include "moves_list.h"
 #endif
+
+#define copy_board() \
+    U64 bitboards_copy[12],occupancies_copy[3]; \
+    int side_copy, enpaassant_copy,castle_copy; \
+    memcpy(bitboards_copy, bitboards, sizeof(bitboards)); \
+    memcpy(occupancies_copy, occupancies, sizeof(occupancies)); \
+    side_copy = side, enpaassant_copy = enpassant, castle_copy = castle;
+
+#define take_back() \
+    memcpy(bitboards, bitboards_copy, sizeof(bitboards)); \
+    memcpy(occupancies,occupancies_copy,sizeof(occupancies)); \
+    side = side_copy, enpassant = enpaassant_copy, castle = castle_copy; 
 
 static inline int is_square_attacked(int square, int side) {
 

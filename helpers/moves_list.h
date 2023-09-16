@@ -28,7 +28,6 @@ typedef struct {
 #define get_move_enpassant(move) (move & 0x400000)
 #define get_move_castling(move) (move & 0x800000)
 
-
 static inline void add_move(moves *move_list, int move) {
     move_list->moves[move_list->count] = move;
     move_list->count++;

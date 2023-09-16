@@ -42,7 +42,7 @@
 
 #ifndef MOVES_H_
 #define MOVES_H_
-#include "helpers/moves.h"
+#include "helpers/moves_list.h"
 #endif
 
 #include "helpers/fen.h"
@@ -66,12 +66,14 @@ int main(){
     parse_fen(tricky_position);
     print_board();
 
-    moves move_list[1];
-    move_list->count = 0;
+    copy_board();
 
-    generate_moves(move_list);
+    parse_fen(empty_board);
+    print_board();
 
-    print_move_list(move_list);
+    take_back();
+
+    print_board();
 
     return 0;
 }
