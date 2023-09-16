@@ -63,7 +63,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R b KQkq a3 0 1 ");
+    parse_fen(tricky_position);
     print_board();
 
     moves move_list[1];

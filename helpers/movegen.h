@@ -251,13 +251,13 @@ static inline void generate_moves(moves *move_list) {
                 while (attacks) {
                     target_square = get_lsb_index(attacks);
                     //quiet move
-                    if (!get_bit((side==white)? occupancies[black] : occupancies[white],target_square)) {
-                        printf("knight quiet: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                    if (!get_bit((side==white) ? occupancies[black] : occupancies[white],target_square)) {
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                     }
 
                     //capture move
                     else {
-                        printf("knight capture: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                     }
 
                     pop_bit(attacks,target_square);
@@ -279,12 +279,12 @@ static inline void generate_moves(moves *move_list) {
                     target_square = get_lsb_index(attacks);
                     //quiet move
                     if (!get_bit((side==white)? occupancies[black] : occupancies[white],target_square)) {
-                        printf("bishop quiet: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                     }
 
                     //capture move
                     else {
-                        printf("bishop capture: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                     }
 
                     pop_bit(attacks,target_square);
@@ -306,12 +306,12 @@ static inline void generate_moves(moves *move_list) {
                     target_square = get_lsb_index(attacks);
                     //quiet move
                     if (!get_bit((side==white)? occupancies[black] : occupancies[white],target_square)) {
-                        printf("rook quiet: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                     }
 
                     //capture move
                     else {
-                        printf("rook capture: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                     }
 
                     pop_bit(attacks,target_square);
@@ -333,12 +333,12 @@ static inline void generate_moves(moves *move_list) {
                     target_square = get_lsb_index(attacks);
                     //quiet move
                     if (!get_bit((side==white)? occupancies[black] : occupancies[white],target_square)) {
-                        printf("queen quiet: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                     }
 
                     //capture move
                     else {
-                        printf("queen capture: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                     }
 
                     pop_bit(attacks,target_square);
@@ -360,12 +360,12 @@ static inline void generate_moves(moves *move_list) {
                     target_square = get_lsb_index(attacks);
                     //quiet move
                     if (!get_bit((side==white)? occupancies[black] : occupancies[white],target_square)) {
-                        printf("king quiet: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 0, 0, 0, 0));
                     }
 
                     //capture move
                     else {
-                        printf("king capture: %s->%s\n",sqaure_to_coordinate[source_square],sqaure_to_coordinate[target_square]);
+                        add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                     }
 
                     pop_bit(attacks,target_square);
