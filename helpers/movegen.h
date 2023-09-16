@@ -112,7 +112,7 @@ static inline void generate_moves(moves *move_list) {
                             add_move(move_list, encode_move(source_square,target_square, piece, B, 1, 1, 0, 0));
                             add_move(move_list, encode_move(source_square,target_square, piece, N, 1, 1, 0, 0));
                         } else {
-                            add_move(move_list, encode_move(source_square,target_square, piece, 0, 1, 1, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, 0, 1, 0, 0, 0));
                         }
                         pop_bit(attacks,target_square);
                     }
@@ -190,12 +190,12 @@ static inline void generate_moves(moves *move_list) {
                     while (attacks) {
                         target_square = get_lsb_index(attacks);
                         if (source_square >= a2 && source_square <= h2) {
-                            add_move(move_list, encode_move(source_square,target_square, piece, q, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, r, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, b, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, n, 1, 1, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, q, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, r, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, b, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, n, 1, 0, 0, 0));
                         } else {
-                            add_move(move_list, encode_move(source_square,target_square, piece, 0, 0, 0, 1, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, 0, 1, 0, 0, 0));
                         }
                         pop_bit(attacks,target_square);
                     }
