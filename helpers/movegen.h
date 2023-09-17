@@ -5,17 +5,17 @@
 
 #ifndef CONST_H_
 #define CONST_H_
-#include "helpers/board_constants.h"
+#include "board_constants.h"
 #endif
 
 #ifndef PCTABLES_H_
 #define PCTABLES_H_
-#include "helpers/pre_calculated_tables.h"
+#include "pre_calculated_tables.h"
 #endif
 
 #ifndef BOARD_H_
 #define BOARD_H_
-#include "helpers/board.h"
+#include "board.h"
 #endif
 
 #ifndef MOVES_H_

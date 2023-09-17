@@ -5,7 +5,7 @@
 
 #ifndef CONST_H_
 #define CONST_H_
-#include "helpers/board_constants.h"
+#include "board_constants.h"
 #endif
 
 #define encode_move(source,target,piece,promoted,capture,double,enpassant,castling) \
