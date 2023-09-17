@@ -81,7 +81,7 @@ int main(){
         getchar();
 
         take_back();
-        print_board();
+        print_bitboard(occupancies[side]);
         getchar();
     }
 
