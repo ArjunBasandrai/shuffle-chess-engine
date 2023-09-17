@@ -59,76 +59,11 @@ void init_all() {
     // init_magic_numbers();
 }
 
-enum {
-    all_moves, only_captures
-};
-
-static inline int make_move(int move, int move_flag) {
-
-    // quiet move
-
-    if (move_flag == all_moves) {
-
-        copy_board();
-        
-        int source_square = get_move_source(move);
-        int target_square = get_move_target(move);
-        int piece = get_move_piece(move);
-        int promoted = get_move_promoted(move);
-        int capture = get_move_capture(move);
-        int double_push = get_move_double(move);
-        int enpassant = get_move_enpassant(move);
-        int castling = get_move_castling(move);
-
-        pop_bit(bitboards[piece], source_square);
-        set_bit(bitboards[piece], target_square);
-
-        if (capture) {
-
-            int start_piece, end_piece;
-            if (side == white) {
-                start_piece = p;
-                end_piece = k;
-            } else {
-                start_piece = P;
-                end_piece = K;
-            }
-
-            for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
-                if (get_bit(bitboards[bb_piece], target_square)) {
-                    pop_bit(bitboards[bb_piece], target_square);
-                    break;
-                }
-            }
-        }
-
-        if (promoted) {
-            pop_bit(bitboards[(side == white) ? P : p], target_square);
-            set_bit(bitboards[promoted], target_square);
-        }
-
-    }
-
-    // capture move
-
-    else {
-
-        if (get_move_capture(move)) {
-            make_move(move,all_moves);
-        }
-
-        else {
-            return 0;
-        }
-
-    }
-}
-
 // Main driver
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R b KQkq - 0 1 ");
+    parse_fen("r3k2r/p2pqpb1/bn2pnp1/2pPN3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQkq a3 0 1 ");
     print_board();
 
     moves move_list[1];
@@ -144,6 +79,8 @@ int main(){
         getchar();
 
         take_back();
+        print_board();
+        getchar();
     }
 
     return 0;

@@ -389,3 +389,74 @@ static inline void generate_moves(moves *move_list) {
 
     }
 }
+
+static inline int make_move(int move, int move_flag) {
+
+    // quiet move
+
+    if (move_flag == all_moves) {
+
+        copy_board();
+        
+        int source_square = get_move_source(move);
+        int target_square = get_move_target(move);
+        int piece = get_move_piece(move);
+        int promoted = get_move_promoted(move);
+        int capture = get_move_capture(move);
+        int double_push = get_move_double(move);
+        int enpass = get_move_enpassant(move);
+        int castling = get_move_castling(move);
+
+        pop_bit(bitboards[piece], source_square);
+        set_bit(bitboards[piece], target_square);
+
+        if (capture) {
+
+            int start_piece, end_piece;
+            if (side == white) {
+                start_piece = p;
+                end_piece = k;
+            } else {
+                start_piece = P;
+                end_piece = K;
+            }
+
+            for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
+                if (get_bit(bitboards[bb_piece], target_square)) {
+                    pop_bit(bitboards[bb_piece], target_square);
+                    break;
+                }
+            }
+        }
+
+        if (promoted) {
+            pop_bit(bitboards[(side == white) ? P : p], target_square);
+            set_bit(bitboards[promoted], target_square);
+        }
+
+        if (enpass) {
+            (side == white) ? pop_bit(bitboards[p],target_square + 8) :
+                              pop_bit(bitboards[P],target_square - 8);
+        }
+
+        /************IMPORTANT************/
+        /****reseting enpassant square****/
+
+        enpassant = no_sq;
+
+    }
+
+    // capture move
+
+    else {
+
+        if (get_move_capture(move)) {
+            make_move(move,all_moves);
+        }
+
+        else {
+            return 0;
+        }
+
+    }
+}

@@ -30,6 +30,11 @@ enum {
     p, n, b, r, q, k
 };
 
+
+enum {
+    all_moves, only_captures
+};
+
 char ascii_pieces[12] = "PNBRQKpnbrqk";
 char *unicode_pieces[12] = {"♙", "♘", "♗", "♖", "♕", "♔", "♟︎", "♞", "♝", "♜", "♛", "♚"};
 int char_pieces[] = {
@@ -62,7 +67,6 @@ const U64 not_a_file = 18374403900871474942ULL;
 const U64 not_h_file = 9187201950435737471ULL;
 const U64 not_hg_file = 4557430888798830399ULL;
 const U64 not_ab_file = 18229723555195321596ULL;
-
 
 const int bishop_relevant_bits[64] = {
     6, 5, 5, 5, 5, 5, 5, 6, 
