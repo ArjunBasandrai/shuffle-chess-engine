@@ -448,6 +448,27 @@ static inline int make_move(int move, int move_flag) {
             enpassant = (side == white) ? target_square + 8 : target_square - 8;
         }
 
+        if (castling) {
+            switch (target_square) {
+                case (g1):
+                    pop_bit(bitboards[R],h1);
+                    set_bit(bitboards[R],f1);
+                    break;
+                case (c1):
+                    pop_bit(bitboards[R],a1);
+                    set_bit(bitboards[R],d1);
+                    break;
+                case (g8):
+                    pop_bit(bitboards[r],h8);
+                    set_bit(bitboards[r],f8);
+                    break;
+                case (c8):
+                    pop_bit(bitboards[r],a8);
+                    set_bit(bitboards[r],d8);
+                    break;
+            }
+        }
+
     }
 
     // capture move
