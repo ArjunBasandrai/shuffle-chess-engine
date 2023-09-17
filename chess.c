@@ -59,6 +59,47 @@ void init_all() {
     // init_magic_numbers();
 }
 
+enum {
+    all_moves, only_captures
+};
+
+static inline int make_move(int move, int move_flag) {
+
+    // quiet move
+
+    if (move_flag == all_moves) {
+
+        copy_board();
+        
+        int source_square = get_move_source(move);
+        int target_square = get_move_target(move);
+        int piece = get_move_piece(move);
+        int promoted = get_move_promoted(move);
+        int capture = get_move_capture(move);
+        int double_push = get_move_double(move);
+        int enpassant = get_move_enpassant(move);
+        int castling = get_move_castling(move);
+
+        pop_bit(bitboards[piece], source_square);
+        set_bit(bitboards[piece], target_square);
+
+    }
+
+    // capture move
+
+    else {
+
+        if (get_move_capture(move)) {
+            make_move(move,all_moves);
+        }
+
+        else {
+            return 0;
+        }
+
+    }
+}
+
 // Main driver
 int main(){
     init_all();
@@ -66,14 +107,22 @@ int main(){
     parse_fen(tricky_position);
     print_board();
 
-    copy_board();
+    moves move_list[1];
 
-    parse_fen(empty_board);
-    print_board();
+    generate_moves(move_list);
 
-    take_back();
+    for (int move_count = 0; move_count<move_list->count; move_count++) {
+        int move = move_list->moves[move_count];
 
-    print_board();
+        copy_board();
+        make_move(move, all_moves);
+        print_board();
+        getchar();
+
+        take_back();
+        print_board();
+        getchar();
+    }
 
     return 0;
 }
