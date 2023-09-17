@@ -46,7 +46,13 @@
 #endif
 
 #include "helpers/fen.h"
+
+#ifndef MOVEGEN_H_
+#define MOVEGEN_H_
 #include "helpers/movegen.h"
+#endif
+
+#include "helpers/perft.h"
 
 #include "helpers/time.h"
 
@@ -61,37 +67,19 @@ void init_all() {
     // init_magic_numbers();
 }
 
-
-
 // Main driver
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppRpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1 ");
+    parse_fen(start_position);
     print_board();
-
-    moves move_list[1];
-
-    generate_moves(move_list);
 
     int start = get_time_ms();
 
-    for (int move_count = 0; move_count<move_list->count; move_count++) {
-        int move = move_list->moves[move_count];
+    perft_driver(5);
 
-        copy_board();
-        if (!make_move(move, all_moves)) { 
-            continue;
-        }
-        print_board();
-        getchar();
-
-        take_back();
-        print_bitboard(occupancies[side]);
-        getchar();
-    }
-
-    printf("%d ms", get_time_ms() - start);
+    printf("time taken: %d ms\n", get_time_ms() - start);
+    printf("nodes: %ld\n",nodes);
 
     return 0;
 }
