@@ -63,7 +63,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1 ");
+    parse_fen("r3k2r/p1ppRpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 0 1 ");
     print_board();
 
     moves move_list[1];
@@ -74,7 +74,9 @@ int main(){
         int move = move_list->moves[move_count];
 
         copy_board();
-        make_move(move, all_moves);
+        if (!make_move(move, all_moves)) { 
+            continue;
+        }
         print_board();
         getchar();
 

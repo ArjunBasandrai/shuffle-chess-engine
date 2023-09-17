@@ -483,6 +483,32 @@ static inline int make_move(int move, int move_flag) {
 
         castle &= castling_rights[source_square];
         castle &= castling_rights[target_square];
+
+        // updating occupancies
+
+        memset(occupancies, 0ULL, 24);
+
+        for (int bb_piece = P; bb_piece <= K; bb_piece++) {
+            occupancies[white] |= bitboards[bb_piece];
+        }
+
+        for (int bb_piece = p; bb_piece <= k; bb_piece++) {
+            occupancies[black] |= bitboards[bb_piece];
+        }
+
+        occupancies[both] |= occupancies[white];
+        occupancies[both] |= occupancies[black];
+
+        // checking if square is in check after move
+
+        side ^= 1;
+        if (is_square_attacked(get_lsb_index((side == white) ? bitboards[k] : bitboards[K]), side)) {
+            take_back();
+            return 0;
+        }
+        else {
+            return 1;
+        }
     }
 
     // capture move
