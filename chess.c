@@ -102,6 +102,11 @@ static inline int make_move(int move, int move_flag) {
             }
         }
 
+        if (promoted) {
+            pop_bit(bitboards[(side == white) ? P : p], target_square);
+            set_bit(bitboards[promoted], target_square);
+        }
+
     }
 
     // capture move
@@ -123,7 +128,7 @@ static inline int make_move(int move, int move_flag) {
 int main(){
     init_all();
 
-    parse_fen(tricky_position);
+    parse_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R b KQkq - 0 1 ");
     print_board();
 
     moves move_list[1];
@@ -135,7 +140,7 @@ int main(){
 
         copy_board();
         make_move(move, all_moves);
-        print_bitboard(bitboards[p]);
+        print_board();
         getchar();
 
         take_back();
