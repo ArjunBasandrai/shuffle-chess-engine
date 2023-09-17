@@ -5,12 +5,12 @@
 
 #ifndef CONST_H_
 #define CONST_H_
-#include "helpers/board_constants.h"
+#include "board_constants.h"
 #endif
 
 #ifndef BITS_H_
 #define BITS_H_
-#include "helpers/bit_manipulation.h"
+#include "bit_manipulation.h"
 #endif
 
 #ifndef U64
