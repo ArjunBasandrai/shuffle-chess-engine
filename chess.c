@@ -75,11 +75,11 @@ int main(){
 
         copy_board();
         make_move(move, all_moves);
-        print_board();
+        print_bitboard(occupancies[side]);
         getchar();
 
         take_back();
-        print_board();
+        print_bitboard(occupancies[side]);
         getchar();
     }
 
