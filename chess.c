@@ -54,8 +54,6 @@
 
 #include "helpers/perft.h"
 
-#include "helpers/time.h"
-
 #ifndef U64
 #define U64 unsigned long long
 #endif
@@ -72,14 +70,8 @@ int main(){
     init_all();
 
     parse_fen(start_position);
-    print_board();
 
-    int start = get_time_ms();
-
-    perft_driver(5);
-
-    printf("time taken: %d ms\n", get_time_ms() - start);
-    printf("nodes: %ld\n",nodes);
+    perft_test(5);
 
     return 0;
 }
