@@ -53,6 +53,7 @@
 #endif
 
 #include "helpers/perft.h"
+#include "helpers/uci.h"
 
 #ifndef U64
 #define U64 unsigned long long
@@ -69,9 +70,18 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen(start_position);
+    parse_fen("r3k2r/p2pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R w KQkq c6 0 1 ");
+    print_board();
 
-    perft_test(5);
+    int move = parse_move("d5c6");
+
+    if (move) {
+        make_move(move, all_moves);
+    } else {
+        printf("Illegal move!!\n\n");
+    }
+
+    print_board();
 
     return 0;
 }
