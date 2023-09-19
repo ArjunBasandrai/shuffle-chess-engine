@@ -70,10 +70,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_position("position startpos moves e2e4 e7e5 g1f3 g8f6 h1g1 h8g8");
-    print_board();
-
-    parse_go("go depth 12");
+    uci_loop();
 
     return 0;
 }

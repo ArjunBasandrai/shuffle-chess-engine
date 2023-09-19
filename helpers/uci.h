@@ -10,17 +10,22 @@
 
 #ifndef CONST_H_
 #define CONST_H_
-#include "helpers/board_constants.h"
+#include "board_constants.h"
 #endif
 
 #ifndef MOVES_H_
 #define MOVES_H_
-#include "helpers/moves_list.h"
+#include "moves_list.h"
 #endif
 
 #ifndef MOVEGEN_H_
 #define MOVEGEN_H_
-#include "helpers/movegen.h"
+#include "movegen.h"
+#endif
+
+#ifndef SEARCH_H_
+#define SEARCH_H_
+#include "search.h"
 #endif
 
 int parse_move(char *move_string) {
@@ -109,6 +114,7 @@ void parse_position(char *command) {
             current_char++;
         }
     }
+    print_board();
 }
 
 void parse_go(char *command) {
@@ -121,5 +127,54 @@ void parse_go(char *command) {
         depth = 6;
     }
 
-    printf("depth : %d\n",depth);
+    search_position(depth);
+}
+
+void uci_loop() {
+    // clear STDIN & STDOUT buffers
+    setbuf(stdin, NULL);
+    setbuf(stdout, NULL);
+
+    char input[2000];
+
+    printf("id name %s\n",engine_name);
+    printf("id name Arjun Basandrai\n");
+    printf("uciok\n");
+
+    // main loop
+    while (1) {
+        memset(input, 0, sizeof(input));
+        fflush(stdout);
+
+        if (!fgets(input, 2000, stdin)) { continue; }
+
+        if (input[0] == '\n') { continue; }
+
+        if (strncmp(input, "isready", 7) == 0) { 
+            printf("readyok\n"); 
+            continue;
+        }
+
+        else if (strncmp(input, "position", 8) == 0) { 
+            parse_position(input); 
+        }
+
+        else if (strncmp(input, "ucinewgame", 10) == 0) { 
+            parse_position("position startpos"); 
+        }
+
+        else if (strncmp(input, "go", 2) == 0) { 
+            parse_go(input); 
+        }
+
+        else if (strncmp(input, "quit", 4) == 0) { 
+            break;
+        }
+
+        else if (strncmp(input, "uci", 3) == 0) { 
+            printf("id name %s\n",engine_name);
+            printf("id name Arjun Basandrai\n");
+            printf("uciok\n");
+        }
+    }
 }
