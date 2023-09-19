@@ -70,17 +70,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("r3k2r/p2pqpb1/bn2pnp1/2pPN3/1p2P3/2N2Q1p/PPPBBPpP/R3K2R w KQkq c6 0 1 ");
-    print_board();
-
-    int move = parse_move("d5c6");
-
-    if (move) {
-        make_move(move, all_moves);
-    } else {
-        printf("Illegal move!!\n\n");
-    }
-
+    parse_position("position startpos moves e2e4 e7e5 g1f3 g8f6 h1g1 h8g8");
     print_board();
 
     return 0;

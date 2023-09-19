@@ -3,6 +3,11 @@
 #include <stdio.h>
 #endif
 
+#ifndef STRING_H_
+#define STRING_H_
+#include <string.h>
+#endif
+
 #ifndef CONST_H_
 #define CONST_H_
 #include "helpers/board_constants.h"
@@ -58,4 +63,51 @@ int parse_move(char *move_string) {
     return 0;
 
     printf("source square: %s\n",sqaure_to_coordinate[target_square]);
+}
+
+
+void parse_position(char *command) {
+    command += 9;
+    char *current_char = command;
+
+    // parse UCI startpos command
+    if (strncmp(command, "startpos", 8) == 0) {
+        parse_fen(start_position);
+    } 
+    
+    // parse UCI fen command
+    else {
+        current_char = strstr(command, "fen");
+
+        if (current_char == NULL) {
+            parse_fen(start_position);
+        }
+
+        else {
+            current_char += 4;
+
+            parse_fen(current_char);
+        }
+    }
+
+    current_char = strstr(command,"moves");
+
+    if (current_char != NULL) {
+
+        current_char += 6;
+
+        while(*current_char) {
+            int move = parse_move(current_char);
+
+            if (!move) {
+                break;
+            }
+
+            make_move(move, all_moves);
+
+            while (*current_char && *current_char != ' ') current_char++;
+            current_char++;
+        }
+    }
+
 }
