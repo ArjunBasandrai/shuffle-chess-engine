@@ -109,5 +109,17 @@ void parse_position(char *command) {
             current_char++;
         }
     }
+}
 
+void parse_go(char *command) {
+    int depth = -1;
+    char *current_depth = NULL;
+
+    if (current_depth = strstr(command, "depth")) {
+        depth = atoi(current_depth + 6);
+    } else {
+        depth = 6;
+    }
+
+    printf("depth : %d\n",depth);
 }
