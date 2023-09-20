@@ -1,3 +1,7 @@
+#ifndef U64
+#define U64 unsigned long long
+#endif
+
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
     a7, b7, c7, d7, e7, f7, g7, h7,
@@ -99,6 +103,21 @@ const int castling_rights[64] = {
     15, 15, 15, 15, 15, 15, 15, 15,
     15, 15, 15, 15, 15, 15, 15, 15,
     13, 15, 15, 15, 12, 15, 15, 14
+};
+
+int material_score[12] = {
+    100,
+    300,
+    350,
+    500,
+    1000,
+    10000,
+    -100,
+    -300,
+    -350,
+    -500,
+    -1000,
+    -10000
 };
 
 char engine_name[] = "Matilda";

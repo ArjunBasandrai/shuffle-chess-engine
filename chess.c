@@ -47,7 +47,7 @@
 
 #ifndef FEN_H_
 #define FEN_H_
-#include "fen.h"
+#include "helpers/fen.h"
 #endif
 
 #ifndef MOVEGEN_H_
@@ -57,6 +57,11 @@
 
 #include "helpers/perft.h"
 #include "helpers/uci.h"
+
+#ifndef EVAL_H_
+#define EVAL_H_
+#include "helpers/evaluation.h"
+#endif
 
 #ifndef U64
 #define U64 unsigned long long
@@ -73,7 +78,11 @@ void init_all() {
 int main(){
     init_all();
 
-    uci_loop();
+    parse_fen(tricky_position);
+    print_board();
+    printf("score: %d\n",evaluate());
+
+    // uci_loop();
 
     return 0;
 }
