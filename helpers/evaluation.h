@@ -8,6 +8,11 @@
 #include "helpers/bit_manipulation.h"
 #endif
 
+#ifndef BOARD_H_
+#define BOARD_H_
+#include "helpers/board.h"
+#endif
+
 #ifndef U64
 #define U64 unsigned long long
 #endif
@@ -26,6 +31,20 @@ static inline int evaluate() {
             square = get_lsb_index(bitboard);
 
             score += material_score[piece];
+            
+            switch (piece) {
+                case P: score += pawn_score[square]; break;
+                case N: score += knight_score[square]; break;
+                case B: score += bishop_score[square]; break;
+                case R: score += rook_score[square]; break;
+                case K: score += king_score[square]; break;
+
+                case p: score -= pawn_score[mirror_score[square]]; break;
+                case n: score -= knight_score[mirror_score[square]]; break;
+                case b: score -= bishop_score[mirror_score[square]]; break;
+                case r: score -= rook_score[mirror_score[square]]; break;
+                case k: score -= king_score[mirror_score[square]]; break;
+            }
 
             pop_bit(bitboard, square);
         }

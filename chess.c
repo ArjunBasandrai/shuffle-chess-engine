@@ -78,7 +78,7 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen(tricky_position);
+    parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
     print_board();
     printf("score: %d\n",evaluate());
 
