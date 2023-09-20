@@ -28,6 +28,13 @@
 #include "search.h"
 #endif
 
+#ifndef FEN_H_
+#define FEN_H_
+#include "fen.h"
+#endif
+
+#include "stdlib.h"
+
 int parse_move(char *move_string) {
     moves move_list[1];
     generate_moves(move_list);

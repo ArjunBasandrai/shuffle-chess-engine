@@ -45,7 +45,10 @@
 #include "helpers/moves_list.h"
 #endif
 
-#include "helpers/fen.h"
+#ifndef FEN_H_
+#define FEN_H_
+#include "fen.h"
+#endif
 
 #ifndef MOVEGEN_H_
 #define MOVEGEN_H_
