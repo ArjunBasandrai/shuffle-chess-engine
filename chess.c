@@ -55,7 +55,11 @@
 #include "helpers/movegen.h"
 #endif
 
+#ifndef PERFT_H_
+#define PERFT_H_
 #include "helpers/perft.h"
+#endif
+
 #include "helpers/uci.h"
 
 #ifndef EVAL_H_
@@ -78,11 +82,11 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
-    print_board();
-    printf("score: %d\n",evaluate());
+    // parse_fen(start_position);
+    // print_board();
+    // search_position(5);
 
-    // uci_loop();
+    uci_loop();
 
     return 0;
 }

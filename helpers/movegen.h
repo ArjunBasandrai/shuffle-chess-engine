@@ -3,6 +3,11 @@
 #include <stdio.h>
 #endif
 
+#ifndef STRING_H_
+#define STRING_H_
+#include <string.h>
+#endif
+
 #ifndef CONST_H_
 #define CONST_H_
 #include "board_constants.h"
