@@ -82,11 +82,19 @@ void init_all() {
 int main(){
     init_all();
 
-    // parse_fen(start_position);
-    // print_board();
-    // search_position(5);
+    parse_fen(tricky_position);
+    print_board();
+    // int start = get_time_ms();
+    // search_position(3);
+    // printf("time: %d ms\n",get_time_ms() - start);
 
-    uci_loop();
+    moves move_list[1];
+
+    generate_moves(move_list);
+
+    print_move_scores(move_list);
+
+    // uci_loop();
 
     return 0;
 }

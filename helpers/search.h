@@ -3,6 +3,11 @@
 #include <stdio.h>
 #endif
 
+#ifndef BITS_H_
+#define BITS_H_
+#include "bit_manipulation.h"
+#endif
+
 #ifndef MOVES_H_
 #define MOVES_H_
 #include "moves_list.h"
@@ -27,6 +32,40 @@ int checkmate_score = -49000;
 int stalemate_score = 0;
 
 int ply, best_move;
+
+static inline int score_move(int move) {
+    if (get_move_capture(move)){
+        /* init target_piece to P because in case of enpassant, there will be no piece at target_square*/
+        int target_piece = P;
+
+        int start_piece, end_piece;
+        if (side == white) { start_piece = p; end_piece = k;} 
+        
+        else { start_piece = P; end_piece = K; }
+
+        for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
+            if (get_bit(bitboards[bb_piece], get_move_target(move))) {
+                target_piece = bb_piece;
+                break;
+            }
+        }
+
+        return mvv_lva[get_move_piece(move)][target_piece];
+    } 
+    
+    else {
+
+    }
+
+    return 0;
+}
+
+void print_move_scores(moves *move_list) {
+    for (int count = 0; count < move_list->count; count++) {
+        print_move(move_list->moves[count]);
+        printf(" : %d\n", score_move(move_list->moves[count]));
+    }
+}
 
 static inline int quiescence(int alpha, int beta) {
 
