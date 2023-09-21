@@ -91,6 +91,7 @@ int main(){
     moves move_list[1];
 
     generate_moves(move_list);
+    sort_moves(move_list);
 
     print_move_scores(move_list);
 
