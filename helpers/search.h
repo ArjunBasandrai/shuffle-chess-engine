@@ -30,6 +30,8 @@ int ply, best_move;
 
 static inline int quiescence(int alpha, int beta) {
 
+    nodes++;
+
     int evaluation = evaluate();
 
     // fail-hard beta cutoff
