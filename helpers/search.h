@@ -61,8 +61,7 @@ static inline int score_move(int move) {
 }
 
 static inline int sort_moves(moves *move_list) {
-    int* move_scores = (int*)malloc(move_list->count);
-
+    int move_scores[move_list->count];
     for (int count = 0; count < move_list->count; count++) {
         move_scores[count] = score_move(move_list->moves[count]);
     }
@@ -108,6 +107,7 @@ static inline int quiescence(int alpha, int beta) {
 
     moves move_list[1];
     generate_moves(move_list);
+    sort_moves(move_list);
 
     for (int count = 0; count < move_list->count; count++) {
         copy_board();
@@ -145,12 +145,16 @@ static inline int negamax(int alpha, int beta, int depth) {
     nodes++;
 
     int in_check = is_square_attacked((side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),side ^ 1);
+
+    if (in_check) depth++;
+
     int legal_moves=0;
     int best;
     int old_alpha = alpha;
 
     moves move_list[1];
     generate_moves(move_list);
+    sort_moves(move_list);
 
     for (int count = 0; count < move_list->count; count++) {
         copy_board();

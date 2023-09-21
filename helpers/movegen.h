@@ -124,14 +124,14 @@ static inline void generate_moves(moves *move_list) {
                     while (attacks) {
                         target_square = get_lsb_index(attacks);
                         if (source_square >= a7 && source_square <= h7) {
-                            add_move(move_list, encode_move(source_square,target_square, piece, Q, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, R, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, B, 1, 1, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, N, 1, 1, 0, 0));
+                            add_move(move_list, encode_move(source_square, target_square, piece, Q, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square, target_square, piece, R, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square, target_square, piece, B, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square, target_square, piece, N, 1, 0, 0, 0));
                         } else {
-                            add_move(move_list, encode_move(source_square,target_square, piece, 0, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square, target_square, piece, 0, 1, 0, 0, 0));
                         }
-                        pop_bit(attacks,target_square);
+                        pop_bit(attacks, target_square);
                     }
 
                     // enpassant captures for white
@@ -141,7 +141,7 @@ static inline void generate_moves(moves *move_list) {
 
                         if (enpassant_attacks) {
                             int target_enpassant = get_lsb_index(enpassant_attacks);
-                            add_move(move_list, encode_move(source_square,target_enpassant, piece, 0, 1, 0, 1, 0));
+                            add_move(move_list, encode_move(source_square, target_enpassant, piece, 0, 1, 0, 1, 0));
                         }
                     }
 
@@ -187,10 +187,10 @@ static inline void generate_moves(moves *move_list) {
 
                     if (!(target_square > h1) && !(get_bit(occupancies[both],target_square))) {
                         if (source_square >= a2 && source_square <= h2) {
-                            add_move(move_list, encode_move(source_square,target_square, piece, q, 1, 0, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, r, 1, 0, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, b, 1, 0, 0, 0));
-                            add_move(move_list, encode_move(source_square,target_square, piece, n, 1, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, q, 0, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, r, 0, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, b, 0, 0, 0, 0));
+                            add_move(move_list, encode_move(source_square,target_square, piece, n, 0, 0, 0, 0));
                         } else {
                             add_move(move_list, encode_move(source_square,target_square, piece, 0, 0, 0, 0, 0));
 

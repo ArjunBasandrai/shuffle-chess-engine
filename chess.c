@@ -82,10 +82,10 @@ void init_all() {
 int main(){
     init_all();
 
-    parse_fen(custom_position);
+    parse_fen(tricky_position);
     print_board();
     int start = get_time_ms();
-    search_position(3);
+    search_position(5);
     printf("time: %d ms\n",get_time_ms() - start);
 
     // uci_loop();
