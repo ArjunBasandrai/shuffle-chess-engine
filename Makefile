@@ -7,4 +7,4 @@ debug:
 	./chess.exe
 
 compile:
-	gcc chess.c -o chess.exe
+	gcc -Wredundant-decls -Ofast chess.c -o chess.exe

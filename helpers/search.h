@@ -61,7 +61,7 @@ static inline int score_move(int move) {
 }
 
 static inline int sort_moves(moves *move_list) {
-    int move_scores[move_list->count];
+    int* move_scores = (int*)malloc(move_list->count);
 
     for (int count = 0; count < move_list->count; count++) {
         move_scores[count] = score_move(move_list->moves[count]);
