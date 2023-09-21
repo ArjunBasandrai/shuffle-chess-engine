@@ -28,9 +28,55 @@ int stalemate_score = 0;
 
 int ply, best_move;
 
+static inline int quiescence(int alpha, int beta) {
+
+    int evaluation = evaluate();
+
+    // fail-hard beta cutoff
+    if (evaluation >= beta) {
+        // node fails high
+        return beta;
+    }
+
+    // found a better move
+    if (evaluation > alpha) {
+        alpha = evaluation;
+    }
+
+    moves move_list[1];
+    generate_moves(move_list);
+
+    for (int count = 0; count < move_list->count; count++) {
+        copy_board();
+        ply++;
+
+        if (make_move(move_list->moves[count], only_captures) == 0) {
+            ply--;
+            continue;
+        }
+
+        int score = -quiescence(-beta, -alpha);
+        ply--;
+        take_back();
+
+        // fail-hard beta cutoff
+        if (score >= beta) {
+            // node fails high
+            return beta;
+        }
+
+        // found a better move
+        if (score > alpha) {
+            alpha = score;
+        }
+    }
+
+    return alpha;
+}
+
 static inline int negamax(int alpha, int beta, int depth) {
     if (depth == 0) {
-        return evaluate();
+        return quiescence(alpha, beta);
     }
 
     nodes++;
