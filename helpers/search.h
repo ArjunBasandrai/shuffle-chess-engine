@@ -5,7 +5,7 @@
 
 #ifndef MOVES_H_
 #define MOVES_H_
-#include "helpers/moves_list.h"
+#include "moves_list.h"
 #endif
 
 #ifndef MOVEGEN_H_
@@ -20,8 +20,11 @@
 
 #ifndef PERFT_H_
 #define PERFT_H_
-#include "helpers/perft.h"
+#include "perft.h"
 #endif
+
+int checkmate_score = -49000;
+int stalemate_score = 0;
 
 int ply, best_move;
 
@@ -32,6 +35,8 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     nodes++;
 
+    int in_check = is_square_attacked((side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),side ^ 1);
+    int legal_moves=0;
     int best;
     int old_alpha = alpha;
 
@@ -46,6 +51,8 @@ static inline int negamax(int alpha, int beta, int depth) {
             ply--;
             continue;
         }
+
+        legal_moves++;
 
         int score = -negamax(-beta, -alpha, depth-1);
         ply--;
@@ -66,6 +73,14 @@ static inline int negamax(int alpha, int beta, int depth) {
         }
     }
 
+    if (legal_moves == 0) {
+        if (in_check) {
+            return checkmate_score + ply;
+        } else {
+            return stalemate_score;
+        }
+    }
+
     if (old_alpha != alpha) {
         best_move = best;
     }
@@ -76,7 +91,11 @@ static inline int negamax(int alpha, int beta, int depth) {
 
 void search_position(int depth) {
     int score = negamax(-50000, 50000, depth);
-    printf("bestmove ");
-    print_move(best_move);
-    printf("\n");
+
+    if (best_move) {
+        printf("info score cp %d depth %d nodes %ld\n", score, depth, nodes);
+        printf("bestmove ");
+        print_move(best_move);
+        printf("\n");
+    }
 }
