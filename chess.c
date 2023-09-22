@@ -82,7 +82,13 @@ void init_all() {
 int main(){
     init_all();
 
-    uci_loop();
+    // uci_loop();
+
+    parse_fen(tricky_position);
+    print_board();
+    int start = get_time_ms();
+    search_position(5);
+    printf("%d ms\n",get_time_ms() - start);
 
     return 0;
 }
