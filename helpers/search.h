@@ -28,16 +28,18 @@
 #include "perft.h"
 #endif
 
+#define max_ply 64
+
 int checkmate_score = -49000;
 int stalemate_score = 0;
 
 int ply;
 
-int killer_moves[2][64];
-int history_moves[12][64];
+int killer_moves[2][max_ply];
+int history_moves[12][max_ply];
 
-int pv_length[64];
-int pv_table[64][64];
+int pv_length[max_ply];
+int pv_table[max_ply][max_ply];
 
 static inline int score_move(int move) {
     if (get_move_capture(move)){
@@ -167,6 +169,8 @@ static inline int negamax(int alpha, int beta, int depth) {
         return quiescence(alpha, beta);
     }
 
+    if (ply > max_ply) return evaluate();
+
     nodes++;
 
     int in_check = is_square_attacked((side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),side ^ 1);
@@ -242,7 +246,17 @@ static inline int negamax(int alpha, int beta, int depth) {
 }
 
 void search_position(int depth) {
-    int score = negamax(-50000, 50000, depth);
+    int score;
+
+    nodes = 0;
+
+    memset(killer_moves,0,sizeof(killer_moves));
+    memset(history_moves,0,sizeof(history_moves));
+    memset(pv_table,0,sizeof(pv_table));
+    memset(pv_length,0,sizeof(pv_length));
+
+
+    score = negamax(-50000, 50000, depth);
 
     printf("info score cp %d depth %d nodes %ld pv ", score, depth, nodes);
 
@@ -251,6 +265,30 @@ void search_position(int depth) {
         printf(" ");
     }
     printf("\n");
+
+    printf("bestmove ");
+    print_move(pv_table[0][0]);
+    printf("\n");
+
+    nodes = 0;
+
+    memset(killer_moves,0,sizeof(killer_moves));
+    memset(history_moves,0,sizeof(history_moves));
+    memset(pv_table,0,sizeof(pv_table));
+    memset(pv_length,0,sizeof(pv_length));
+
+    for (int current_depth = 1; current_depth <= depth; current_depth++) {
+
+        score = negamax(-50000, 50000, current_depth);
+
+        printf("info score cp %d depth %d nodes %ld pv ", score, current_depth, nodes);
+
+        for (int count = 0; count < pv_length[0]; count++) {
+            print_move(pv_table[0][count]);
+            printf(" ");
+        }
+        printf("\n");
+    }
 
     printf("bestmove ");
     print_move(pv_table[0][0]);

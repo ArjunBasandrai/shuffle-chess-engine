@@ -87,7 +87,7 @@ int main(){
     parse_fen(tricky_position);
     print_board();
     int start = get_time_ms();
-    search_position(5);
+    search_position(6);
     printf("%d ms\n",get_time_ms() - start);
 
     return 0;
