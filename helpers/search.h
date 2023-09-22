@@ -192,10 +192,13 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         // fail-hard beta cutoff
         if (score >= beta) {
+
             // processing killer moves
 
-            killer_moves[1][ply] = killer_moves[0][ply];
-            killer_moves[0][ply] = move_list->moves[count];
+            if (get_move_capture(move_list->moves[count]) == 0) {
+                killer_moves[1][ply] = killer_moves[0][ply];
+                killer_moves[0][ply] = move_list->moves[count];
+            }
 
             // node fails high
             return beta;
@@ -205,8 +208,9 @@ static inline int negamax(int alpha, int beta, int depth) {
         if (score > alpha) {
 
             // store history moves
-
-            history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+            if (get_move_capture(move_list->moves[count]) == 0) {
+                history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+            }
 
             alpha = score;
             if (ply == 0) {
