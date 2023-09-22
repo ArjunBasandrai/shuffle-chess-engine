@@ -31,10 +31,13 @@
 int checkmate_score = -49000;
 int stalemate_score = 0;
 
-int ply, best_move;
+int ply;
 
 int killer_moves[2][64];
 int history_moves[12][64];
+
+int pv_length[64];
+int pv_table[64][64];
 
 static inline int score_move(int move) {
     if (get_move_capture(move)){
@@ -157,6 +160,9 @@ static inline int quiescence(int alpha, int beta) {
 }
 
 static inline int negamax(int alpha, int beta, int depth) {
+
+    pv_length[ply] = ply;
+
     if (depth == 0) {
         return quiescence(alpha, beta);
     }
@@ -168,7 +174,6 @@ static inline int negamax(int alpha, int beta, int depth) {
     if (in_check) depth++;
 
     int legal_moves=0;
-    int best;
     int old_alpha = alpha;
 
     moves move_list[1];
@@ -192,10 +197,13 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         // fail-hard beta cutoff
         if (score >= beta) {
+
             // processing killer moves
 
-            killer_moves[1][ply] = killer_moves[0][ply];
-            killer_moves[0][ply] = move_list->moves[count];
+            if (get_move_capture(move_list->moves[count]) == 0) {
+                killer_moves[1][ply] = killer_moves[0][ply];
+                killer_moves[0][ply] = move_list->moves[count];
+            }
 
             // node fails high
             return beta;
@@ -205,13 +213,19 @@ static inline int negamax(int alpha, int beta, int depth) {
         if (score > alpha) {
 
             // store history moves
-
-            history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+            if (get_move_capture(move_list->moves[count]) == 0) {
+                history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+            }
 
             alpha = score;
-            if (ply == 0) {
-                best = move_list->moves[count];
+
+            pv_table[ply][ply] = move_list->moves[count];
+
+            for (int next_ply = ply + 1; next_ply < pv_length[ply + 1]; next_ply++) {
+                pv_table[ply][next_ply] = pv_table[ply + 1][next_ply];
             }
+
+            pv_length[ply] = pv_length[ply + 1];
         }
     }
 
@@ -223,10 +237,6 @@ static inline int negamax(int alpha, int beta, int depth) {
         }
     }
 
-    if (old_alpha != alpha) {
-        best_move = best;
-    }
-
     // node fails high
     return alpha;
 }
@@ -234,10 +244,16 @@ static inline int negamax(int alpha, int beta, int depth) {
 void search_position(int depth) {
     int score = negamax(-50000, 50000, depth);
 
-    if (best_move) {
-        printf("info score cp %d depth %d nodes %ld\n", score, depth, nodes);
-        printf("bestmove ");
-        print_move(best_move);
-        printf("\n");
+    printf("info score cp %d depth %d nodes %ld pv ", score, depth, nodes);
+
+    for (int count = 0; count < pv_length[0]; count++) {
+        print_move(pv_table[0][count]);
+        printf(" ");
     }
+    printf("\n");
+
+    printf("bestmove ");
+    print_move(pv_table[0][0]);
+    printf("\n");
+    
 }
