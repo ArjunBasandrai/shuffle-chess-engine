@@ -4,5 +4,8 @@ chess.exe
 #backup folder
 backups
 
+#engine versions folder
+versions
+
 # VS Code settings and configurations
 .vscode

@@ -33,6 +33,9 @@ int stalemate_score = 0;
 
 int ply, best_move;
 
+int killer_moves[2][64];
+int history_moves[12][64];
+
 static inline int score_move(int move) {
     if (get_move_capture(move)){
         /* init target_piece to P because in case of enpassant, there will be no piece at target_square*/
@@ -50,11 +53,27 @@ static inline int score_move(int move) {
             }
         }
 
-        return mvv_lva[get_move_piece(move)][target_piece];
+        return mvv_lva[get_move_piece(move)][target_piece] + 10000; // + 10000 is added so that captures rank higher than killer moves
     } 
     
     else {
+        // score 1st killer move
 
+        if (killer_moves[0][ply] == move) {
+            return 9000;
+        }
+
+        // score 2nd killer move
+
+        else if (killer_moves[1][ply] == move) {
+            return 8000;
+        }
+
+        // score history move
+
+        else {
+            return history_moves[get_move_piece(move)][get_move_target(move)];
+        }
     }
 
     return 0;
@@ -173,12 +192,22 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         // fail-hard beta cutoff
         if (score >= beta) {
+            // processing killer moves
+
+            killer_moves[1][ply] = killer_moves[0][ply];
+            killer_moves[0][ply] = move_list->moves[count];
+
             // node fails high
             return beta;
         }
 
         // found a better move
         if (score > alpha) {
+
+            // store history moves
+
+            history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+
             alpha = score;
             if (ply == 0) {
                 best = move_list->moves[count];
