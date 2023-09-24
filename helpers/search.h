@@ -41,7 +41,28 @@ int history_moves[12][max_ply];
 int pv_length[max_ply];
 int pv_table[max_ply][max_ply];
 
+int follow_pv, score_pv;
+
+static inline void enable_pv_scoring(moves *move_list) {
+    follow_pv = 0;
+    for (int count = 0; count < move_list->count; count++) {
+        if (pv_table[0][ply] == move_list->moves[count]) {
+            score_pv = 1;
+            follow_pv = 1;
+        }
+    }
+}
+
 static inline int score_move(int move) {
+
+    if (score_pv) {
+        if (pv_table[0][ply] == move) {
+            score_pv = 0;
+            
+            return 20000;
+        }
+    }
+
     if (get_move_capture(move)){
         /* init target_piece to P because in case of enpassant, there will be no piece at target_square*/
         int target_piece = P;
@@ -163,6 +184,7 @@ static inline int quiescence(int alpha, int beta) {
 
 static inline int negamax(int alpha, int beta, int depth) {
 
+    int found_pv = 0;
     pv_length[ply] = ply;
 
     if (depth == 0) {
@@ -182,6 +204,9 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     moves move_list[1];
     generate_moves(move_list);
+
+    if (follow_pv) enable_pv_scoring(move_list);
+
     sort_moves(move_list);
 
     for (int count = 0; count < move_list->count; count++) {
@@ -195,7 +220,26 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         legal_moves++;
 
-        int score = -negamax(-beta, -alpha, depth-1);
+        int score;
+
+        if (found_pv) {
+            /* Once you've found a move with a score that is between alpha and beta,
+               the rest of the moves are searched with the goal of proving that they are all bad.
+               It's possible to do this a bit faster than a search that worries that one
+               of the remaining moves might be good. */
+            score = -negamax(-alpha-1,-alpha,depth - 1);
+            /* If the algorithm finds out that it was wrong, and that one of the
+               subsequent moves was better than the first PV move, it has to search again,
+               in the normal alpha-beta manner.  This happens sometimes, and it's a waste of time,
+               but generally not often enough to counteract the savings gained from doing the
+               "bad move proof" search referred to earlier. */
+            if ((score > alpha) && (score < beta)) {
+                score = -negamax(-beta, -alpha, depth-1);
+            }
+        } else {
+            score = -negamax(-beta, -alpha, depth-1);
+        }
+
         ply--;
         take_back();
 
@@ -223,6 +267,8 @@ static inline int negamax(int alpha, int beta, int depth) {
 
             alpha = score;
 
+            found_pv = 1;
+
             pv_table[ply][ply] = move_list->moves[count];
 
             for (int next_ply = ply + 1; next_ply < pv_length[ply + 1]; next_ply++) {
@@ -245,53 +291,38 @@ static inline int negamax(int alpha, int beta, int depth) {
     return alpha;
 }
 
-void search_position(int depth) {
-    int score;
-
+void search_position(int depth)
+{
+    int score = 0;
+    
     nodes = 0;
-
-    memset(killer_moves,0,sizeof(killer_moves));
-    memset(history_moves,0,sizeof(history_moves));
-    memset(pv_table,0,sizeof(pv_table));
-    memset(pv_length,0,sizeof(pv_length));
-
-
-    score = negamax(-50000, 50000, depth);
-
-    printf("info score cp %d depth %d nodes %ld pv ", score, depth, nodes);
-
-    for (int count = 0; count < pv_length[0]; count++) {
-        print_move(pv_table[0][count]);
-        printf(" ");
-    }
-    printf("\n");
-
-    printf("bestmove ");
-    print_move(pv_table[0][0]);
-    printf("\n");
-
-    nodes = 0;
-
-    memset(killer_moves,0,sizeof(killer_moves));
-    memset(history_moves,0,sizeof(history_moves));
-    memset(pv_table,0,sizeof(pv_table));
-    memset(pv_length,0,sizeof(pv_length));
-
-    for (int current_depth = 1; current_depth <= depth; current_depth++) {
-
+    
+    follow_pv = 0;
+    score_pv = 0;
+    
+    memset(killer_moves, 0, sizeof(killer_moves));
+    memset(history_moves, 0, sizeof(history_moves));
+    memset(pv_table, 0, sizeof(pv_table));
+    memset(pv_length, 0, sizeof(pv_length));
+    
+    for (int current_depth = 1; current_depth <= depth; current_depth++)
+    {
+        follow_pv = 1;
+        
         score = negamax(-50000, 50000, current_depth);
-
+        
         printf("info score cp %d depth %d nodes %ld pv ", score, current_depth, nodes);
-
-        for (int count = 0; count < pv_length[0]; count++) {
+        
+        for (int count = 0; count < pv_length[0]; count++)
+        {
             print_move(pv_table[0][count]);
             printf(" ");
         }
+        
         printf("\n");
     }
 
     printf("bestmove ");
     print_move(pv_table[0][0]);
     printf("\n");
-    
 }
