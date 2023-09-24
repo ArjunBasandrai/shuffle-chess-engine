@@ -189,7 +189,6 @@ static inline int quiescence(int alpha, int beta) {
 
 static inline int negamax(int alpha, int beta, int depth) {
     int score;
-    int found_pv = 0;
     pv_length[ply] = ply;
 
     if (depth == 0) {
@@ -242,54 +241,42 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         legal_moves++;
 
-        if (found_pv) {
-            /* Once you've found a move with a score that is between alpha and beta,
-               the rest of the moves are searched with the goal of proving that they are all bad.
-               It's possible to do this a bit faster than a search that worries that one
-               of the remaining moves might be good. */
-            score = -negamax(-alpha - 1, -alpha , depth - 1);
+        if (moves_searched == 0) {
+            score = -negamax(-beta, -alpha, depth - 1);
+        }
+        
+        else {
+            if (
+                moves_searched >= full_depth_moves &&
+                depth >= reduction_limit &&
+                in_check == 0 && 
+                get_move_capture(move_list->moves[count]) == 0 &&
+                get_move_promoted(move_list->moves[count]) == 0
+                ) {
+                score = -negamax(-alpha - 1, -alpha, depth - 2);
+                }
             
-            /* If the algorithm finds out that it was wrong, and that one of the
-               subsequent moves was better than the first PV move, it has to search again,
-               in the normal alpha-beta manner.  This happens sometimes, and it's a waste of time,
-               but generally not often enough to counteract the savings gained from doing the
-               "bad move proof" search referred to earlier. */
-            if ((score > alpha) && (score < beta)) {
-                /* re-search the move that has failed to be proved to be bad
-                   with normal alpha beta score bounds*/
-                score = -negamax(-beta, -alpha, depth - 1);
-            }
-
-        } else {
-            if (moves_searched == 0) {
-                score = -negamax(-beta, -alpha, depth - 1);
-            }
+            else {score = alpha + 1;}
             
-            else {
-                if (
-                    moves_searched >= full_depth_moves &&
-                    depth >= reduction_limit &&
-                    in_check == 0 && 
-                    get_move_capture(move_list->moves[count]) == 0 &&
-                    get_move_promoted(move_list->moves[count]) == 0
-                  ) {
-                    score = -negamax(-alpha - 1, -alpha, depth - 2);
-                  }
-                
-                else {score = alpha + 1;}
-                
-                // if found a better move during LMR
-                if (score > alpha) {
-                    // re-search at full depth but with narrowed score bandwith
-                    score = -negamax(-alpha - 1, -alpha, depth-1);
-                
-                    // if LMR fails re-search at full depth and full score bandwith
-                    if((score > alpha) && (score < beta)) {
-                        score = -negamax(-beta, -alpha, depth-1);
-                    }
+            // if found a better move during LMR
+            if (score > alpha) {
+                /* Once you've found a move with a score that is between alpha and beta,
+                the rest of the moves are searched with the goal of proving that they are all bad.
+                It's possible to do this a bit faster than a search that worries that one
+                of the remaining moves might be good. */
+                score = -negamax(-alpha - 1, -alpha, depth-1);
+            
+                /* If the algorithm finds out that it was wrong, and that one of the
+                subsequent moves was better than the first PV move, it has to search again,
+                in the normal alpha-beta manner.  This happens sometimes, and it's a waste of time,
+                but generally not often enough to counteract the savings gained from doing the
+                "bad move proof" search referred to earlier. */
+                if((score > alpha) && (score < beta)) {
+                    score = -negamax(-beta, -alpha, depth-1);
                 }
             }
         }
+        
         
         ply--;
         take_back();
@@ -318,8 +305,6 @@ static inline int negamax(int alpha, int beta, int depth) {
             }
 
             alpha = score;
-
-            found_pv = 1;
 
             pv_table[ply][ply] = move_list->moves[count];
 
