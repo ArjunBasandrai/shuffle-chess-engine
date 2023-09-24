@@ -188,7 +188,7 @@ static inline int quiescence(int alpha, int beta) {
 }
 
 static inline int negamax(int alpha, int beta, int depth) {
-
+    int score;
     int found_pv = 0;
     pv_length[ply] = ply;
 
@@ -205,7 +205,22 @@ static inline int negamax(int alpha, int beta, int depth) {
     if (in_check) depth++;
 
     int legal_moves=0;
-    int old_alpha = alpha;
+
+    // Null Move Pruning
+    if (depth >= 3 && !in_check && ply) {
+        copy_board();
+
+        side ^= 1;
+        enpassant = no_sq;
+
+        score = -negamax(-beta, -beta + 1, depth - 1 - 2);
+
+        take_back();
+
+        if (score >= beta) {
+            return beta;
+        }
+    }
 
     moves move_list[1];
     generate_moves(move_list);
@@ -227,8 +242,6 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         legal_moves++;
 
-        int score;
-
         if (found_pv) {
             /* Once you've found a move with a score that is between alpha and beta,
                the rest of the moves are searched with the goal of proving that they are all bad.
@@ -246,7 +259,7 @@ static inline int negamax(int alpha, int beta, int depth) {
                    with normal alpha beta score bounds*/
                 score = -negamax(-beta, -alpha, depth - 1);
             }
-            
+
         } else {
             if (moves_searched == 0) {
                 score = -negamax(-beta, -alpha, depth - 1);
@@ -344,11 +357,24 @@ void search_position(int depth)
     memset(pv_table, 0, sizeof(pv_table));
     memset(pv_length, 0, sizeof(pv_length));
     
+    int alpha = -50000;
+    int beta = 50000;
+
+    // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++)
     {
         follow_pv = 1;
         
-        score = negamax(-50000, 50000, current_depth);
+        score = negamax(alpha, beta, current_depth);
+
+        if ((score <= alpha) || (score >= beta)) {
+            alpha = -50000;
+            beta = 50000;
+            continue;
+        }
+
+        alpha = score - 50;
+        beta = score + 50;
         
         printf("info score cp %d depth %d nodes %ld pv ", score, current_depth, nodes);
         
