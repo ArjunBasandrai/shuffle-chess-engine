@@ -203,4 +203,7 @@ static int mvv_lva[12][12] = {
 	100, 200, 300, 400, 500, 600,  100, 200, 300, 400, 500, 600
 };
 
+const int full_depth_moves = 4;
+const int reduction_limit = 3;
+
 char engine_name[] = "Matilda";
