@@ -61,6 +61,7 @@
 #endif
 
 #include "helpers/uci.h"
+#include "helpers/zobrist.h"
 
 #ifndef EVAL_H_
 #define EVAL_H_
@@ -76,16 +77,18 @@ void init_all() {
     init_sliders_attacks(bishop);
     init_sliders_attacks(rook);
     // init_magic_numbers();
+    init_random_keys();
 }
 
 // Main driver
 int main(){
     init_all();
 
-    uci_loop();
+    // uci_loop();
 
-    // parse_fen(tricky_position);
-    // print_board();
+    parse_fen(tricky_position);
+    print_board();
+
     // int start = get_time_ms();
     // search_position(7);
     // printf("%d ms\n",get_time_ms() - start);
