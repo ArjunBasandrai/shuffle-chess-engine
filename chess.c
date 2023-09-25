@@ -93,6 +93,8 @@ int main(){
     parse_fen(tricky_position);
     print_board();
 
+    perft_test(5);
+
     // int start = get_time_ms();
     // search_position(7);
     // printf("%d ms\n",get_time_ms() - start);

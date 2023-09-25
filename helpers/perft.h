@@ -41,6 +41,17 @@ static inline void perft_driver(int depth) {
         perft_driver(depth-1);
 
         take_back();
+
+        // U64 hash_from_scratch = generate_hash_keys();
+
+        // if (hash_key != hash_from_scratch) {
+        //     printf("\nTake back\nmove: ");
+        //     print_move(move_list->moves[move_count]);
+        //     printf("\n");
+        //     print_board();
+        //     printf("hash key should be: %llx\n",hash_from_scratch);
+        //     getchar();
+        // }
     }
 }
 
