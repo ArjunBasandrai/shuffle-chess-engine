@@ -8,9 +8,19 @@
 #include "bit_manipulation.h"
 #endif
 
+#ifndef CONST_H_
+#define CONST_H_
+#include "board_constants.h"
+#endif
+
 #ifndef BOARD_H_
 #define BOARD_H_
 #include "board.h"
+#endif
+
+#ifndef ZOBRIST_H_
+#define ZOBRIST_H_
+#include "zobrist.h"
 #endif
 
 #define empty_board "8/8/8/8/8/8/8/8 w - - "
@@ -104,4 +114,6 @@ void parse_fen(char *fen) {
 
     occupancies[both] |= occupancies[white];
     occupancies[both] |= occupancies[black];
+    
+    hash_key = generate_hash_keys();
 }

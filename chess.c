@@ -61,11 +61,15 @@
 #endif
 
 #include "helpers/uci.h"
-#include "helpers/zobrist.h"
 
 #ifndef EVAL_H_
 #define EVAL_H_
 #include "helpers/evaluation.h"
+#endif
+
+#ifndef ZOBRIST_H_
+#define ZOBRIST_H_
+#include "helpers/zobrist.h"
 #endif
 
 #ifndef U64

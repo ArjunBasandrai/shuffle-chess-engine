@@ -206,4 +206,6 @@ static int mvv_lva[12][12] = {
 const int full_depth_moves = 4;
 const int reduction_limit = 3;
 
+U64 hash_key;
+
 char engine_name[] = "Matilda";

@@ -48,8 +48,9 @@ void print_board() {
 
     printf("   Side: %s\n", (!side) ? "white" : "black");
     printf("   Enpassant: %s\n",(enpassant != no_sq) ? sqaure_to_coordinate[enpassant] : "NO");
-    printf("   Castling: %c%c%c%c\n\n",(castle & wk) ? 'K' : '-',
+    printf("   Castling: %c%c%c%c\n",(castle & wk) ? 'K' : '-',
                                         (castle & wq) ? 'Q' : '-',
                                         (castle & bk) ? 'k' : '-',
                                         (castle & bq) ? 'q' : '-');
+    printf("   Hash Key: %llx\n\n", hash_key);
 }
