@@ -124,15 +124,76 @@ void parse_position(char *command) {
     print_board();
 }
 
-void parse_go(char *command) {
+void parse_go(char *command)
+{
+    // init parameters
     int depth = -1;
-    char *current_depth = NULL;
 
-    if (current_depth = strstr(command, "depth")) {
-        depth = atoi(current_depth + 6);
-    } else {
-        depth = 6;
+    // init argument
+    char *argument = NULL;
+
+    // infinite search
+    if ((argument = strstr(command,"infinite"))) {}
+
+    if ((argument = strstr(command,"binc")) && side == black) {
+        // parse black time increment
+        inc = atoi(argument + 5);
     }
+
+    if ((argument = strstr(command,"winc")) && side == white) {
+        // parse white time increment
+        inc = atoi(argument + 5);
+    }
+
+    if ((argument = strstr(command,"wtime")) && side == white) {
+        // parse white time limit
+        time = atoi(argument + 6);
+    }
+
+    if ((argument = strstr(command,"btime")) && side == black) {
+        // parse black time limit
+        time = atoi(argument + 6);
+    }
+
+    if ((argument = strstr(command,"movestogo"))) {
+        // parse number of moves to go
+        movestogo = atoi(argument + 10);
+    }
+
+    if ((argument = strstr(command,"movetime"))) {
+        // parse amount of time allowed to spend to make a move
+        movetime = atoi(argument + 9);
+    }
+
+    if ((argument = strstr(command,"depth"))) {
+        depth = atoi(argument + 6);
+    }
+
+    if (movetime != -1) {
+        time = movetime;
+
+        movestogo = 1;
+    }
+
+    starttime = get_time_ms();
+
+    depth = depth;
+
+    // if time control is available
+    if(time != -1)
+    {
+        timeset = 1;
+
+        time /= movestogo;
+        time -= 50;
+        stoptime = starttime + time + inc;
+    }
+
+    if(depth == -1)
+        depth = 64;
+
+    printf("time:%d start:%d stop:%d depth:%d timeset:%d\n",
+    time, starttime, stoptime, depth, timeset);
 
     search_position(depth);
 }

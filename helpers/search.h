@@ -33,6 +33,8 @@
 #include "perft.h"
 #endif
 
+#include "io.h"
+
 #define max_ply 64
 
 int checkmate_score = -49000;
@@ -47,6 +49,117 @@ int pv_length[max_ply];
 int pv_table[max_ply][max_ply];
 
 int follow_pv, score_pv;
+
+// exit from engine flag
+int quit = 0;
+
+// UCI "movestogo" command moves counter
+int movestogo = 30;
+
+// UCI "movetime" command time counter
+int movetime = -1;
+
+// UCI "time" command holder (ms)
+int time = -1;
+
+// UCI "inc" command's time increment holder
+int inc = 0;
+
+// UCI "starttime" command time holder
+int starttime = 0;
+
+// UCI "stoptime" command time holder
+int stoptime = 0;
+
+// variable to flag time control availability
+int timeset = 0;
+
+// variable to flag when the time is up
+int stopped = 0;
+
+int input_waiting() {
+    static int init = 0, pipe;
+    static HANDLE inh;
+    DWORD dw;
+
+    if (!init) {
+        init = 1;
+        inh = GetStdHandle(STD_INPUT_HANDLE);
+        pipe = !GetConsoleMode(inh, &dw);
+        if (!pipe) {
+            SetConsoleMode(inh, dw & ~(ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT));
+            FlushConsoleInputBuffer(inh);
+        }
+    }
+    
+    if (pipe) {
+        if (!PeekNamedPipe(inh, NULL, 0, NULL, &dw, NULL)) return 1;
+        return dw;
+    }
+    
+    else {
+        GetNumberOfConsoleInputEvents(inh, &dw);
+        return dw <= 1 ? 0 : dw;
+    }
+}
+
+
+void read_input() {
+    // bytes to read holder
+    int bytes;
+    
+    // GUI/user input
+    char input[256] = "", *endc;
+
+    // "listen" to STDIN
+    if (input_waiting()) {
+        // tell engine to stop calculating
+        stopped = 1;
+        
+        do
+        {
+            // read bytes from STDIN
+            bytes=_read(fileno(stdin), input, 256);
+        }
+        
+        // until bytes available
+        while (bytes < 0);
+        
+        // searches for the first occurrence of '\n'
+        endc = strchr(input,'\n');
+        
+        // if found new line set value at pointer to 0
+        if (endc) *endc=0;
+        
+        // if input is available
+        if (strlen(input) > 0) {
+            // match UCI "quit" command
+            if (!strncmp(input, "quit", 4)) {
+                // tell engine to terminate exacution    
+                quit = 1;
+            }
+
+            // // match UCI "stop" command
+            else if (!strncmp(input, "stop", 4)) {
+                // tell engine to terminate exacution
+                quit = 1;
+            }
+        }   
+    }
+}
+
+// a bridge function to interact between search and GUI input
+static void communicate() {
+	// if time is up break here
+    if (timeset == 1 && get_time_ms() > stoptime) {
+		// tell engine to stop calculating
+		stopped = 1;
+	}
+	
+    // read GUI input
+	read_input();
+}
+
 
 static inline void enable_pv_scoring(moves *move_list) {
     follow_pv = 0;
@@ -140,6 +253,10 @@ void print_move_scores(moves *move_list) {
 
 static inline int quiescence(int alpha, int beta) {
 
+    if((nodes & 2047 ) == 0)
+        // "listen" to the GUI/user input
+		communicate();
+
     nodes++;
 
     int evaluation = evaluate();
@@ -172,6 +289,8 @@ static inline int quiescence(int alpha, int beta) {
         ply--;
         take_back();
 
+        if(stopped == 1) return 0;
+
         // fail-hard beta cutoff
         if (score >= beta) {
             // node fails high
@@ -188,6 +307,10 @@ static inline int quiescence(int alpha, int beta) {
 }
 
 static inline int negamax(int alpha, int beta, int depth) {
+
+    if((nodes & 2047 ) == 0)
+        // "listen" to the GUI/user input
+		communicate();
     int score;
     pv_length[ply] = ply;
 
@@ -280,6 +403,9 @@ static inline int negamax(int alpha, int beta, int depth) {
         
         ply--;
         take_back();
+
+        if(stopped == 1) return 0;
+
         moves_searched++;
 
         // fail-hard beta cutoff
@@ -333,6 +459,8 @@ void search_position(int depth)
     int score = 0;
     
     nodes = 0;
+
+    stopped = 0;
     
     follow_pv = 0;
     score_pv = 0;
@@ -348,6 +476,7 @@ void search_position(int depth)
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++)
     {
+        if (stopped == 1) break;
         follow_pv = 1;
         
         score = negamax(alpha, beta, current_depth);
