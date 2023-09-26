@@ -43,7 +43,7 @@ static inline int read_hash_entry(int alpha, int beta, int depth) {
                 return hash_entry->score;
             } else if ((hash_entry->flag == hash_flag_alpha) && (hash_entry->score <= alpha)) {
                 return alpha;
-            } else if ((hash_entry->flag == hash_flag_beta) && (hash_entry->score >= alpha)) {
+            } else if ((hash_entry->flag == hash_flag_beta) && (hash_entry->score >= beta)) {
                 return beta;
             } 
         }

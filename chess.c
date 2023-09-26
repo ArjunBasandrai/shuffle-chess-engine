@@ -72,7 +72,10 @@
 #include "helpers/zobrist.h"
 #endif
 
+#ifndef TRANSPOSE_H_
+#define TRANSPOSE_H_
 #include "helpers/transposition_table.h"
+#endif
 
 #ifndef U64
 #define U64 unsigned long long
@@ -90,17 +93,13 @@ void init_all() {
 int main(){
     init_all();
 
-    // uci_loop();
+    uci_loop();
 
-    parse_fen(start_position);
-    print_board();
-
-    clear_transposition_table();
-
-    write_hash_entry(21, 1 , hash_flag_beta);
-    int score = read_hash_entry(45, 30, 1);
-
-    printf("score from hash entry: %d\n",score);
+    // parse_fen(tricky_position);
+    // print_board();
+    // int start = get_time_ms();
+    // search_position(7);
+    // printf("%d ms\n",get_time_ms() - start);
 
     return 0;
 }

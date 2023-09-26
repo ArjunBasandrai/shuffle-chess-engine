@@ -33,6 +33,11 @@
 #include "perft.h"
 #endif
 
+#ifndef TRANSPOSE_H_
+#define TRANSPOSE_H_
+#include "transposition_table.h"
+#endif
+
 #include "io.h"
 
 #define max_ply 64
@@ -253,7 +258,7 @@ void print_move_scores(moves *move_list) {
 
 static inline int quiescence(int alpha, int beta) {
 
-    if((nodes & 2047 ) == 0)
+    if((nodes & 2047) == 0)
         // "listen" to the GUI/user input
 		communicate();
 
@@ -308,17 +313,27 @@ static inline int quiescence(int alpha, int beta) {
 
 static inline int negamax(int alpha, int beta, int depth) {
 
+    int score;
+    
+    int hash_flag = hash_flag_alpha;
+
+    // read hash from transposition table
+    if ((score = read_hash_entry(alpha, beta, depth)) != no_hash_entry) {
+        // if move has already been searched and henc
+        return score;
+    }
+
     if((nodes & 2047 ) == 0)
         // "listen" to the GUI/user input
 		communicate();
-    int score;
+    
     pv_length[ply] = ply;
 
     if (depth == 0) {
         return quiescence(alpha, beta);
     }
 
-    if (ply > max_ply) return evaluate();
+    if (ply > max_ply - 1) return evaluate();
 
     nodes++;
 
@@ -411,6 +426,8 @@ static inline int negamax(int alpha, int beta, int depth) {
         // fail-hard beta cutoff
         if (score >= beta) {
 
+            write_hash_entry(beta, depth, hash_flag_beta);
+
             // processing killer moves
 
             if (get_move_capture(move_list->moves[count]) == 0) {
@@ -424,6 +441,8 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         // found a better move
         if (score > alpha) {
+
+            hash_flag = hash_flag_exact;
 
             // store history moves
             if (get_move_capture(move_list->moves[count]) == 0) {
@@ -449,6 +468,8 @@ static inline int negamax(int alpha, int beta, int depth) {
             return stalemate_score;
         }
     }
+
+    write_hash_entry(alpha, depth, hash_flag);
 
     // node fails high
     return alpha;
