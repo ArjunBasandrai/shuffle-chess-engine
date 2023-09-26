@@ -72,6 +72,8 @@
 #include "helpers/zobrist.h"
 #endif
 
+#include "helpers/transposition_table.h"
+
 #ifndef U64
 #define U64 unsigned long long
 #endif
@@ -90,10 +92,12 @@ int main(){
 
     // uci_loop();
 
-    parse_fen(tricky_position);
+    parse_fen(start_position);
     print_board();
 
-    perft_test(5);
+    clear_transposition_table();
+
+    // perft_test(5);
 
     // int start = get_time_ms();
     // search_position(7);
