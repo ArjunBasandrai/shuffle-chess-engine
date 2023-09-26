@@ -97,11 +97,10 @@ int main(){
 
     clear_transposition_table();
 
-    // perft_test(5);
+    write_hash_entry(21, 1 , hash_flag_beta);
+    int score = read_hash_entry(45, 30, 1);
 
-    // int start = get_time_ms();
-    // search_position(7);
-    // printf("%d ms\n",get_time_ms() - start);
+    printf("score from hash entry: %d\n",score);
 
     return 0;
 }
