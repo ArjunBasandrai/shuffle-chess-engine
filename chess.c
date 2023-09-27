@@ -87,6 +87,7 @@ void init_all() {
     init_sliders_attacks(rook);
     // init_magic_numbers();
     init_random_keys();
+    clear_transposition_table();
 }
 
 // Main driver
@@ -95,11 +96,14 @@ int main(){
 
     uci_loop();
 
-    // parse_fen(tricky_position);
+    // parse_fen(start_position);
     // print_board();
     // int start = get_time_ms();
-    // search_position(7);
+    // search_position(10);
     // printf("%d ms\n",get_time_ms() - start);
+
+    // make_move(pv_table[0][0], all_moves);
+    // search_position(10);
 
     return 0;
 }

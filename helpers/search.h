@@ -264,6 +264,10 @@ static inline int quiescence(int alpha, int beta) {
 
     nodes++;
 
+    if (ply > max_ply - 1) {
+        return evaluate();
+    }
+
     int evaluation = evaluate();
 
     // fail-hard beta cutoff
@@ -296,15 +300,15 @@ static inline int quiescence(int alpha, int beta) {
 
         if(stopped == 1) return 0;
 
-        // fail-hard beta cutoff
-        if (score >= beta) {
-            // node fails high
-            return beta;
-        }
-
         // found a better move
         if (score > alpha) {
             alpha = score;
+
+            // fail-hard beta cutoff
+            if (score >= beta) {
+                // node fails high
+                return beta;
+            }
         }
     }
 
@@ -318,7 +322,7 @@ static inline int negamax(int alpha, int beta, int depth) {
     int hash_flag = hash_flag_alpha;
 
     // read hash from transposition table
-    if ((score = read_hash_entry(alpha, beta, depth)) != no_hash_entry) {
+    if (ply && (score = read_hash_entry(alpha, beta, depth)) != no_hash_entry) {
         // if move has already been searched and henc
         return score;
     }
@@ -347,10 +351,18 @@ static inline int negamax(int alpha, int beta, int depth) {
     if (depth >= 3 && !in_check && ply) {
         copy_board();
 
-        side ^= 1;
+        ply++;
+
+        if (enpassant != no_sq) hash_key ^= enpassant_keys[enpassant];
+
         enpassant = no_sq;
+        side ^= 1;
+
+        hash_key ^= side_key;
 
         score = -negamax(-beta, -beta + 1, depth - 1 - 2);
+
+        ply--;
 
         take_back();
 
@@ -415,29 +427,12 @@ static inline int negamax(int alpha, int beta, int depth) {
             }
         }
         
-        
         ply--;
         take_back();
 
         if(stopped == 1) return 0;
 
         moves_searched++;
-
-        // fail-hard beta cutoff
-        if (score >= beta) {
-
-            write_hash_entry(beta, depth, hash_flag_beta);
-
-            // processing killer moves
-
-            if (get_move_capture(move_list->moves[count]) == 0) {
-                killer_moves[1][ply] = killer_moves[0][ply];
-                killer_moves[0][ply] = move_list->moves[count];
-            }
-
-            // node fails high
-            return beta;
-        }
 
         // found a better move
         if (score > alpha) {
@@ -458,6 +453,22 @@ static inline int negamax(int alpha, int beta, int depth) {
             }
 
             pv_length[ply] = pv_length[ply + 1];
+
+            // fail-hard beta cutoff
+            if (score >= beta) {
+
+                write_hash_entry(beta, depth, hash_flag_beta);
+
+                // processing killer moves
+
+                if (get_move_capture(move_list->moves[count]) == 0) {
+                    killer_moves[1][ply] = killer_moves[0][ply];
+                    killer_moves[0][ply] = move_list->moves[count];
+                }
+
+                // node fails high
+                return beta;
+            }
         }
     }
 

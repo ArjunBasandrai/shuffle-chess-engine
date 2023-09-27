@@ -229,6 +229,7 @@ void uci_loop() {
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos"); 
+            clear_transposition_table();
         }
 
         else if (strncmp(input, "go", 2) == 0) { 
