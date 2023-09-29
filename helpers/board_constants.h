@@ -2,6 +2,11 @@
 #define U64 unsigned long long
 #endif
 
+#define infinity 50000
+#define mate_value 49000
+#define mate_score 48000
+#define stalemate_score 0
+
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
     a7, b7, c7, d7, e7, f7, g7, h7,
@@ -207,5 +212,6 @@ const int full_depth_moves = 4;
 const int reduction_limit = 3;
 
 U64 hash_key;
+int ply;
 
 char engine_name[] = "Matilda";

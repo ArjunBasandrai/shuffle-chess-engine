@@ -42,11 +42,6 @@
 
 #define max_ply 64
 
-int checkmate_score = -49000;
-int stalemate_score = 0;
-
-int ply;
-
 int killer_moves[2][max_ply];
 int history_moves[12][max_ply];
 
@@ -474,7 +469,7 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     if (legal_moves == 0) {
         if (in_check) {
-            return checkmate_score + ply;
+            return -mate_value + ply;
         } else {
             return stalemate_score;
         }
@@ -502,8 +497,8 @@ void search_position(int depth)
     memset(pv_table, 0, sizeof(pv_table));
     memset(pv_length, 0, sizeof(pv_length));
     
-    int alpha = -50000;
-    int beta = 50000;
+    int alpha = -infinity;
+    int beta = infinity;
 
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++)
@@ -514,8 +509,8 @@ void search_position(int depth)
         score = negamax(alpha, beta, current_depth);
 
         if ((score <= alpha) || (score >= beta)) {
-            alpha = -50000;
-            beta = 50000;
+            alpha = -infinity;
+            beta = infinity;
             continue;
         }
 

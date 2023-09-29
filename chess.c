@@ -94,16 +94,20 @@ void init_all() {
 int main(){
     init_all();
 
-    uci_loop();
+    int debug = 0;
 
-    // parse_fen(start_position);
-    // print_board();
-    // int start = get_time_ms();
-    // search_position(10);
-    // printf("%d ms\n",get_time_ms() - start);
+    if (debug) {
+        parse_fen(start_position);
+        print_board();
+        int start = get_time_ms();
+        search_position(10);
+        printf("%d ms\n", get_time_ms() - start);
 
-    // make_move(pv_table[0][0], all_moves);
-    // search_position(10);
+        make_move(pv_table[0][0], all_moves);
+        search_position(10);
+    } else {
+        uci_loop();
+    }
 
     return 0;
 }
