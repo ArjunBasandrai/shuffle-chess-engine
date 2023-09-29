@@ -251,6 +251,17 @@ void print_move_scores(moves *move_list) {
     }
 }
 
+static inline int is_repetition() {
+
+    for (int index = 0; index < repetition_index; index++) {
+        if (repetitions_table[index] == hash_key) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 static inline int quiescence(int alpha, int beta) {
 
     if((nodes & 2047) == 0)
@@ -284,13 +295,18 @@ static inline int quiescence(int alpha, int beta) {
         copy_board();
         ply++;
 
+        repetition_index++;
+        repetitions_table[repetition_index] = hash_key;
+
         if (make_move(move_list->moves[count], only_captures) == 0) {
             ply--;
+            repetition_index--;
             continue;
         }
 
         int score = -quiescence(-beta, -alpha);
         ply--;
+        repetition_index--;
         take_back();
 
         if(stopped == 1) return 0;
@@ -315,6 +331,10 @@ static inline int negamax(int alpha, int beta, int depth) {
     int score;
     
     int hash_flag = hash_flag_alpha;
+
+    if (ply && is_repetition()) {
+        return draw_score;
+    }
 
     int pv_node = (beta - alpha > 1);
 
@@ -350,6 +370,9 @@ static inline int negamax(int alpha, int beta, int depth) {
 
         ply++;
 
+        repetition_index++;
+        repetitions_table[repetition_index] = hash_key;
+
         if (enpassant != no_sq) hash_key ^= enpassant_keys[enpassant];
 
         enpassant = no_sq;
@@ -360,6 +383,7 @@ static inline int negamax(int alpha, int beta, int depth) {
         score = -negamax(-beta, -beta + 1, depth - 1 - 2);
 
         ply--;
+        repetition_index--;
 
         take_back();
 
@@ -381,8 +405,12 @@ static inline int negamax(int alpha, int beta, int depth) {
         copy_board();
         ply++;
 
+        repetition_index++;
+        repetitions_table[repetition_index] = hash_key;
+
         if (make_move(move_list->moves[count], all_moves) == 0) {
             ply--;
+            repetition_index--;
             continue;
         }
 
@@ -425,6 +453,7 @@ static inline int negamax(int alpha, int beta, int depth) {
         }
         
         ply--;
+        repetition_index--;
         take_back();
 
         if(stopped == 1) return 0;
@@ -473,7 +502,7 @@ static inline int negamax(int alpha, int beta, int depth) {
         if (in_check) {
             return -mate_value + ply;
         } else {
-            return stalemate_score;
+            return draw_score;
         }
     }
 

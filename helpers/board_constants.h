@@ -5,7 +5,7 @@
 #define infinity 50000
 #define mate_value 49000
 #define mate_score 48000
-#define stalemate_score 0
+#define draw_score 0
 
 enum {
     a8, b8, c8, d8, e8, f8, g8, h8,
@@ -213,5 +213,8 @@ const int reduction_limit = 3;
 
 U64 hash_key;
 int ply;
+
+U64 repetitions_table[150];
+int repetition_index;
 
 char engine_name[] = "Matilda";
