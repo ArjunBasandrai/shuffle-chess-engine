@@ -316,8 +316,10 @@ static inline int negamax(int alpha, int beta, int depth) {
     
     int hash_flag = hash_flag_alpha;
 
-    // read hash from transposition table
-    if (ply && (score = read_hash_entry(alpha, beta, depth)) != no_hash_entry) {
+    int pv_node = (beta - alpha > 1);
+
+    // read hash from transposition table if not root ply and not a pv node
+    if (ply && (score = read_hash_entry(alpha, beta, depth)) != no_hash_entry && !pv_node) {
         // if move has already been searched and henc
         return score;
     }
@@ -516,8 +518,15 @@ void search_position(int depth)
 
         alpha = score - 50;
         beta = score + 50;
+
+        if (score > -mate_value && score < -mate_score) {
+            printf("info score mate %d depth %d nodes %ld time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes);
+        } else if (score > mate_score && score < mate_value) {
+            printf("info score mate %d depth %d nodes %ld time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes);
+        } else {
+            printf("info score cp %d depth %d nodes %ld time %d pv ", score, current_depth, nodes);
+        }
         
-        printf("info score cp %d depth %d nodes %ld pv ", score, current_depth, nodes);
         
         for (int count = 0; count < pv_length[0]; count++)
         {

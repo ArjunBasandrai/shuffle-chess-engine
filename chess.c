@@ -94,7 +94,7 @@ void init_all() {
 int main(){
     init_all();
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
         parse_fen(start_position);
