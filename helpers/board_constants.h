@@ -214,7 +214,7 @@ const int reduction_limit = 3;
 U64 hash_key;
 int ply;
 
-U64 repetitions_table[150];
+U64 repetitions_table[1000];
 int repetition_index;
 
 char engine_name[] = "Matilda";

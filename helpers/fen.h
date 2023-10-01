@@ -36,6 +36,10 @@ void parse_fen(char *fen) {
     side = 0;
     enpassant = no_sq;
     castle = 0;
+    hash_key = 0ULL;
+    repetition_index = 0;
+    memset(repetitions_table, 0ULL, sizeof(repetitions_table));
+    ply = 0;
 
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {

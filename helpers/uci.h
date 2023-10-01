@@ -114,7 +114,8 @@ void parse_position(char *command) {
             if (!move) {
                 break;
             }
-
+            repetition_index++;
+            repetitions_table[repetition_index] = hash_key;
             make_move(move, all_moves);
 
             while (*current_char && *current_char != ' ') current_char++;
