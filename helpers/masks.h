@@ -213,8 +213,6 @@ void init_evaluation_masks() {
             for (int i=0; i < (7 - rank) + 1; i++) {
                 white_passed_mask[square] &= ~rank_mask[(7 - i) * 8 + file];
             }
-            printf("%s\n",sqaure_to_coordinate[square]);
-            print_bitboard(white_passed_mask[square]);
         }
     }
 
@@ -230,8 +228,6 @@ void init_evaluation_masks() {
             for (int i=0; i < rank + 1; i++) {
                 black_passed_mask[square] &= ~rank_mask[i * 8 + file];
             }
-            printf("%s\n",sqaure_to_coordinate[square]);
-            print_bitboard(black_passed_mask[square]);
         }
     }
 }

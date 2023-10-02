@@ -98,11 +98,9 @@ int main(){
     int debug = 1;
 
     if (debug) {
-        parse_fen(repetitions);
+        parse_fen("8/p1p1p1pp/8/8/8/8/P1P1P1PP/8 w - - ");
         print_board();
-        // int start = get_time_ms();
-        // search_position(10);
-        // printf("%d ms\n", get_time_ms() - start);
+        printf("score: %d\n", evaluate());
     } else {
         uci_loop();
     }
