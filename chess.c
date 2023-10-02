@@ -88,20 +88,21 @@ void init_all() {
     // init_magic_numbers();
     init_random_keys();
     clear_transposition_table();
+    init_evaluation_masks();
 }
 
 // Main driver
 int main(){
     init_all();
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
         parse_fen(repetitions);
         print_board();
-        int start = get_time_ms();
-        search_position(10);
-        printf("%d ms\n", get_time_ms() - start);
+        // int start = get_time_ms();
+        // search_position(10);
+        // printf("%d ms\n", get_time_ms() - start);
     } else {
         uci_loop();
     }

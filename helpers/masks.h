@@ -149,3 +149,89 @@ U64 rook_attacks_on_the_fly(int square, U64 block){
 
     return attacks;
 }
+
+U64 set_file_rank_mask(int file_number, int rank_number) {
+    U64 mask = 0ULL;
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            if (file_number != -1) {
+                if (file == file_number) {
+                    mask |= set_bit(mask, square);
+                }
+            } else if (rank_number != -1) {
+                if (rank == rank_number) {
+                    mask |= set_bit(mask, square);
+                }
+            }
+        }
+    }
+
+    return mask;
+}
+
+void init_evaluation_masks() {
+
+    // init file masks
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            file_mask[square] |= set_file_rank_mask(file, -1);
+        }
+    }
+
+    // init rank masks
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            rank_mask[square] |= set_file_rank_mask(-1, rank);
+        }
+    }
+
+    // init isolated masks
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            isolated_mask[square] |= set_file_rank_mask(file - 1, -1);
+            isolated_mask[square] |= set_file_rank_mask(file + 1, -1);
+        }
+    }
+
+    // init white passed pawn masks
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            white_passed_mask[square] |= set_file_rank_mask(file - 1, -1);
+            white_passed_mask[square] |= set_file_rank_mask(file, -1);
+            white_passed_mask[square] |= set_file_rank_mask(file + 1, -1);
+
+            for (int i=0; i < (7 - rank) + 1; i++) {
+                white_passed_mask[square] &= ~rank_mask[(7 - i) * 8 + file];
+            }
+            printf("%s\n",sqaure_to_coordinate[square]);
+            print_bitboard(white_passed_mask[square]);
+        }
+    }
+
+    // init white passed pawn masks
+
+    for (int rank = 0; rank < 8; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            black_passed_mask[square] |= set_file_rank_mask(file - 1, -1);
+            black_passed_mask[square] |= set_file_rank_mask(file, -1);
+            black_passed_mask[square] |= set_file_rank_mask(file + 1, -1);
+
+            for (int i=0; i < rank + 1; i++) {
+                black_passed_mask[square] &= ~rank_mask[i * 8 + file];
+            }
+            printf("%s\n",sqaure_to_coordinate[square]);
+            print_bitboard(black_passed_mask[square]);
+        }
+    }
+}

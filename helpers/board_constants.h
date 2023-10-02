@@ -217,4 +217,10 @@ int ply;
 U64 repetitions_table[1000];
 int repetition_index;
 
+U64 file_mask[64];
+U64 rank_mask[64];
+U64 isolated_mask[64];
+U64 white_passed_mask[64];
+U64 black_passed_mask[64];
+
 char engine_name[] = "Matilda";
