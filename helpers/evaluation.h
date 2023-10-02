@@ -19,7 +19,7 @@
 
 const int double_pawn_penalty = -10;
 const int isolated_pawn_penalty = -10;
-const int passed_pawn_bonus[8] = { 0, 5, 10, 20, 35, 60, 100, 200 };
+const int passed_pawn_bonus[8] = { 0, 10, 30, 50, 75, 100, 150, 200 };
 
 static inline int evaluate() {
     int score = 0;
@@ -53,6 +53,11 @@ static inline int evaluate() {
                         score += isolated_pawn_penalty;
                     }
 
+                    // passed pawn bonus
+                    if ((white_passed_mask[square] & bitboards[p]) == 0) {
+                        score += passed_pawn_bonus[get_rank[square]];
+                    }
+
                     break;
                 case N: score += knight_score[square]; break;
                 case B: score += bishop_score[square]; break;
@@ -71,6 +76,11 @@ static inline int evaluate() {
                     // isolated pawn penalty
                     if ((bitboards[p] & isolated_mask[square]) == 0) {
                         score -= isolated_pawn_penalty;
+                    }
+                    
+                    // passed pawn bonus
+                    if ((black_passed_mask[square] & bitboards[P]) == 0) {
+                        score -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                     }
 
                     break;

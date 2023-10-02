@@ -95,10 +95,10 @@ void init_all() {
 int main(){
     init_all();
 
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
-        parse_fen("8/p1p1p1pp/8/8/8/8/P1P1P1PP/8 w - - ");
+        parse_fen("8/8/8/P1P4/8/5p1p/8/8 w - - ");
         print_board();
         printf("score: %d\n", evaluate());
     } else {
