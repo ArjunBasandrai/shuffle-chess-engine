@@ -21,6 +21,9 @@ const int double_pawn_penalty = -10;
 const int isolated_pawn_penalty = -10;
 const int passed_pawn_bonus[8] = { 0, 10, 30, 50, 75, 100, 150, 200 };
 
+const int semi_open_file_score = 10;
+const int open_file_score = 15;
+
 static inline int evaluate() {
     int score = 0;
 
@@ -59,10 +62,40 @@ static inline int evaluate() {
                     }
 
                     break;
+
                 case N: score += knight_score[square]; break;
                 case B: score += bishop_score[square]; break;
-                case R: score += rook_score[square]; break;
-                case K: score += king_score[square]; break;
+                case R: 
+                    // positional score
+                    score += rook_score[square];
+
+                    // semi open file bonus
+                    if ((bitboards[P] & file_mask[square]) == 0) {
+                        score += semi_open_file_score;
+                    }
+
+                    // open file bonus
+                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                        score += open_file_score;
+                    }
+
+                    break;
+
+                case K: 
+                    // posiitional score
+                    score += king_score[square]; 
+
+                    // semi open file penalty
+                    if ((bitboards[P] & file_mask[square]) == 0) {
+                        score -= semi_open_file_score;
+                    }
+
+                    // open file penalty
+                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                        score -= open_file_score;
+                    }
+
+                    break;
 
                 case p: 
                     score -= pawn_score[mirror_score[square]];
@@ -84,10 +117,40 @@ static inline int evaluate() {
                     }
 
                     break;
+
                 case n: score -= knight_score[mirror_score[square]]; break;
                 case b: score -= bishop_score[mirror_score[square]]; break;
-                case r: score -= rook_score[mirror_score[square]]; break;
-                case k: score -= king_score[mirror_score[square]]; break;
+                case r: 
+                    // positional score
+                    score -= rook_score[mirror_score[square]]; 
+
+                    // semi open file bonus
+                    if ((bitboards[p] & file_mask[square]) == 0) {
+                        score -= semi_open_file_score;
+                    }
+
+                    // open file bonus
+                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                        score -= open_file_score;
+                    }
+
+                    break;
+
+                case k: 
+                    // positional score
+                    score -= king_score[mirror_score[square]]; 
+
+                    // semi open file penalty
+                    if ((bitboards[p] & file_mask[square]) == 0) {
+                        score += semi_open_file_score;
+                    }
+
+                    // open file penalty
+                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                        score += open_file_score;
+                    }
+                    
+                    break;
             }
 
             pop_bit(bitboard, square);

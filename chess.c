@@ -98,7 +98,7 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("8/8/8/P1P4/8/5p1p/8/8 w - - ");
+        parse_fen("4r1k1/5pp1/1p3n2/1Pn1p2p/1q6/2N1PP2/1BP3P1/2Q2RK1 b - - 4 30 ");
         print_board();
         printf("score: %d\n", evaluate());
     } else {
