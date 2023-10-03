@@ -1,1 +1,1 @@
-# c-chess-engine
+# shuffle-chess-engine
