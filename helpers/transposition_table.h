@@ -7,7 +7,7 @@
 #define U64 unsigned long long
 #endif
 
-#define hash_size 0x400000
+#define hash_size 800000
 
 // no hash entry
 #define no_hash_entry 100000 // must be outside alpha beta window (-50000, 50000)

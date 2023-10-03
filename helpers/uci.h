@@ -186,7 +186,7 @@ void parse_go(char *command)
         timeset = 1;
 
         time /= movestogo;
-        time -= 50;
+        if (time > 1500) time -= 50;
         stoptime = starttime + time + inc;
     }
 
