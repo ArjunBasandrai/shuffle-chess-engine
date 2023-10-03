@@ -24,6 +24,8 @@ const int passed_pawn_bonus[8] = { 0, 10, 30, 50, 75, 100, 150, 200 };
 const int semi_open_file_score = 10;
 const int open_file_score = 15;
 
+const int king_shield_bonus = 5;
+
 static inline int evaluate() {
     int score = 0;
 
@@ -64,7 +66,14 @@ static inline int evaluate() {
                     break;
 
                 case N: score += knight_score[square]; break;
-                case B: score += bishop_score[square]; break;
+                case B: 
+                    // positional score
+                    score += bishop_score[square]; 
+
+                    // mobility
+                    score += count_bits(get_bishop_attacks(square, occupancies[both]));
+
+                    break;
                 case R: 
                     // positional score
                     score += rook_score[square];
@@ -80,6 +89,10 @@ static inline int evaluate() {
                     }
 
                     break;
+                
+                case Q:
+                    // mobility
+                    score += count_bits(get_queen_attacks(square, occupancies[both]));
 
                 case K: 
                     // posiitional score
@@ -94,6 +107,9 @@ static inline int evaluate() {
                     if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
                         score -= open_file_score;
                     }
+
+                    // king safety bonus
+                    score += count_bits(king_attacks[square] & occupancies[white]) * king_shield_bonus;
 
                     break;
 
@@ -119,7 +135,14 @@ static inline int evaluate() {
                     break;
 
                 case n: score -= knight_score[mirror_score[square]]; break;
-                case b: score -= bishop_score[mirror_score[square]]; break;
+                case b: 
+                    // positional score
+                    score -= bishop_score[mirror_score[square]]; 
+
+                    // mobility
+                    score -= count_bits(get_bishop_attacks(square, occupancies[both]));
+
+                    break;
                 case r: 
                     // positional score
                     score -= rook_score[mirror_score[square]]; 
@@ -135,6 +158,10 @@ static inline int evaluate() {
                     }
 
                     break;
+                
+                case q:
+                    // mobility
+                    score -= count_bits(get_queen_attacks(square, occupancies[both]));
 
                 case k: 
                     // positional score
@@ -149,6 +176,9 @@ static inline int evaluate() {
                     if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
                         score += open_file_score;
                     }
+
+                    // king safety bonus
+                    score -= count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
                     
                     break;
             }
