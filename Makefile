@@ -1,10 +1,10 @@
 all:
-	gcc -Wredundant-decls -Ofast chess.c -o chess.exe
-	./chess.exe
+	gcc -Wredundant-decls -Ofast shuffle.c -o shuffle.exe
+	./shuffle.exe
 
 debug:
-	gcc chess.c -o chess.exe
-	./chess.exe
+	gcc shuffle.c -o shuffle.exe
+	./shuffle.exe
 
 compile:
-	gcc -Wredundant-decls -Ofast chess.c -o chess.exe
+	gcc -Wredundant-decls -Ofast shuffle.c -o shuffle.exe

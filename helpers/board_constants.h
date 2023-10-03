@@ -234,4 +234,4 @@ int get_rank[64] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-char engine_name[] = "Matilda";
+char engine_name[] = "Shuffle";
