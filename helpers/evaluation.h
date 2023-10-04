@@ -26,7 +26,24 @@ const int open_file_score = 15;
 
 const int king_shield_bonus = 5;
 
+static inline int get_game_phase_score() {
+    int white_piece_scores=0, black_piece_scores=0;
+
+    for (int piece = N; piece <= Q; piece++) {
+        white_piece_scores += count_bits(bitboards[piece]) * material_score[opening][piece];
+    }
+
+    for (int piece = n; piece <= q; piece++) {
+        black_piece_scores += count_bits(bitboards[piece]) * -material_score[opening][piece];
+    }
+
+    return white_piece_scores + black_piece_scores;
+}
+
 static inline int evaluate() {
+
+    int game_phase_score = get_game_phase_score();
+
     int score = 0;
 
     U64 bitboard;
@@ -40,8 +57,9 @@ static inline int evaluate() {
             piece = bb_piece;
             square = get_lsb_index(bitboard);
 
+        /*      
             score += material_score[piece];
-            
+        
             switch (piece) {
                 case P: 
                     // positional score
@@ -182,6 +200,7 @@ static inline int evaluate() {
                     
                     break;
             }
+        */
 
             pop_bit(bitboard, square);
         }
