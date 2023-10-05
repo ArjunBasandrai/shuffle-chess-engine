@@ -1,9 +1,6 @@
 # .exe executable
 # chess.exe
 
-#backup folder
-backups
-
 #engine versions folder
 versions
 
