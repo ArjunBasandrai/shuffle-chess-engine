@@ -61,5 +61,9 @@ PGN of both these game have been provided in the assets folder as [game1.pgn](ht
 [VICE Chess Engine in C](https://www.youtube.com/watch?v=bGAfaepBco4&list=PLZ1QII7yudbc-Ky058TEaOstZHVbT-2hg) by Bluefever Software <br>
 [Coding Adventures: Chess Bot](https://www.youtube.com/watch?v=U4ogK0MIzqk&t=1007s&pp=ygUWY2hlc3MgZW5naW5lIHNlYmFzdGlhbg%3D%3D) by Sebastian Lague
 
+## License
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+
 ## Note
-#### Shuffle is currently not compatible with Unix-based systems
+Shuffle is currently not compatible with Unix-based systems
+
