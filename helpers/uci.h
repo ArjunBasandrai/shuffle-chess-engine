@@ -35,6 +35,20 @@
 
 #include "stdlib.h"
 
+#define version 1.1
+
+void reset_time_control() {
+    quit = 0;
+    movestogo = 30;
+    movetime = -1;
+    time = -1;
+    inc = 0;
+    starttime = 0;
+    stoptime = 0;
+    timeset = 0;
+    stopped = 0;
+}
+
 int parse_move(char *move_string) {
     moves move_list[1];
     generate_moves(move_list);
@@ -127,6 +141,8 @@ void parse_position(char *command) {
 
 void parse_go(char *command)
 {
+    reset_time_control();
+
     // init parameters
     int depth = -1;
 
@@ -205,8 +221,8 @@ void uci_loop() {
 
     char input[2000];
 
-    printf("id name %s\n",engine_name);
-    printf("id name Arjun Basandrai\n");
+    printf("id name %s %s\n",engine_name,version);
+    printf("id author Arjun Basandrai\n");
     printf("uciok\n");
 
     // main loop

@@ -548,22 +548,22 @@ void search_position(int depth)
         alpha = score - 50;
         beta = score + 50;
 
-        if (score > -mate_value && score < -mate_score) {
-            printf("info score mate %d depth %d nodes %ld time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - starttime);
-        } else if (score > mate_score && score < mate_value) {
-            printf("info score mate %d depth %d nodes %ld time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - starttime);
-        } else {
-            printf("info score cp %d depth %d nodes %ld time %d pv ", score, current_depth, nodes, get_time_ms() - starttime);
+        if (pv_length[0]) {
+            if (score > -mate_value && score < -mate_score) {
+                printf("info score mate %d depth %d nodes %ld time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - starttime);
+            } else if (score > mate_score && score < mate_value) {
+                printf("info score mate %d depth %d nodes %ld time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - starttime);
+            } else {
+                printf("info score cp %d depth %d nodes %ld time %d pv ", score, current_depth, nodes, get_time_ms() - starttime);
+            }
+            for (int count = 0; count < pv_length[0]; count++)
+            {
+                print_move(pv_table[0][count]);
+                printf(" ");
+            }
+            printf("\n");
         }
         
-        
-        for (int count = 0; count < pv_length[0]; count++)
-        {
-            print_move(pv_table[0][count]);
-            printf(" ");
-        }
-        
-        printf("\n");
     }
 
     printf("bestmove ");
