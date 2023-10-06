@@ -46,7 +46,7 @@ static inline int evaluate() {
     int game_phase = -1;
 
     if (game_phase_score > opening_phase_score) game_phase = opening;
-    if (game_phase_score < endgame_phase_score) = game_phase = endgame;
+    if (game_phase_score < endgame_phase_score) game_phase = endgame;
     else game_phase = middlegame;
 
     int score = 0;
