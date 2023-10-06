@@ -19,6 +19,18 @@
 - Ability to play at various time controls
 - UCI compatibility
 
+## Screenshots
+### Game 1 
+In this game against TSCP 1.81, Shuffle was playing as white and mated black with a Queen and a Bishop <br/><br/>
+![game 1](assets/game1.png)  
+
+### Game 2
+In this game against TSCP 1.81, Shuffle was playing as black and made 3 Queens before mating the white king on the _a_ file <br/><br/>
+![game 2](assets/game2.png)
+
+### Game PGNs
+PGN of both these game have been provided in the assets folder as [game1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game1.pgn) and [game2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game2.pgn)
+
 ## Instructions
 
 ### Directions to install
@@ -27,7 +39,7 @@
 
 ### Directions to run
 
-- Open the `shuffle.exe` file in any UCI based GUI like [Arena GU](http://www.playwitharena.de/) or  [Cute Chess GUI](https://cutechess.com/)
+- Open the `shuffle.exe` file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or  [Cute Chess GUI](https://cutechess.com/)
 - Set any Game Mode/Time Control of choice
 - Have fun!
 
