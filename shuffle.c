@@ -95,12 +95,12 @@ void init_all() {
 int main(){
     init_all();
 
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
         parse_fen(start_position);
         print_board();
-        evaluate();
+        printf("score: %d\n",evaluate());
     } else {
         uci_loop();
     }

@@ -62,158 +62,256 @@ static inline int evaluate() {
             piece = bb_piece;
             square = get_lsb_index(bitboard);
 
-            if (game_phase == opening || game_phase == endgame) {
-                score += material_score[game_phase][piece];
-            } else {
+            if (game_phase == middlegame) {
                 score += (
                     material_score[opening][piece] * game_phase_score + 
                     material_score[endgame][piece] * (opening_phase_score - game_phase_score)
-                    ) / opening_phase_score;
+                ) / opening_phase_score;
+            } else {
+                score += material_score[game_phase][piece];
             }
 
-        /*      
+              
         
             switch (piece) {
                 case P: 
                     // positional score
-                    score += pawn_score[square]; 
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][PAWN][square] * game_phase_score + 
+                            positional_score[endgame][PAWN][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][PAWN][square];
+                    }
 
                     // double pawn penalty
-                    number_of_pawns = count_bits(bitboards[P] & file_mask[square]);
-                    if (number_of_pawns > 1) {
-                        score += number_of_pawns * double_pawn_penalty;
-                    }
+                    // number_of_pawns = count_bits(bitboards[P] & file_mask[square]);
+                    // if (number_of_pawns > 1) {
+                    //     score += number_of_pawns * double_pawn_penalty;
+                    // }
 
                     // isolated pawn penalty
-                    if ((bitboards[P] & isolated_mask[square]) == 0) {
-                        score += isolated_pawn_penalty;
-                    }
+                    // if ((bitboards[P] & isolated_mask[square]) == 0) {
+                    //     score += isolated_pawn_penalty;
+                    // }
 
                     // passed pawn bonus
-                    if ((white_passed_mask[square] & bitboards[p]) == 0) {
-                        score += passed_pawn_bonus[get_rank[square]];
-                    }
+                    // if ((white_passed_mask[square] & bitboards[p]) == 0) {
+                    //     score += passed_pawn_bonus[get_rank[square]];
+                    // }
 
                     break;
 
-                case N: score += knight_score[square]; break;
+                case N: 
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][KNIGHT][square] * game_phase_score + 
+                            positional_score[endgame][KNIGHT][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][KNIGHT][square];
+                    }
+
+                    break;
                 case B: 
                     // positional score
-                    score += bishop_score[square]; 
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][BISHOP][square] * game_phase_score + 
+                            positional_score[endgame][BISHOP][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][BISHOP][square];
+                    }
 
                     // mobility
-                    score += count_bits(get_bishop_attacks(square, occupancies[both]));
+                    // score += count_bits(get_bishop_attacks(square, occupancies[both]));
 
                     break;
                 case R: 
                     // positional score
-                    score += rook_score[square];
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][ROOK][square] * game_phase_score + 
+                            positional_score[endgame][ROOK][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][ROOK][square];
+                    }
 
                     // semi open file bonus
-                    if ((bitboards[P] & file_mask[square]) == 0) {
-                        score += semi_open_file_score;
-                    }
+                    // if ((bitboards[P] & file_mask[square]) == 0) {
+                    //     score += semi_open_file_score;
+                    // }
 
                     // open file bonus
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
-                        score += open_file_score;
-                    }
+                    // if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    //     score += open_file_score;
+                    // }
 
                     break;
                 
                 case Q:
-                    // mobility
-                    score += count_bits(get_queen_attacks(square, occupancies[both]));
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][QUEEN][square] * game_phase_score + 
+                            positional_score[endgame][QUEEN][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][QUEEN][square];
+                    }
+
+                    break;
 
                 case K: 
                     // posiitional score
-                    score += king_score[square]; 
+                    if (game_phase == middlegame) {
+                        score += (
+                            positional_score[opening][KING][square] * game_phase_score + 
+                            positional_score[endgame][KING][square] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score += positional_score[game_phase][KING][square];
+                    }
 
                     // semi open file penalty
-                    if ((bitboards[P] & file_mask[square]) == 0) {
-                        score -= semi_open_file_score;
-                    }
+                    // if ((bitboards[P] & file_mask[square]) == 0) {
+                    //     score -= semi_open_file_score;
+                    // }
 
                     // open file penalty
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
-                        score -= open_file_score;
-                    }
+                    // if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    //     score -= open_file_score;
+                    // }
 
                     // king safety bonus
-                    score += count_bits(king_attacks[square] & occupancies[white]) * king_shield_bonus;
+                    // score += count_bits(king_attacks[square] & occupancies[white]) * king_shield_bonus;
 
                     break;
 
                 case p: 
-                    score -= pawn_score[mirror_score[square]];
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][PAWN][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][PAWN][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][PAWN][mirror_score[square]];
+                    }
 
                     // double pawn penalty
-                    number_of_pawns = count_bits(bitboards[p] & file_mask[square]);
-                    if (number_of_pawns > 1) {
-                        score -= number_of_pawns * double_pawn_penalty;
-                    }
+                    // number_of_pawns = count_bits(bitboards[p] & file_mask[square]);
+                    // if (number_of_pawns > 1) {
+                    //     score -= number_of_pawns * double_pawn_penalty;
+                    // }
 
                     // isolated pawn penalty
-                    if ((bitboards[p] & isolated_mask[square]) == 0) {
-                        score -= isolated_pawn_penalty;
-                    }
+                    // if ((bitboards[p] & isolated_mask[square]) == 0) {
+                    //     score -= isolated_pawn_penalty;
+                    // }
                     
                     // passed pawn bonus
-                    if ((black_passed_mask[square] & bitboards[P]) == 0) {
-                        score -= passed_pawn_bonus[get_rank[mirror_score[square]]];
-                    }
+                    // if ((black_passed_mask[square] & bitboards[P]) == 0) {
+                    //     score -= passed_pawn_bonus[get_rank[mirror_score[square]]];
+                    // }
 
                     break;
-
-                case n: score -= knight_score[mirror_score[square]]; break;
-                case b: 
+                
+                case n: 
                     // positional score
-                    score -= bishop_score[mirror_score[square]]; 
-
-                    // mobility
-                    score -= count_bits(get_bishop_attacks(square, occupancies[both]));
-
-                    break;
-                case r: 
-                    // positional score
-                    score -= rook_score[mirror_score[square]]; 
-
-                    // semi open file bonus
-                    if ((bitboards[p] & file_mask[square]) == 0) {
-                        score -= semi_open_file_score;
-                    }
-
-                    // open file bonus
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
-                        score -= open_file_score;
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][KNIGHT][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][KNIGHT][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][KNIGHT][mirror_score[square]];
                     }
 
                     break;
                 
-                case q:
+                case b: 
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][BISHOP][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][BISHOP][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][BISHOP][mirror_score[square]];
+                    } 
+
                     // mobility
-                    score -= count_bits(get_queen_attacks(square, occupancies[both]));
+                    // score -= count_bits(get_bishop_attacks(square, occupancies[both]));
+
+                    break;
+                case r: 
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][ROOK][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][ROOK][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][ROOK][mirror_score[square]];
+                    } 
+
+                    // semi open file bonus
+                    // if ((bitboards[p] & file_mask[square]) == 0) {
+                    //     score -= semi_open_file_score;
+                    // }
+
+                    // open file bonus
+                    // if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    //     score -= open_file_score;
+                    // }
+
+                    break;
+                
+                case q:
+                    // positional score
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][QUEEN][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][QUEEN][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][QUEEN][mirror_score[square]];
+                    }
+
+                    break;
 
                 case k: 
                     // positional score
-                    score -= king_score[mirror_score[square]]; 
+                    if (game_phase == middlegame) {
+                        score -= (
+                            positional_score[opening][KING][mirror_score[square]] * game_phase_score + 
+                            positional_score[endgame][KING][mirror_score[square]] * (opening_phase_score - game_phase_score)
+                        ) / opening_phase_score;
+                    } else {
+                        score -= positional_score[game_phase][KING][mirror_score[square]];
+                    }
 
                     // semi open file penalty
-                    if ((bitboards[p] & file_mask[square]) == 0) {
-                        score += semi_open_file_score;
-                    }
+                    // if ((bitboards[p] & file_mask[square]) == 0) {
+                    //     score += semi_open_file_score;
+                    // }
 
                     // open file penalty
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
-                        score += open_file_score;
-                    }
+                    // if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    //     score += open_file_score;
+                    // }
 
                     // king safety bonus
-                    score -= count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
+                    // score -= count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
                     
                     break;
             }
-        */
+        
 
             pop_bit(bitboard, square);
         }
