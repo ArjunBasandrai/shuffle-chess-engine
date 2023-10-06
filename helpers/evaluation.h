@@ -43,6 +43,11 @@ static inline int get_game_phase_score() {
 static inline int evaluate() {
 
     int game_phase_score = get_game_phase_score();
+    int game_phase = -1;
+
+    if (game_phase_score > opening_phase_score) game_phase = opening;
+    if (game_phase_score < endgame_phase_score) = game_phase = endgame;
+    else game_phase = middlegame;
 
     int score = 0;
 
@@ -57,8 +62,16 @@ static inline int evaluate() {
             piece = bb_piece;
             square = get_lsb_index(bitboard);
 
+            if (game_phase == opening || game_phase == endgame) {
+                score += material_score[game_phase][piece];
+            } else {
+                score += (
+                    material_score[opening][piece] * game_phase_score + 
+                    material_score[endgame][piece] * (opening_phase_score - game_phase_score)
+                    ) / opening_phase_score;
+            }
+
         /*      
-            score += material_score[piece];
         
             switch (piece) {
                 case P: 
