@@ -1,10 +1,19 @@
+CC = gcc
+ENGINE = shuffle
+C = $(ENGINE).c
+EXE = $(ENGINE).exe
+
 all:
-	gcc  -Ofast shuffle.c -o shuffle.exe
+	$(CC) -Ofast $(C) -o $(EXE)
 	./shuffle.exe
 
 debug:
-	gcc shuffle.c -o shuffle.exe
+	$(CC) $(C) -o $(EXE)
 	./shuffle.exe
 
 compile:
-	gcc -Ofast shuffle.c -o shuffle.exe
+	$(CC) -Ofast $(C) -o $(EXE)
+
+distcheck:
+	mkdir -p dist
+	rm -rf dist
