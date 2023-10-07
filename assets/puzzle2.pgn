@@ -1,0 +1,18 @@
+[Event "Computer chess game"]
+[Site "LAPTOP-ALU416CH"]
+[Date "2023.10.07"]
+[Round "?"]
+[White "Shuffle"]
+[Black "Shuffle"]
+[Result "1-0"]
+[Time "13:56:55"]
+[SetUp "1"]
+[FEN "6k1/5pPp/4pPQP/3pP3/2pP4/1pP5/pP5K/R7 w - - 0 1"]
+[Termination "normal"]
+[PlyCount "3"]
+[WhiteType "program"]
+[BlackType "program"]
+
+1. Qb1 {(Qg6-b1 a2xb1Q Ra1-a8+) +M2/7 0} axb1=Q {(a2xb1Q Ra1-a8+) -M2/8 0}
+2. Ra8# {(Ra1-a8+) +M1/8 0} 1-0
+

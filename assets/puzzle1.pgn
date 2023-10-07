@@ -1,0 +1,18 @@
+[Event "Computer chess game"]
+[Site "LAPTOP-ALU416CH"]
+[Date "2023.10.07"]
+[Round "?"]
+[White "Shuffle"]
+[Black "Shuffle"]
+[Result "1-0"]
+[Time "13:36:08"]
+[SetUp "1"]
+[FEN "r2q1b1r/pppbk1pp/3p1pB1/3P3Q/2P5/4B3/PP3PPP/R3K2R w KQ - 0 1"]
+[Termination "normal"]
+[PlyCount "3"]
+[WhiteType "program"]
+[BlackType "program"]
+
+1. Qe5+ {(Qh5-e5+ f6xe5 Be3-g5+) +M2/15 5} dxe5 {(d6xe5 Be3-c5+) -M2/15 3}
+2. Bc5# {(Be3-c5+) +M1/15 2} 1-0
+
