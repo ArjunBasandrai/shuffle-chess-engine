@@ -16,4 +16,5 @@ compile:
 
 distcheck:
 	mkdir -p dist
+	cp -r "src/" "dist/"
 	rm -rf dist
