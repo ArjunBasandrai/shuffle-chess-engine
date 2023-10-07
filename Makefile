@@ -1,5 +1,5 @@
 all:
-	gcc -Wredundant-decls -Ofast shuffle.c -o shuffle.exe
+	gcc  -Ofast shuffle.c -o shuffle.exe
 	./shuffle.exe
 
 debug:
@@ -7,4 +7,4 @@ debug:
 	./shuffle.exe
 
 compile:
-	gcc -Wredundant-decls -Ofast shuffle.c -o shuffle.exe
+	gcc -Ofast shuffle.c -o shuffle.exe
