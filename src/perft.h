@@ -10,12 +10,12 @@
 
 #ifndef MOVES_H_
 #define MOVES_H_
-#include "helpers/moves_list.h"
+#include "moves_list.h"
 #endif
 
 #ifndef MOVEGEN_H_
 #define MOVEGEN_H_
-#include "helpers/movegen.h"
+#include "movegen.h"
 #endif
 
 #include "time.h"

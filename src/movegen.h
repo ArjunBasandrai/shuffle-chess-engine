@@ -30,7 +30,7 @@
 
 #ifndef ZOBRIST_H_
 #define ZOBRIST_H_
-#include "helpers/zobrist.h"
+#include "zobrist.h"
 #endif
 
 #define copy_board() \
