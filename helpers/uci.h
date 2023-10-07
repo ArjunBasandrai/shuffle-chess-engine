@@ -35,7 +35,7 @@
 
 #include "stdlib.h"
 
-#define version 1.1
+#define version "1.1"
 
 void reset_time_control() {
     quit = 0;
@@ -258,8 +258,8 @@ void uci_loop() {
         }
 
         else if (strncmp(input, "uci", 3) == 0) { 
-            printf("id name %s\n",engine_name);
-            printf("id name Arjun Basandrai\n");
+            printf("id name %s %s\n",engine_name, version);
+            printf("id author Arjun Basandrai\n");
             printf("uciok\n");
         }
     }
