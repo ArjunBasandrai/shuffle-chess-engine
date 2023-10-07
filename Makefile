@@ -23,20 +23,23 @@ __run:
 	./$(EXE)
 
 dist:
-	mkdir -p "$(DISTDIR)"
-	cp -r "$(SRCDIR)/" "$(DISTDIR)/"
-	cp shuffle.c "$(DISTDIR)/"
-	cp Makefile "$(DISTDIR)/"
-	cp README.md "$(DISTDIR)/"
-	tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
-	rm -rf "$(DISTDIR)"
+	@echo "Building distribution tarball..."
+	@mkdir -p "$(DISTDIR)"
+	@cp -r "$(SRCDIR)/" "$(DISTDIR)/"
+	@cp shuffle.c "$(DISTDIR)/"
+	@cp Makefile "$(DISTDIR)/"
+	@cp README.md "$(DISTDIR)/"
+	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
+	@rm -rf "$(DISTDIR)"
 
 distcheck: dist
-	tar -xzf $(DISTDIR).tar.gz
-	cd $(DISTDIR) && $(MAKE) all
-	cd $(DISTDIR) && $(MAKE) clean
-	rm -rf $(DISTDIR)
-	rm -f $(DISTDIR).tar.gz
+	@echo "Checking distribution tarball..."
+	@tar -xzf $(DISTDIR).tar.gz
+	@cd $(DISTDIR) && $(MAKE) all
+	@cd $(DISTDIR) && $(MAKE) clean
+	@rm -rf $(DISTDIR)
+	@rm -f $(DISTDIR).tar.gz
+	@echo "Test Successful!!"
 
 clean:
 	rm -rf $(EXE)
