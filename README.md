@@ -28,8 +28,16 @@ In this game against TSCP 1.81, Shuffle was playing as white and mated black wit
 In this game against TSCP 1.81, Shuffle was playing as black and made 3 Queens before mating the white king on the _a_ file <br/><br/>
 ![game 2](assets/game2.png)
 
-### Game PGNs
-PGN of both these game have been provided in the assets folder as [game1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game1.pgn) and [game2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game2.pgn)
+### Puzzle 1
+In this position, Shuffle finds the brilliant move that leads to Mate in 2 <br/><br/>
+![puzzle 1](assets/puzzle1.png)
+
+### Puzzle 2
+In this position, Shuffle found a Queen Sacrifice, that would lead to Mate in 1 and prevent a stalemate <br/><br/>
+![puzzle 2](assets/puzzle2.png)
+
+### Game and Puzzle PGNs
+PGN of both the games and puzzles have been provided in the assets folder as [game1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game1.pgn), [game2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game2.pgn), [puzzle1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/puzzle1.pgn) and [puzzle2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/puzzle2.pgn)
 
 ## Instructions
 
