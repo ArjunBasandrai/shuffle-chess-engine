@@ -22,7 +22,7 @@ __release_compile:
 __run:
 	./$(EXE)
 
-distcheck:
+dist:
 	mkdir -p "$(DISTDIR)"
 	cp -r "$(SRCDIR)/" "$(DISTDIR)/"
 	cp shuffle.c "$(DISTDIR)/"
@@ -31,8 +31,14 @@ distcheck:
 	tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
 	rm -rf "$(DISTDIR)"
 
+distcheck: dist
 	tar -xzf $(DISTDIR).tar.gz
 	cd $(DISTDIR) && $(MAKE) all
 	cd $(DISTDIR) && $(MAKE) clean
 	rm -rf $(DISTDIR)
 	rm -f $(DISTDIR).tar.gz
+
+clean:
+	rm -rf $(EXE)
+
+.PHONY: all clean dist distcheck
