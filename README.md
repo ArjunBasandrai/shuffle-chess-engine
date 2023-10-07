@@ -73,5 +73,6 @@ PGN of both the games and puzzles have been provided in the assets folder as [ga
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 ## Note
-Shuffle is currently not compatible with Unix-based systems
+- Shuffle is currently not compatible with Unix-based systems
+- If you're in India and using the Jio Network, you may experience difficulties viewing the images in this file. Please consider switching to a different network provider or utilizing a VPN to access the images
 
