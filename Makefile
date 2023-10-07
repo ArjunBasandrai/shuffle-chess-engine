@@ -21,6 +21,7 @@ compile:
 distcheck:
 	mkdir -p "$(DISTDIR)"
 	cp -r "$(SRCDIR)/" "$(DISTDIR)/"
+	cp shuffle.c "$(DISTDIR)/"
 	cp Makefile "$(DISTDIR)/"
 	cp README.md "$(DISTDIR)/"
 	tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
