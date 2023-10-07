@@ -4,19 +4,23 @@ ENGINE = shuffle
 C = $(ENGINE).c
 EXE = $(ENGINE).exe
 
+R_FLAGS = -Ofast
+
 DISTDIR = dist
 SRCDIR = src
 
-all:
-	$(CC) -Ofast $(C) -o $(EXE)
-	./shuffle.exe
+all: __release_compile
 
-debug:
+debug: __debug_compile __run
+
+__debug_compile:
 	$(CC) $(C) -o $(EXE)
-	./shuffle.exe
 
-compile:
-	$(CC) -Ofast $(C) -o $(EXE)
+__release_compile:
+	$(CC) $(R_FLAGS) $(C) -o $(EXE)
+
+__run:
+	./$(EXE)
 
 distcheck:
 	mkdir -p "$(DISTDIR)"
