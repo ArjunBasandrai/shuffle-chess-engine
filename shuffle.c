@@ -87,8 +87,8 @@ void init_all() {
     init_sliders_attacks(rook);
     // init_magic_numbers();
     init_random_keys();
-    clear_transposition_table();
     init_evaluation_masks();
+    init_transposition_table(64);
 }
 
 // Main driver

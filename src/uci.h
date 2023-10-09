@@ -33,6 +33,11 @@
 #include "fen.h"
 #endif
 
+#ifndef TRANSPOSE_H_
+#define TRANSPOSE_H_
+#include "transposition_table.h"
+#endif
+
 #include "stdlib.h"
 
 #define version "1.1"
@@ -215,6 +220,8 @@ void parse_go(char *command)
 }
 
 void uci_loop() {
+    int max_hash = 1024;
+    int mb = 64;
     // clear STDIN & STDOUT buffers
     setbuf(stdin, NULL);
     setbuf(stdout, NULL);
@@ -223,6 +230,7 @@ void uci_loop() {
 
     printf("id name %s %s\n",engine_name,version);
     printf("id author Arjun Basandrai\n");
+    printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
     printf("uciok\n");
 
     // main loop
@@ -261,6 +269,16 @@ void uci_loop() {
             printf("id name %s %s\n",engine_name, version);
             printf("id author Arjun Basandrai\n");
             printf("uciok\n");
+        }
+
+        else if (!strncmp(input, "setoption name Hash value ", 26)) {
+            sscanf(input,"%*s %*s %*s %*s %d",&mb);
+
+            if (mb < 4) mb = 4;
+            if (mb > max_hash) mb = max_hash;
+
+            printf("Set hash table size to %dMB\n", mb);
+            init_transposition_table(mb);
         }
     }
 }
