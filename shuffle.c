@@ -103,6 +103,7 @@ int main(){
         printf("score: %d\n",evaluate());
     } else {
         uci_loop();
+        free(transposition_table);
     }
 
     return 0;
