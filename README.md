@@ -16,6 +16,7 @@
 - Negamax search with Alpha-Beta Pruning to quickly search for all possible positions
 - Advanced move ordering techniques like Principle Variation Search, Null Move Pruning, Late Move Reduction to reduce search times
 - Tapered Evaluation for static evaluation of given board state
+- Dynamically allocated transposition table to allow allocation of memory from the GUI or UCI command
 - Ability to play at various time controls
 - UCI compatibility
 
