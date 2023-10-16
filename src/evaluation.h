@@ -68,6 +68,9 @@ static inline int evaluate() {
         
             switch (piece) {
                 case P: 
+                    // positional score
+                    score_opening += positional_score[opening][PAWN][square];
+                    score_endgame += positional_score[endgame][PAWN][square];
 
                     // double pawn penalty
                     // number_of_pawns = count_bits(bitboards[P] & file_mask[square]);
@@ -87,16 +90,25 @@ static inline int evaluate() {
 
                     break;
 
-                case N: 
+                case N:
+                    // positional score
+                    score_opening += positional_score[opening][KNIGHT][square];
+                    score_endgame += positional_score[endgame][KNIGHT][square]; 
 
                     break;
                 case B: 
+                    // positional score
+                    score_opening += positional_score[opening][BISHOP][square];
+                    score_endgame += positional_score[endgame][BISHOP][square]; 
 
                     // mobility
                     // score += count_bits(get_bishop_attacks(square, occupancies[both]));
 
                     break;
                 case R: 
+                    // positional score
+                    score_opening += positional_score[opening][ROOK][square];
+                    score_endgame += positional_score[endgame][ROOK][square]; 
 
                     // semi open file bonus
                     // if ((bitboards[P] & file_mask[square]) == 0) {
@@ -111,10 +123,16 @@ static inline int evaluate() {
                     break;
                 
                 case Q:
+                    // positional score
+                    score_opening += positional_score[opening][QUEEN][square];
+                    score_endgame += positional_score[endgame][QUEEN][square]; 
 
                     break;
 
                 case K: 
+                    // positional score
+                    score_opening += positional_score[opening][KING][square];
+                    score_endgame += positional_score[endgame][KING][square]; 
 
                     // semi open file penalty
                     // if ((bitboards[P] & file_mask[square]) == 0) {
@@ -132,6 +150,9 @@ static inline int evaluate() {
                     break;
 
                 case p: 
+                    // positional score
+                    score_opening -= positional_score[opening][PAWN][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
 
                     // double pawn penalty
                     // number_of_pawns = count_bits(bitboards[p] & file_mask[square]);
@@ -152,16 +173,25 @@ static inline int evaluate() {
                     break;
                 
                 case n: 
+                    // positional score
+                    score_opening -= positional_score[opening][KNIGHT][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][KNIGHT][mirror_score[square]];
 
                     break;
                 
                 case b: 
+                    // positional score
+                    score_opening -= positional_score[opening][BISHOP][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][BISHOP][mirror_score[square]];
 
                     // mobility
                     // score -= count_bits(get_bishop_attacks(square, occupancies[both]));
 
                     break;
                 case r: 
+                    // positional score
+                    score_opening -= positional_score[opening][ROOK][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][ROOK][mirror_score[square]];
 
                     // semi open file bonus
                     // if ((bitboards[p] & file_mask[square]) == 0) {
@@ -176,10 +206,16 @@ static inline int evaluate() {
                     break;
                 
                 case q:
+                    // positional score
+                    score_opening -= positional_score[opening][QUEEN][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][QUEEN][mirror_score[square]];
 
                     break;
 
                 case k: 
+                    // positional score
+                    score_opening -= positional_score[opening][KING][mirror_score[square]];
+                    score_endgame -= positional_score[endgame][KING][mirror_score[square]];
 
                     // semi open file penalty
                     // if ((bitboards[p] & file_mask[square]) == 0) {
@@ -197,22 +233,15 @@ static inline int evaluate() {
                     break;
             }
         
-
             pop_bit(bitboard, square);
         }
     }
 
-    // if (game_phase == middlegame) {
-    //     score += (
-    //         material_score[opening][piece] * game_phase_score + 
-    //         material_score[endgame][piece] * (opening_phase_score - game_phase_score)
-    //     ) / opening_phase_score;
-    // } else {
-    //     score += material_score[game_phase][piece];
-    // }
-
     if (game_phase == middlegame) {
-        printf("middlegame\n");
+        score = (
+            score_opening * game_phase_score + 
+            score_endgame * (opening_phase_score - game_phase_score)
+        ) / opening_phase_score;
     } else if (game_phase == opening) {
         score = score_opening;
     } else if (game_phase == endgame) {
