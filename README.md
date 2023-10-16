@@ -59,7 +59,7 @@ PGN of both the games and puzzles have been provided in the assets folder as [ga
   <img src = "https://avatars.githubusercontent.com/u/64721050?v=4" width="150" alt="Arjun Basandrai">
 </p>
   <p align="center">
-    <a href = "https://github.com/Arjun Basandrai">
+    <a href = "https://github.com/ArjunBasandrai">
       <img src = "http://www.iconninja.com/files/241/825/211/round-collaboration-social-github-code-circle-network-icon.svg" width="36" height = "36" alt="GitHub"/>
     </a>
   </p>
