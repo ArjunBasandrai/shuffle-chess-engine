@@ -45,11 +45,12 @@ static inline int evaluate() {
     int game_phase_score = get_game_phase_score();
     int game_phase = -1;
 
+
     if (game_phase_score > opening_phase_score) game_phase = opening;
-    if (game_phase_score < endgame_phase_score) game_phase = endgame;
+    else if (game_phase_score < endgame_phase_score) game_phase = endgame;
     else game_phase = middlegame;
 
-    int score = 0;
+    int score = 0, score_opening = 0, score_endgame = 0;
 
     U64 bitboard;
     int piece, square;
@@ -62,28 +63,11 @@ static inline int evaluate() {
             piece = bb_piece;
             square = get_lsb_index(bitboard);
 
-            if (game_phase == middlegame) {
-                score += (
-                    material_score[opening][piece] * game_phase_score + 
-                    material_score[endgame][piece] * (opening_phase_score - game_phase_score)
-                ) / opening_phase_score;
-            } else {
-                score += material_score[game_phase][piece];
-            }
-
-              
+            score_opening += material_score[opening][piece];
+            score_endgame += material_score[endgame][piece];
         
             switch (piece) {
                 case P: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][PAWN][square] * game_phase_score + 
-                            positional_score[endgame][PAWN][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][PAWN][square];
-                    }
 
                     // double pawn penalty
                     // number_of_pawns = count_bits(bitboards[P] & file_mask[square]);
@@ -104,42 +88,15 @@ static inline int evaluate() {
                     break;
 
                 case N: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][KNIGHT][square] * game_phase_score + 
-                            positional_score[endgame][KNIGHT][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][KNIGHT][square];
-                    }
 
                     break;
                 case B: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][BISHOP][square] * game_phase_score + 
-                            positional_score[endgame][BISHOP][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][BISHOP][square];
-                    }
 
                     // mobility
                     // score += count_bits(get_bishop_attacks(square, occupancies[both]));
 
                     break;
                 case R: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][ROOK][square] * game_phase_score + 
-                            positional_score[endgame][ROOK][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][ROOK][square];
-                    }
 
                     // semi open file bonus
                     // if ((bitboards[P] & file_mask[square]) == 0) {
@@ -154,28 +111,10 @@ static inline int evaluate() {
                     break;
                 
                 case Q:
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][QUEEN][square] * game_phase_score + 
-                            positional_score[endgame][QUEEN][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][QUEEN][square];
-                    }
 
                     break;
 
                 case K: 
-                    // posiitional score
-                    if (game_phase == middlegame) {
-                        score += (
-                            positional_score[opening][KING][square] * game_phase_score + 
-                            positional_score[endgame][KING][square] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score += positional_score[game_phase][KING][square];
-                    }
 
                     // semi open file penalty
                     // if ((bitboards[P] & file_mask[square]) == 0) {
@@ -193,15 +132,6 @@ static inline int evaluate() {
                     break;
 
                 case p: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][PAWN][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][PAWN][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][PAWN][mirror_score[square]];
-                    }
 
                     // double pawn penalty
                     // number_of_pawns = count_bits(bitboards[p] & file_mask[square]);
@@ -222,43 +152,16 @@ static inline int evaluate() {
                     break;
                 
                 case n: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][KNIGHT][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][KNIGHT][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][KNIGHT][mirror_score[square]];
-                    }
 
                     break;
                 
                 case b: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][BISHOP][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][BISHOP][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][BISHOP][mirror_score[square]];
-                    } 
 
                     // mobility
                     // score -= count_bits(get_bishop_attacks(square, occupancies[both]));
 
                     break;
                 case r: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][ROOK][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][ROOK][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][ROOK][mirror_score[square]];
-                    } 
 
                     // semi open file bonus
                     // if ((bitboards[p] & file_mask[square]) == 0) {
@@ -273,28 +176,10 @@ static inline int evaluate() {
                     break;
                 
                 case q:
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][QUEEN][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][QUEEN][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][QUEEN][mirror_score[square]];
-                    }
 
                     break;
 
                 case k: 
-                    // positional score
-                    if (game_phase == middlegame) {
-                        score -= (
-                            positional_score[opening][KING][mirror_score[square]] * game_phase_score + 
-                            positional_score[endgame][KING][mirror_score[square]] * (opening_phase_score - game_phase_score)
-                        ) / opening_phase_score;
-                    } else {
-                        score -= positional_score[game_phase][KING][mirror_score[square]];
-                    }
 
                     // semi open file penalty
                     // if ((bitboards[p] & file_mask[square]) == 0) {
@@ -315,6 +200,23 @@ static inline int evaluate() {
 
             pop_bit(bitboard, square);
         }
+    }
+
+    // if (game_phase == middlegame) {
+    //     score += (
+    //         material_score[opening][piece] * game_phase_score + 
+    //         material_score[endgame][piece] * (opening_phase_score - game_phase_score)
+    //     ) / opening_phase_score;
+    // } else {
+    //     score += material_score[game_phase][piece];
+    // }
+
+    if (game_phase == middlegame) {
+        printf("middlegame\n");
+    } else if (game_phase == opening) {
+        score = score_opening;
+    } else if (game_phase == endgame) {
+        score = score_endgame;
     }
 
     return (side == white) ? score : -score;

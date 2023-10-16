@@ -98,7 +98,8 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen(start_position);
+        // parse_fen("r3k2r/p1ppqpb1/1n2pnp1/3PN3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R w KQkq - 0 1 ");
+        parse_fen("8/1ppppppp/8/8/8/8/PPPPPPPP/8 w KQkq - 0 1");
         print_board();
         printf("score: %d\n",evaluate());
     } else {
