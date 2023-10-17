@@ -40,7 +40,7 @@
 
 #include "stdlib.h"
 
-#define version "1.1"
+#define version "1.2"
 
 void reset_time_control() {
     quit = 0;
