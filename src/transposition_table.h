@@ -41,18 +41,18 @@ void init_transposition_table(int mb) {
     hash_entries = hash_size / sizeof(tt);
 
     if (transposition_table != NULL) {
-        printf("Clearing tt memory...\n");
+        // printf("Clearing tt memory...\n");
         free(transposition_table);
     }
 
     transposition_table = (tt*)malloc(hash_entries*sizeof(tt));
 
     if (transposition_table == NULL) {
-        printf("Couldn't allocate memory for tt, trying size %dMB\n"),mb/2;
+        // printf("Couldn't allocate memory for tt, trying size %dMB\n"),mb/2;
         init_transposition_table(mb/2);
     } else {
         clear_transposition_table();
-        printf("tt is initialized with %d entries\n", hash_entries);
+        // printf("tt is initialized with %d entries\n", hash_entries);
     }
 }
 
