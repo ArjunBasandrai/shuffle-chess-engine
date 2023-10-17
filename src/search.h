@@ -559,7 +559,7 @@ void search_position(int depth)
             for (int count = 0; count < pv_length[0]; count++)
             {
                 print_move(pv_table[0][count]);
-                printf(" ");
+                // printf(" ");
             }
             printf("\n");
         }

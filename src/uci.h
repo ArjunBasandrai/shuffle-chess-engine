@@ -93,7 +93,7 @@ int parse_move(char *move_string) {
 
     return 0;
 
-    printf("source square: %s\n",sqaure_to_coordinate[target_square]);
+    // printf("source square: %s\n",sqaure_to_coordinate[target_square]);
 }
 
 
@@ -141,7 +141,6 @@ void parse_position(char *command) {
             current_char++;
         }
     }
-    print_board();
 }
 
 void parse_go(char *command)
@@ -214,7 +213,7 @@ void parse_go(char *command)
     if(depth == -1)
         depth = 64;
 
-    printf("time:%d start:%d stop:%d depth:%d timeset:%d\n", time, starttime, stoptime, depth, timeset);
+    // printf("time:%d start:%d stop:%d depth:%d timeset:%d\n", time, starttime, stoptime, depth, timeset);
 
     search_position(depth);
 }
@@ -228,10 +227,10 @@ void uci_loop() {
 
     char input[2000];
 
-    printf("id name %s %s\n",engine_name,version);
-    printf("id author Arjun Basandrai\n");
-    printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
-    printf("uciok\n");
+    // printf("id name %s %s\n",engine_name,version);
+    // printf("id author Arjun Basandrai\n");
+    // printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
+    // printf("uciok\n");
 
     // main loop
     while (1) {
@@ -268,6 +267,7 @@ void uci_loop() {
         else if (strncmp(input, "uci", 3) == 0) { 
             printf("id name %s %s\n",engine_name, version);
             printf("id author Arjun Basandrai\n");
+            printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
             printf("uciok\n");
         }
 
@@ -277,7 +277,7 @@ void uci_loop() {
             if (mb < 4) mb = 4;
             if (mb > max_hash) mb = max_hash;
 
-            printf("Set hash table size to %dMB\n", mb);
+            // printf("Set hash table size to %dMB\n", mb);
             init_transposition_table(mb);
         }
     }
