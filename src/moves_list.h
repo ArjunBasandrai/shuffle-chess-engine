@@ -47,13 +47,12 @@ char promoted_pieces[] = {
 // for UCI
 void print_move(int move) {
     if (promoted_pieces[get_move_promoted(move)]) {
-        printf("%s%s%s ",sqaure_to_coordinate[get_move_source(move)],
+        printf("%s%s%c ",sqaure_to_coordinate[get_move_source(move)],
                         sqaure_to_coordinate[get_move_target(move)],
                         promoted_pieces[get_move_promoted(move)]);
-        } else {
-                printf("%s%s ",sqaure_to_coordinate[get_move_source(move)],
-                        sqaure_to_coordinate[get_move_target(move)]);
-
+    } else {
+        printf("%s%s ",sqaure_to_coordinate[get_move_source(move)],
+                sqaure_to_coordinate[get_move_target(move)]);
     }
 }
 
