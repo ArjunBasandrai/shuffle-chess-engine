@@ -1,5 +1,3 @@
-#include "Windows.h"
+#pragma once
 
-int get_time_ms() {
-    return GetTickCount();
-}
+int get_time_ms();

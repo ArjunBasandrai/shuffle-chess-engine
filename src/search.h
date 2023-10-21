@@ -1,44 +1,13 @@
-#ifndef STDIO_H_
-#define STDIO_H_
-#include <stdio.h>
-#endif
+#pragma once
 
-#ifndef CONST_H_
-#define CONST_H_
-#include "board_constants.h"
-#endif
-
-#ifndef BITS_H_
-#define BITS_H_
 #include "bit_manipulation.h"
-#endif
-
-#ifndef MOVES_H_
-#define MOVES_H_
+#include "board.h"
 #include "moves_list.h"
-#endif
-
-#ifndef MOVEGEN_H_
-#define MOVEGEN_H_
 #include "movegen.h"
-#endif
-
-#ifndef EVAL_H_
-#define EVAL_H_
 #include "evaluation.h"
-#endif
-
-#ifndef PERFT_H_
-#define PERFT_H_
-#include "perft.h"
-#endif
-
-#ifndef TRANSPOSE_H_
-#define TRANSPOSE_H_
 #include "transposition_table.h"
-#endif
-
-#include "io.h"
+#include "perft.h"
+#include "time.h"
 
 #define max_ply 64
 
@@ -50,103 +19,20 @@ int pv_table[max_ply][max_ply];
 
 int follow_pv, score_pv;
 
-// exit from engine flag
-int quit = 0;
+extern int quit;
+extern int movestogo;
+extern int movetime;
+extern int time;
+extern int inc;
+extern int starttime;
+extern int stoptime;
+extern int timeset;
+extern int stopped;
 
-// UCI "movestogo" command moves counter
-int movestogo = 30;
+int input_waiting();
+void read_input();
+static void communicate();
 
-// UCI "movetime" command time counter
-int movetime = -1;
-
-// UCI "time" command holder (ms)
-int time = -1;
-
-// UCI "inc" command's time increment holder
-int inc = 0;
-
-// UCI "starttime" command time holder
-int starttime = 0;
-
-// UCI "stoptime" command time holder
-int stoptime = 0;
-
-// variable to flag time control availability
-int timeset = 0;
-
-// variable to flag when the time is up
-int stopped = 0;
-
-int input_waiting() {
-    static int init = 0, pipe;
-    static HANDLE inh;
-    DWORD dw;
-
-    if (!init) {
-        init = 1;
-        inh = GetStdHandle(STD_INPUT_HANDLE);
-        pipe = !GetConsoleMode(inh, &dw);
-        if (!pipe) {
-            SetConsoleMode(inh, dw & ~(ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT));
-            FlushConsoleInputBuffer(inh);
-        }
-    }
-    
-    if (pipe) {
-        if (!PeekNamedPipe(inh, NULL, 0, NULL, &dw, NULL)) return 1;
-        return dw;
-    }
-    
-    else {
-        GetNumberOfConsoleInputEvents(inh, &dw);
-        return dw <= 1 ? 0 : dw;
-    }
-}
-
-
-void read_input() {
-    // bytes to read holder
-    int bytes;
-    
-    // GUI/user input
-    char input[256] = "", *endc;
-
-    // "listen" to STDIN
-    if (input_waiting()) {
-        // tell engine to stop calculating
-        stopped = 1;
-        
-        do
-        {
-            // read bytes from STDIN
-            bytes=_read(fileno(stdin), input, 256);
-        }
-        
-        // until bytes available
-        while (bytes < 0);
-        
-        // searches for the first occurrence of '\n'
-        endc = strchr(input,'\n');
-        
-        // if found new line set value at pointer to 0
-        if (endc) *endc=0;
-        
-        // if input is available
-        if (strlen(input) > 0) {
-            // match UCI "quit" command
-            if (!strncmp(input, "quit", 4)) {
-                // tell engine to terminate exacution    
-                quit = 1;
-            }
-
-            // // match UCI "stop" command
-            else if (!strncmp(input, "stop", 4)) {
-                // tell engine to terminate exacution
-                quit = 1;
-            }
-        }   
-    }
-}
 
 // a bridge function to interact between search and GUI input
 static void communicate() {
@@ -243,13 +129,7 @@ static inline int sort_moves(moves *move_list) {
         }
     }
 }
-
-void print_move_scores(moves *move_list) {
-    for (int count = 0; count < move_list->count; count++) {
-        print_move(move_list->moves[count]);
-        printf(" : %d\n", score_move(move_list->moves[count]));
-    }
-}
+void print_move_scores(moves *move_list);
 
 static inline int is_repetition() {
 
@@ -512,61 +392,4 @@ static inline int negamax(int alpha, int beta, int depth) {
     return alpha;
 }
 
-void search_position(int depth)
-{
-    int score = 0;
-    
-    nodes = 0;
-
-    stopped = 0;
-    
-    follow_pv = 0;
-    score_pv = 0;
-    
-    memset(killer_moves, 0, sizeof(killer_moves));
-    memset(history_moves, 0, sizeof(history_moves));
-    memset(pv_table, 0, sizeof(pv_table));
-    memset(pv_length, 0, sizeof(pv_length));
-    
-    int alpha = -infinity;
-    int beta = infinity;
-
-    // iterative deepening
-    for (int current_depth = 1; current_depth <= depth; current_depth++)
-    {
-        if (stopped == 1) break;
-        follow_pv = 1;
-        
-        score = negamax(alpha, beta, current_depth);
-
-        if ((score <= alpha) || (score >= beta)) {
-            alpha = -infinity;
-            beta = infinity;
-            continue;
-        }
-
-        alpha = score - 50;
-        beta = score + 50;
-
-        if (pv_length[0]) {
-            if (score > -mate_value && score < -mate_score) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - starttime);
-            } else if (score > mate_score && score < mate_value) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - starttime);
-            } else {
-                printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, nodes, get_time_ms() - starttime);
-            }
-            for (int count = 0; count < pv_length[0]; count++)
-            {
-                print_move(pv_table[0][count]);
-                // printf(" ");
-            }
-            printf("\n");
-        }
-        
-    }
-
-    printf("bestmove ");
-    print_move(pv_table[0][0]);
-    printf("\n");
-}
+void search_position(int depth);

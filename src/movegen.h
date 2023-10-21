@@ -1,37 +1,11 @@
-#ifndef STDIO_H_
-#define STDIO_H_
-#include <stdio.h>
-#endif
+#pragma once
 
-#ifndef STRING_H_
-#define STRING_H_
-#include <string.h>
-#endif
-
-#ifndef CONST_H_
-#define CONST_H_
-#include "board_constants.h"
-#endif
-
-#ifndef PCTABLES_H_
-#define PCTABLES_H_
-#include "pre_calculated_tables.h"
-#endif
-
-#ifndef BOARD_H_
-#define BOARD_H_
-#include "board.h"
-#endif
-
-#ifndef MOVES_H_
-#define MOVES_H_
+#include "bit_manipulation.h"
 #include "moves_list.h"
-#endif
-
-#ifndef ZOBRIST_H_
-#define ZOBRIST_H_
+#include "pre_calculated_tables.h"
 #include "zobrist.h"
-#endif
+#include "board.h"
+
 
 #define copy_board() \
     U64 bitboards_copy[12],occupancies_copy[3]; \
@@ -66,24 +40,7 @@ static inline int is_square_attacked(int square, int side) {
     return 0;
 }
 
-void print_attacked_squares(int side) {
-
-    printf("\n");
-    for (int rank = 0; rank < 8; rank++) {
-        for (int file = 0; file < 8; file++) {
-            int square = rank * 8 + file;
-
-            if (!file) {
-                printf("%d  ", 8 - rank);
-            }
-            printf("%d ",is_square_attacked(square, side) ? 1 : 0);
-        }
-        printf("\n");
-    }
-
-    printf("\n   a b c d e f g h\n\n");
-
-}
+void print_attacked_squares(int side);
 
 static inline void generate_moves(moves *move_list) {
     move_list->count = 0;

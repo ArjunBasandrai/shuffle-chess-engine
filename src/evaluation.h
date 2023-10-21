@@ -1,30 +1,21 @@
-#ifndef CONST_H_
-#define CONST_H_
+#pragma once
+
 #include "board_constants.h"
-#endif
-
-#ifndef BITS_H_
-#define BITS_H_
 #include "bit_manipulation.h"
-#endif
-
-#ifndef BOARD_H_
-#define BOARD_H_
 #include "board.h"
-#endif
 
 #ifndef U64
 #define U64 unsigned long long
 #endif
 
-const int double_pawn_penalty = -10;
-const int isolated_pawn_penalty = -10;
-const int passed_pawn_bonus[8] = { 0, 10, 30, 50, 75, 100, 150, 200 };
+extern const int double_pawn_penalty;
+extern const int isolated_pawn_penalty;
+extern const int passed_pawn_bonus[8];
 
-const int semi_open_file_score = 10;
-const int open_file_score = 15;
+extern const int semi_open_file_score;
+extern const int open_file_score;
 
-const int king_shield_bonus = 5;
+extern const int king_shield_bonus;
 
 static inline int get_game_phase_score() {
     int white_piece_scores=0, black_piece_scores=0;

@@ -1,15 +1,13 @@
-#ifndef CONST_H_
-#define CONST_H_
+#pragma once
+
 #include "board_constants.h"
-#endif
 
 #ifndef U64
 #define U64 unsigned long long
 #endif
 
-int hash_entries = 0;
+extern int hash_entries;
 
-// no hash entry
 #define no_hash_entry 100000 // must be outside alpha beta window (-50000, 50000)
 
 #define hash_flag_exact 0
@@ -24,37 +22,11 @@ typedef struct {
 
 } tt;
 
-tt *transposition_table = NULL;
+extern tt *transposition_table;
 
-void clear_transposition_table() {
-    tt *hash_entry;
-    for (hash_entry = transposition_table; hash_entry < transposition_table + hash_entries; hash_entry++) {
-        hash_entry->hash_key = 0;
-        hash_entry->depth = 0;
-        hash_entry->flag = 0;
-        hash_entry->score = 0;
-    }
-}
+void clear_transposition_table();
 
-void init_transposition_table(int mb) {
-    int hash_size = 0x100000 * mb;  
-    hash_entries = hash_size / sizeof(tt);
-
-    if (transposition_table != NULL) {
-        // printf("Clearing tt memory...\n");
-        free(transposition_table);
-    }
-
-    transposition_table = (tt*)malloc(hash_entries*sizeof(tt));
-
-    if (transposition_table == NULL) {
-        // printf("Couldn't allocate memory for tt, trying size %dMB\n"),mb/2;
-        init_transposition_table(mb/2);
-    } else {
-        clear_transposition_table();
-        // printf("tt is initialized with %d entries\n", hash_entries);
-    }
-}
+void init_transposition_table(int mb);
 
 static inline int read_hash_entry(int alpha, int beta, int depth) {
     tt *hash_entry = &transposition_table[hash_key % hash_entries];
