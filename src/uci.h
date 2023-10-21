@@ -222,16 +222,10 @@ void parse_go(char *command)
 void uci_loop() {
     int max_hash = 1024;
     int mb = 64;
-    // clear STDIN & STDOUT buffers
-    setbuf(stdin, NULL);
+    
     setbuf(stdout, NULL);
 
     char input[2000];
-
-    // printf("id name %s %s\n",engine_name,version);
-    // printf("id author Arjun Basandrai\n");
-    // printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
-    // printf("uciok\n");
 
     // main loop
     while (1) {
@@ -278,7 +272,6 @@ void uci_loop() {
             if (mb < 4) mb = 4;
             if (mb > max_hash) mb = max_hash;
 
-            // printf("Set hash table size to %dMB\n", mb);
             init_transposition_table(mb);
         }
     }
