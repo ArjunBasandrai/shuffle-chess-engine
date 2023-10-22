@@ -93,17 +93,17 @@ static int mvv_lva[12][12] = {
 extern const int full_depth_moves;
 extern const int reduction_limit;
 
-U64 hash_key;
-int ply;
+extern U64 hash_key;
+extern int ply;
 
-U64 repetitions_table[1000];
-int repetition_index;
+extern U64 repetitions_table[1000];
+extern int repetition_index;
 
-U64 file_mask[64];
-U64 rank_mask[64];
-U64 isolated_mask[64];
-U64 white_passed_mask[64];
-U64 black_passed_mask[64];
+extern U64 file_mask[64];
+extern U64 rank_mask[64];
+extern U64 isolated_mask[64];
+extern U64 white_passed_mask[64];
+extern U64 black_passed_mask[64];
 
 extern int get_rank[64];
 

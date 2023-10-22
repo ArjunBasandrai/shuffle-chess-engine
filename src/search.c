@@ -7,6 +7,14 @@
 #include "io.h"
 #include "zobrist.h"
 
+int killer_moves[2][max_ply];
+int history_moves[12][max_ply];
+
+int pv_length[max_ply];
+int pv_table[max_ply][max_ply];
+
+int follow_pv, score_pv;
+
 int quit = 0;
 int movestogo = 30;
 int movetime = -1;

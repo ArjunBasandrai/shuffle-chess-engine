@@ -4,6 +4,14 @@
 #include "bit_manipulation.h"
 #include "masks.h"
 
+U64 pawn_attacks[2][64];
+U64 knight_attacks[64];
+U64 king_attacks[64];
+U64 bishop_masks[64];
+U64 rook_masks[64];
+U64 bishop_attacks[64][512];
+U64 rook_attacks[64][4096];
+
 void init_leaper_attacks() {
     for(int square = 0; square < 64; square++){
         pawn_attacks[white][square] = mask_pawn_attacks(square,white);

@@ -5,7 +5,7 @@
 #endif
 
 // Random numbers
-unsigned int random_state;
+extern unsigned int random_state;
 
 unsigned int get_random_U32_number();
 

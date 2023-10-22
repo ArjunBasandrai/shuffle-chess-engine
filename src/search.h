@@ -11,13 +11,13 @@
 
 #define max_ply 64
 
-int killer_moves[2][max_ply];
-int history_moves[12][max_ply];
+extern int killer_moves[2][max_ply];
+extern int history_moves[12][max_ply];
 
-int pv_length[max_ply];
-int pv_table[max_ply][max_ply];
+extern int pv_length[max_ply];
+extern int pv_table[max_ply][max_ply];
 
-int follow_pv, score_pv;
+extern int follow_pv, score_pv;
 
 extern int quit;
 extern int movestogo;

@@ -6,6 +6,8 @@
 #include "board_constants.h"
 #include "time.h"
 
+U64 nodes;
+
 void perft_test(int depth) {
 
     printf("\n  Performance test\n\n");

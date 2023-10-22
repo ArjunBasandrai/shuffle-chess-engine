@@ -219,6 +219,18 @@ const int mirror_score[128] = {
 const int full_depth_moves = 4;
 const int reduction_limit = 3;
 
+U64 hash_key;
+int ply;
+
+U64 repetitions_table[1000];
+int repetition_index;
+
+U64 file_mask[64];
+U64 rank_mask[64];
+U64 isolated_mask[64];
+U64 white_passed_mask[64];
+U64 black_passed_mask[64];
+
 int get_rank[64] = {
     7, 7, 7, 7, 7, 7, 7, 7,
     6, 6, 6, 6, 6, 6, 6, 6,

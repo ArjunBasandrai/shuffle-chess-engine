@@ -7,13 +7,13 @@
 #define U64 unsigned long long
 #endif
 
-U64 pawn_attacks[2][64];
-U64 knight_attacks[64];
-U64 king_attacks[64];
-U64 bishop_masks[64];
-U64 rook_masks[64];
-U64 bishop_attacks[64][512];
-U64 rook_attacks[64][4096];
+extern U64 pawn_attacks[2][64];
+extern U64 knight_attacks[64];
+extern U64 king_attacks[64];
+extern U64 bishop_masks[64];
+extern U64 rook_masks[64];
+extern U64 bishop_attacks[64][512];
+extern U64 rook_attacks[64][4096];
 
 void init_leaper_attacks();
 void init_sliders_attacks(int bishop);

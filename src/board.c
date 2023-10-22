@@ -8,7 +8,9 @@
 #define U64 unsigned long long
 #endif
 
+int side;
 int enpassant = no_sq;
+int castle;
 
 void print_board() {
     for (int rank = 0; rank < 8; rank++) {

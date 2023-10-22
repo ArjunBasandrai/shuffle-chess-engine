@@ -9,8 +9,8 @@
 U64 bitboards[12];
 U64 occupancies[3];
 
-int side;
+extern int side;
 extern int enpassant;
-int castle;
+extern int castle;
 
 void print_board();

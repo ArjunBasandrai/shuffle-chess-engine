@@ -9,7 +9,7 @@
 #define U64 unsigned long long
 #endif
 
-U64 nodes;
+extern U64 nodes;
 
 static inline void perft_driver(int depth) {
     if (depth == 0) {
