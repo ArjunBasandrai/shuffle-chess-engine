@@ -6,8 +6,8 @@
 
 #include "board_constants.h"
 
-U64 bitboards[12];
-U64 occupancies[3];
+extern U64 bitboards[12];
+extern U64 occupancies[3];
 
 extern int side;
 extern int enpassant;

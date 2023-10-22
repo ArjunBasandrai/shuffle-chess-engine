@@ -4,10 +4,10 @@
 #define U64 unsigned long long
 #endif
 
-U64 piece_keys[12][64];
-U64 enpassant_keys[64];
-U64 castle_keys[16];
-U64 side_key;
+extern U64 piece_keys[12][64];
+extern U64 enpassant_keys[64];
+extern U64 castle_keys[16];
+extern U64 side_key;
 
 void init_random_keys();
 

@@ -5,6 +5,11 @@
 #include "board_constants.h"
 #include "board.h"
 
+U64 piece_keys[12][64];
+U64 enpassant_keys[64];
+U64 castle_keys[16];
+U64 side_key;
+
 void init_random_keys() {
     random_state = 1804289383;
     for (int piece = P; piece <= k; piece++) {

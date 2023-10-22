@@ -12,6 +12,9 @@ int side;
 int enpassant = no_sq;
 int castle;
 
+U64 bitboards[12];
+U64 occupancies[3];
+
 void print_board() {
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
