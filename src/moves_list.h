@@ -1,12 +1,6 @@
-#ifndef STDIO_H_
-#define STDIO_H_
-#include <stdio.h>
-#endif
+#pragma once
 
-#ifndef CONST_H_
-#define CONST_H_
 #include "board_constants.h"
-#endif
 
 #define encode_move(source,target,piece,promoted,capture,double,enpassant,castling) \
     (source) | (target << 6) | \
@@ -33,49 +27,7 @@ static inline void add_move(moves *move_list, int move) {
     move_list->count++;
 }
 
-char promoted_pieces[] = {
-    [Q] = 'q',
-    [R] = 'r',
-    [B] = 'b',
-    [N] = 'n',
-    [q] = 'q',
-    [r] = 'r',
-    [b] = 'b',
-    [n] = 'n'
-};
+extern char promoted_pieces[];
 
-// for UCI
-void print_move(int move) {
-    if (promoted_pieces[get_move_promoted(move)]) {
-        printf("%s%s%c ",sqaure_to_coordinate[get_move_source(move)],
-                        sqaure_to_coordinate[get_move_target(move)],
-                        promoted_pieces[get_move_promoted(move)]);
-    } else {
-        printf("%s%s ",sqaure_to_coordinate[get_move_source(move)],
-                sqaure_to_coordinate[get_move_target(move)]);
-    }
-}
-
-void print_move_list(moves *move_list) {
-
-    if (!move_list->count) {
-        printf("\n    No moves in move list!\n\n");
-        return;
-    }
-
-    printf("\n    move   piece  capture  double  enpassant  castling\n\n");
-    for (int move_count = 0; move_count < move_list->count; move_count++) {
-        int move = move_list->moves[move_count];
-
-        printf("    %s%s%c  %c      %d        %d       %d          %d\n",sqaure_to_coordinate[get_move_source(move)],
-                                                                        sqaure_to_coordinate[get_move_target(move)],
-                                                                        get_move_promoted(move) ? promoted_pieces[get_move_promoted(move)] : ' ',
-                                                                        ascii_pieces[get_move_piece(move)],
-                                                                        get_move_capture(move) ? 1 : 0,
-                                                                        get_move_double(move) ? 1 : 0,
-                                                                        get_move_enpassant(move) ? 1 : 0,
-                                                                        get_move_castling(move) ? 1 : 0);
-    }
-
-    printf("\n    Total number of moves: %d\n",move_list->count);
-}
+void print_move(int move);
+void print_move_list(moves *move_list);

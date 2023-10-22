@@ -14,10 +14,10 @@ all: __release_compile
 debug: __debug_compile __run
 
 __debug_compile:
-	$(CC) $(C) -o $(EXE)
+	$(CC) -o $(EXE) $(C) src/bit_manipulation.c src/board.c src/board_constants.c src/magic_numbers.c src/evaluation.c src/fen.c src/magic_num_generator.c src/masks.c src/movegen.c src/moves_list.c src/perft.c src/pre_calculated_tables.c src/random_unsigned.c src/search.c src/time.c src/transposition_table.c src/uci.c src/zobrist.c
 
 __release_compile:
-	$(CC) $(R_FLAGS) $(C) -o $(EXE)
+	$(CC) $(R_FLAGS) -o $(EXE) $(C) src/bit_manipulation.c src/board.c src/board_constants.c src/magic_numbers.c src/evaluation.c src/fen.c src/magic_num_generator.c src/masks.c src/movegen.c src/moves_list.c src/perft.c src/pre_calculated_tables.c src/random_unsigned.c src/search.c src/time.c src/transposition_table.c src/uci.c src/zobrist.c
 
 __run:
 	./$(EXE)
