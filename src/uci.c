@@ -241,6 +241,7 @@ void uci_loop() {
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos"); 
+            using_book = 1; 
             clear_transposition_table();
         }
 
@@ -256,6 +257,7 @@ void uci_loop() {
             printf("id name %s %s\n",engine_name, version);
             printf("id author Arjun Basandrai\n");
             printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
+            printf("option name OwnBook type check default true\n");
             printf("uciok\n");
         }
 

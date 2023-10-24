@@ -48,7 +48,6 @@ int main(){
         print_board();
         printf("score: %d\n",evaluate());
     } else {
-        printf("Hello ji: %d\n",using_book);
         uci_loop();
         free(transposition_table);
     }
