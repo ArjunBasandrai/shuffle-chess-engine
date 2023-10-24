@@ -4,7 +4,7 @@
 #include "perft.h"
 
 #include "board_constants.h"
-#include "time.h"
+#include "gettime.h"
 
 U64 nodes;
 

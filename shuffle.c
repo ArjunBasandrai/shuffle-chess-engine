@@ -17,6 +17,7 @@
 #include "src/transposition_table.h"
 #include "src/uci.h"
 #include "src/zobrist.h"
+#include "src/books/book.h"
 
 
 #ifndef U64
@@ -31,6 +32,8 @@ void init_all() {
     init_random_keys();
     init_evaluation_masks();
     init_transposition_table(64);
+    init_book();
+    close_book();
 }
 
 // Main driver
@@ -45,6 +48,7 @@ int main(){
         print_board();
         printf("score: %d\n",evaluate());
     } else {
+        printf("Hello ji: %d\n",using_book);
         uci_loop();
         free(transposition_table);
     }

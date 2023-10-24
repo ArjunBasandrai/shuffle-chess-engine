@@ -18,7 +18,7 @@ int follow_pv, score_pv;
 int quit = 0;
 int movestogo = 30;
 int movetime = -1;
-int time = -1;
+int m_time = -1;
 int inc = 0;
 int starttime = 0;
 int stoptime = 0;
