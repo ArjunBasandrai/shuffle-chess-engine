@@ -11,13 +11,14 @@
 #include "search.h"
 #include "fen.h"
 #include "transposition_table.h"
-#include "time.h"
+#include "gettime.h"
+#include "books/book.h"
 
 void reset_time_control() {
     quit = 0;
     movestogo = 30;
     movetime = -1;
-    time = -1;
+    m_time = -1;
     inc = 0;
     starttime = 0;
     stoptime = 0;
@@ -97,13 +98,28 @@ void parse_position(char *command) {
     if (current_char != NULL) {
 
         current_char += 6;
-
+        current_line = "";
+        int make_line = 1;
         while(*current_char) {
             int move = parse_move(current_char);
+
+            if (using_book && make_line) {
+                char *result = (char*)malloc(strlen(current_line) + strlen(current_char) + 1);
+                strcpy(result, current_char);
+                strcat(result, current_line);
+                current_line = result;
+                for (int i = strlen(current_line) - 1; i>= 0; i--) {
+                    if (current_line[i] == '\n') {
+                        current_line[i] = '\0';
+                    }
+                }
+                make_line = 0;
+            }
 
             if (!move) {
                 break;
             }
+
             repetition_index++;
             repetitions_table[repetition_index] = hash_key;
             make_move(move, all_moves);
@@ -111,6 +127,8 @@ void parse_position(char *command) {
             while (*current_char && *current_char != ' ') current_char++;
             current_char++;
         }
+    } else {
+        current_line = "";
     }
 }
 
@@ -139,12 +157,12 @@ void parse_go(char *command)
 
     if ((argument = strstr(command,"wtime")) && side == white) {
         // parse white time limit
-        time = atoi(argument + 6);
+        m_time = atoi(argument + 6);
     }
 
     if ((argument = strstr(command,"btime")) && side == black) {
         // parse black time limit
-        time = atoi(argument + 6);
+        m_time = atoi(argument + 6);
     }
 
     if ((argument = strstr(command,"movestogo"))) {
@@ -162,7 +180,7 @@ void parse_go(char *command)
     }
 
     if (movetime != -1) {
-        time = movetime;
+        m_time = movetime;
 
         movestogo = 1;
     }
@@ -172,22 +190,26 @@ void parse_go(char *command)
     depth = depth;
 
     // if time control is available
-    if(time != -1)
+    if(m_time != -1)
     {
         timeset = 1;
 
-        time /= movestogo;
-        if (time > 1500) time -= 50;
-        stoptime = starttime + time + inc;
-        if (time < 1500 && inc && depth == 64) stoptime = starttime + inc - 50;
+        m_time /= movestogo;
+        if (m_time > 1500) m_time -= 50;
+        stoptime = starttime + m_time + inc;
+        if (m_time < 1500 && inc && depth == 64) stoptime = starttime + inc - 50;
     }
 
     if(depth == -1)
         depth = 64;
 
     // printf("time:%d start:%d stop:%d depth:%d timeset:%d\n", time, starttime, stoptime, depth, timeset);
-
-    search_position(depth);
+    if (using_book) {
+        get_book_move(current_line);
+    } 
+    if (!using_book) {
+        search_position(depth);
+    }
 }
 
 void uci_loop() {
@@ -213,12 +235,13 @@ void uci_loop() {
         }
 
         else if (strncmp(input, "position", 8) == 0) { 
-            parse_position(input); 
+            parse_position(input);
             clear_transposition_table();
         }
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos"); 
+            using_book = 1; 
             clear_transposition_table();
         }
 
@@ -234,6 +257,7 @@ void uci_loop() {
             printf("id name %s %s\n",engine_name, version);
             printf("id author Arjun Basandrai\n");
             printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
+            printf("option name OwnBook type check default true\n");
             printf("uciok\n");
         }
 

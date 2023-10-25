@@ -7,7 +7,7 @@
 #include "evaluation.h"
 #include "transposition_table.h"
 #include "perft.h"
-#include "time.h"
+#include "gettime.h"
 
 #define max_ply 64
 
@@ -22,7 +22,7 @@ extern int follow_pv, score_pv;
 extern int quit;
 extern int movestogo;
 extern int movetime;
-extern int time;
+extern int m_time;
 extern int inc;
 extern int starttime;
 extern int stoptime;

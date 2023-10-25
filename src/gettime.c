@@ -1,6 +1,6 @@
 #include <windows.h>
 
-#include "time.h"
+#include "gettime.h"
 
 int get_time_ms() {
     return GetTickCount();
