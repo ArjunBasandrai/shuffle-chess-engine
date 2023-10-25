@@ -27,6 +27,8 @@ SRCS = src/bit_manipulation.c \
 		src/transposition_table.c \
 		src/uci.c \
 		src/zobrist.c \
+		src/polyglot/polykeys.c \
+		src/polyglot/polybook.c \
 		src/books/book.c
 
 all: __release_compile
