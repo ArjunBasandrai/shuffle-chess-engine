@@ -110,3 +110,9 @@ extern U64 black_passed_mask[64];
 extern int get_rank[64];
 
 extern char engine_name[];
+
+typedef struct {
+    int use_book;
+} s_options;
+
+extern s_options engine_options[1];

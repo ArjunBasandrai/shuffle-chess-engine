@@ -250,5 +250,15 @@ void uci_loop() {
 
             init_transposition_table(mb);
         }
+
+        else if (!strncmp(input, "setoption name Book value ", 26)) {
+            char *ptr = NULL;
+            ptr = strstr(input, "true");
+            if (ptr != NULL) {
+                engine_options->use_book = 1;
+            } else {
+                engine_options->use_book = 0;
+            }
+        }
     }
 }

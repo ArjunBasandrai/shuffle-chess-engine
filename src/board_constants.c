@@ -253,4 +253,5 @@ int get_rank[64] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
+s_options engine_options[1];
 char engine_name[] = "Shuffle";
