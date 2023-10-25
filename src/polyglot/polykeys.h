@@ -11,4 +11,4 @@ extern const int polyglot_pieces[12];
 
 extern void init_poly_book();
 extern void clean_poly_book();
-extern void get_book_move();
+extern int get_book_move();

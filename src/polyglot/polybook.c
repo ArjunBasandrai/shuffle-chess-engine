@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "../bit_manipulation.h"
 #include "../board_constants.h"
@@ -29,6 +30,7 @@ const int poly_promotions[] = {
 };
 
 void init_poly_book() {
+    srand(time(NULL));
     engine_options->use_book = 0;
     FILE *pFile = fopen("src/polyglot/polyglot_opening_books/shuffle.bin", "rb");
     if (pFile == NULL) {
@@ -222,7 +224,8 @@ int polymove_to_inmove(unsigned short move) {
     return encode_move(source,target,sp,(pp!=0)?p:0,capture,db,enpass,castle);
 }
 
-void list_book_moves(U64 polykey) {
+int get_book_move() {
+    U64 polykey = polykey_from_board();
     s_polyglot_book_entry *entry;
     unsigned short move;
     int temp_move;
@@ -248,15 +251,10 @@ void list_book_moves(U64 polykey) {
         }
     }
 
-    for (int i=0;i<count;i++) {
-        print_move(book_moves[i]);
-        printf("\n");
+    if (count) {
+        int randmove = rand() % count;
+        return book_moves[randmove];
+    } else {
+        return 0;
     }
-}
-
-void get_book_move() {
-    print_board();
-    U64 polykey = polykey_from_board();
-    // printf("Polykey: %llx\n",polykey);
-    list_book_moves(polykey);
 }

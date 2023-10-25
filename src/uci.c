@@ -219,6 +219,7 @@ void uci_loop() {
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos"); 
+            engine_options->use_book = 1;
             clear_transposition_table();
         }
 
@@ -228,10 +229,6 @@ void uci_loop() {
 
         else if (strncmp(input, "quit", 4) == 0) { 
             break;
-        }
-
-        else if (strncmp(input, "polykey", 7) == 0) { 
-            get_book_move();
         }
 
         else if (strncmp(input, "uci", 3) == 0) { 
