@@ -5,6 +5,8 @@
 #include "../bit_manipulation.h"
 #include "../board_constants.h"
 #include "../board.h"
+#include "../moves_list.h"
+#include "../pre_calculated_tables.h"
 #include "polykeys.h"
 
 typedef struct {
@@ -20,6 +22,10 @@ s_polyglot_book_entry *entries;
 
 const int polyglot_pieces[12] = {
     1, 3, 5, 7, 9, 11, 0, 2, 4, 6, 8, 10
+};
+
+const int poly_promotions[] = {
+    n, b, r, q
 };
 
 void init_poly_book() {
@@ -139,20 +145,109 @@ U64 endian_swap_u64(U64 x) {
     return x;
 }
 
+int polymove_to_inmove(unsigned short move) {
+    int ff = ((move >> 6) & 7);
+    int fr = 8 - ((move >> 9) & 7);
+    int tf = ((move >> 0) & 7);
+    int tr = 8 - ((move >> 3) & 7);
+    int pp = ((move >> 12) & 7);
+
+    int source = (fr-1) * 8 + ff;
+    int target = (tr-1) * 8 + tf;
+
+    int p;
+    if (pp && (side == white)) {
+        switch (pp) {
+            case 1: p=N; break;
+            case 2: p=B; break;
+            case 3: p=R; break;
+            case 4: p=Q; break;
+        }
+    } else if (pp && (side == black)) {
+        switch (pp) {
+            case 1: p=n; break;
+            case 2: p=b; break;
+            case 3: p=r; break;
+            case 4: p=q; break;
+        }
+    }
+
+    U64 bitboard;
+    int sp = -1;
+    for (int piece = P; piece <= k; piece++) {
+        bitboard = bitboards[piece];
+        while (bitboard) {
+            int square = get_lsb_index(bitboard);
+            if (square == source) {
+                sp = piece;
+                break;
+            }
+            pop_bit(bitboard, square);
+        }
+    }
+
+    int capture;
+    if (!get_bit(occupancies[both], target)) {
+        capture = 0;
+    } else {
+        capture = 1;
+    }
+
+    int db;
+    if (((side == white) && (source >= a2) && (source <= h2) && (source == target + 16)) || ((side == black) && (source >= a7) && (source <= h7) && (source == target - 16))) {
+        db = 1;
+    } else {
+        db = 0;
+    }
+
+    int enpass=0;
+    if (enpassant) {
+        U64 enpassant_attacks = pawn_attacks[side][source] & (1ULL << enpassant);
+        if (enpassant_attacks) {
+            int target_enpassant = get_lsb_index(enpassant_attacks);
+            if (target_enpassant == target) {enpass = 1;}
+        }
+    }
+
+    int castle;
+    if (((sp == K)||(sp == k)) && (target - source == 2) || (target - source == -3)) {
+        castle = 1;
+    } else {
+        castle = 0;
+    }
+
+    return encode_move(source,target,sp,(pp!=0)?p:0,capture,db,enpass,castle);
+}
+
 void list_book_moves(U64 polykey) {
-    int start = 0;
     s_polyglot_book_entry *entry;
     unsigned short move;
+    int temp_move;
+    const int max_book_moves = 32;
+    int book_moves[32];
+    int count = 0;
+
     for (entry = entries; entry<entries+num_entries; entry++) {
         if (polykey == endian_swap_u64(entry->key)) {
             move = endian_swap_u16(entry->move);
-            printf("Key: %llx Index: %d Move: %c%d%c%d\n", endian_swap_u64(entry->key), start, 
-                    files[((move >> 6) & 7)],
-                    ((move >> 9) & 7) + 1,
-                    files[((move >> 0) & 7)],
-                    ((move >> 3) & 7) + 1);
+            int source_file = ((move >> 6) & 7);
+            temp_move = polymove_to_inmove(move);
+            if (temp_move) {
+                book_moves[count++] = temp_move;
+                if (count > max_book_moves) break;
+            }
+            // printf("Key: %llx Move: %c%d%c%d\n", endian_swap_u64(entry->key), 
+            //         files[((move >> 6) & 7)],
+            //         ((move >> 9) & 7) + 1,
+            //         files[((move >> 0) & 7)],
+            //         ((move >> 3) & 7) + 1);
+            
         }
-        start++;
+    }
+
+    for (int i=0;i<count;i++) {
+        print_move(book_moves[i]);
+        printf("\n");
     }
 }
 
