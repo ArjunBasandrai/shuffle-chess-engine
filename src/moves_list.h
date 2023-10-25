@@ -29,5 +29,5 @@ static inline void add_move(moves *move_list, int move) {
 
 extern char promoted_pieces[];
 
-void print_move(int move);
-void print_move_list(moves *move_list);
+extern void print_move(int move);
+extern void print_move_list(moves *move_list);
