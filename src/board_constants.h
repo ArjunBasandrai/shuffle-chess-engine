@@ -49,6 +49,8 @@ extern char ascii_pieces[12];
 extern char *unicode_pieces[12];
 extern int char_pieces[];
 
+extern char files[8];
+
 extern const char *sqaure_to_coordinate[];
 
 extern const U64 not_a_file;

@@ -9,4 +9,6 @@
 extern const U64 polyglot_keys[781];
 extern const int polyglot_pieces[12];
 
-extern U64 polykey_from_board();
+extern void init_poly_book();
+extern void clean_poly_book();
+extern void get_book_move();

@@ -21,6 +21,17 @@ int char_pieces[] = {
     ['k'] = k
 };
 
+char files[8] = {
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h'
+};
+
 const char *sqaure_to_coordinate[] = {
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",

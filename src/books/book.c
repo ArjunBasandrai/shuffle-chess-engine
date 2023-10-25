@@ -14,7 +14,7 @@ void open_book() {
     srand(time(NULL));
     file = fopen("src/books/book.txt", "r");
     if (!file) {
-        perror("Opening Book found!");
+        perror("Opening Book not found!");
         exit(1);
     }
 }
