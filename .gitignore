@@ -4,8 +4,5 @@
 # engine versions folder
 versions
 
-# TSCP style book implementation
-src/books
-
 # VS Code settings and configurations
 .vscode
