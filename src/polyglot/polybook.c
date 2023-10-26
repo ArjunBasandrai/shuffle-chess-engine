@@ -215,7 +215,6 @@ int polymove_to_inmove(unsigned short move) {
     }
 
     int castle;
-    printf("%d %d\n",source,target);
     if (((sp == K)||(sp == k)) && (target - source == -3)) {
         castle = 1;
     }
@@ -257,26 +256,14 @@ int get_book_move() {
                 weights[w_count++] = temp_weight;
                 weight_sum += temp_weight;
 
-                printf("%c%d%c%d: %d\n",files[((move >> 6) & 7)],
-                    ((move >> 9) & 7) + 1,
-                    files[((move >> 0) & 7)],
-                    ((move >> 3) & 7) + 1,
-                    weights[w_count-1]);
                 if (count > max_book_moves) break; 
-            }
-            // printf("Key: %llx Move: %c%d%c%d\n", endian_swap_u64(entry->key), 
-            //         files[((move >> 6) & 7)],
-            //         ((move >> 9) & 7) + 1,
-            //         files[((move >> 0) & 7)],
-            //         ((move >> 3) & 7) + 1);
-            
+            }            
         }
     }
 
     if (count) {
         int index;
         int random_weight = rand() % weight_sum;
-        printf("%d %d ",count, random_weight);
         for (int i=0; i<count; i++) {
             random_weight = random_weight - weights[i];
             if (random_weight <= 0 ) {
@@ -284,7 +271,6 @@ int get_book_move() {
                 break;
             }
         }
-        printf("%d\n", index);
         return book_moves[index];
     } else {
         return 0;
