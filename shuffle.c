@@ -17,7 +17,7 @@
 #include "src/transposition_table.h"
 #include "src/uci.h"
 #include "src/zobrist.h"
-#include "src/books/book.h"
+#include "src/polyglot/polykeys.h"
 
 
 #ifndef U64
@@ -32,8 +32,7 @@ void init_all() {
     init_random_keys();
     init_evaluation_masks();
     init_transposition_table(64);
-    init_book();
-    close_book();
+    init_poly_book();
 }
 
 // Main driver
@@ -43,13 +42,12 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("r3k2r/p1ppqpb1/1n2pnp1/3PN3/1p2P3/2N2Q1p/PPPB1PPP/R3K2R w KQkq - 0 1 ");
-        // parse_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ");
-        print_board();
-        printf("score: %d\n",evaluate());
+        parse_fen(start_position);
+        get_book_move();
     } else {
         uci_loop();
         free(transposition_table);
+        clean_poly_book();
     }
 
     return 0;

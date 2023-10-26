@@ -6,6 +6,7 @@
 #include "board_constants.h"
 #include "io.h"
 #include "zobrist.h"
+#include "polyglot/polykeys.h"
 
 int killer_moves[2][max_ply];
 int history_moves[12][max_ply];
@@ -121,6 +122,18 @@ void search_position(int depth)
     
     int alpha = -infinity;
     int beta = infinity;
+
+    int best_move = 0;
+    if (engine_options->use_book == 1) {
+        best_move = get_book_move();
+        if (best_move){
+            printf("bestmove ");
+            print_move(best_move);
+            printf("\n");
+            return;
+        }
+        engine_options->use_book == 0;
+    }
 
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++)

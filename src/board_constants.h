@@ -49,6 +49,8 @@ extern char ascii_pieces[12];
 extern char *unicode_pieces[12];
 extern int char_pieces[];
 
+extern char files[8];
+
 extern const char *sqaure_to_coordinate[];
 
 extern const U64 not_a_file;
@@ -108,3 +110,9 @@ extern U64 black_passed_mask[64];
 extern int get_rank[64];
 
 extern char engine_name[];
+
+typedef struct {
+    int use_book;
+} s_options;
+
+extern s_options engine_options[1];
