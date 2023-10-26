@@ -215,7 +215,13 @@ int polymove_to_inmove(unsigned short move) {
     }
 
     int castle;
-    if (((sp == K)||(sp == k)) && (target - source == 2) || (target - source == -3)) {
+    printf("%d %d\n",source,target);
+    if (((sp == K)||(sp == k)) && (target - source == -3)) {
+        castle = 1;
+    }
+    // kingside castling polyglot format has h1 instead of g1
+     else if (((sp == K)||(sp == k)) && (target - source == 3)) {
+        target--;
         castle = 1;
     } else {
         castle = 0;
@@ -233,6 +239,12 @@ int get_book_move() {
     int book_moves[32];
     int count = 0;
 
+    // move weights
+    int weights[32];
+    int temp_weight;
+    int w_count = 0;
+    int weight_sum = 0;
+
     for (entry = entries; entry<entries+num_entries; entry++) {
         if (polykey == endian_swap_u64(entry->key)) {
             move = endian_swap_u16(entry->move);
@@ -240,7 +252,17 @@ int get_book_move() {
             temp_move = polymove_to_inmove(move);
             if (temp_move) {
                 book_moves[count++] = temp_move;
-                if (count > max_book_moves) break;
+
+                temp_weight = endian_swap_u16(entry->weight);
+                weights[w_count++] = temp_weight;
+                weight_sum += temp_weight;
+
+                printf("%c%d%c%d: %d\n",files[((move >> 6) & 7)],
+                    ((move >> 9) & 7) + 1,
+                    files[((move >> 0) & 7)],
+                    ((move >> 3) & 7) + 1,
+                    weights[w_count-1]);
+                if (count > max_book_moves) break; 
             }
             // printf("Key: %llx Move: %c%d%c%d\n", endian_swap_u64(entry->key), 
             //         files[((move >> 6) & 7)],
@@ -252,8 +274,18 @@ int get_book_move() {
     }
 
     if (count) {
-        int randmove = rand() % count;
-        return book_moves[randmove];
+        int index;
+        int random_weight = rand() % weight_sum;
+        printf("%d %d ",count, random_weight);
+        for (int i=0; i<count; i++) {
+            random_weight = random_weight - weights[i];
+            if (random_weight <= 0 ) {
+                index = i;
+                break;
+            }
+        }
+        printf("%d\n", index);
+        return book_moves[index];
     } else {
         return 0;
     }
