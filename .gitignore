@@ -1,5 +1,5 @@
-# .exe executable
-# chess.exe
+.exe executable
+shuffle.exe
 
 # engine versions folder
 versions
