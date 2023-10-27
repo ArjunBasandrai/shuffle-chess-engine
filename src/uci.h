@@ -1,6 +1,6 @@
 #pragma once
 
-#define version "1.6.1"
+#define version "1.6.0"
 
 void reset_time_control();
 int parse_move(char *move_string);
