@@ -32,7 +32,7 @@ const int poly_promotions[] = {
 void init_poly_book() {
     srand(time(NULL));
     engine_options->use_book = 0;
-    FILE *pFile = fopen("src/polyglot/polyglot_opening_books/shuffle.bin", "rb");
+    FILE *pFile = fopen("../../src/polyglot/polyglot_opening_books/shuffle.bin", "rb");
     if (pFile == NULL) {
         perror("No PolyGlot book found");
         return;
