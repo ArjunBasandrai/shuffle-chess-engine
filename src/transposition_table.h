@@ -19,7 +19,7 @@ typedef struct {
     int depth;
     int flag;
     int score;
-
+    int best_move;
 } tt;
 
 extern tt *transposition_table;
@@ -28,7 +28,7 @@ void clear_transposition_table();
 
 void init_transposition_table(int mb);
 
-static inline int read_hash_entry(int alpha, int beta, int depth) {
+static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth) {
     tt *hash_entry = &transposition_table[hash_key % hash_entries];
     if (hash_entry->hash_key == hash_key) {
         if (hash_entry->depth >= depth) {
@@ -45,12 +45,13 @@ static inline int read_hash_entry(int alpha, int beta, int depth) {
             } else if ((hash_entry->flag == hash_flag_beta) && (score >= beta)) {
                 return beta;
             } 
+            *best_move = hash_entry->best_move;
         }
     }
     return no_hash_entry;
 }
 
-static inline void write_hash_entry(int score, int depth, int hash_flag) {
+static inline void write_hash_entry(int score, int best_move, int depth, int hash_flag) {
     tt *hash_entry = &transposition_table[hash_key % hash_entries];
 
     // store score independent from the actual path from root to current position
@@ -61,4 +62,5 @@ static inline void write_hash_entry(int score, int depth, int hash_flag) {
     hash_entry->score = score;
     hash_entry->flag = hash_flag;
     hash_entry->depth = depth;
+    hash_entry->best_move = best_move;
 }

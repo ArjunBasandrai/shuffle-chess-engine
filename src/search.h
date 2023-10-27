@@ -110,10 +110,14 @@ static inline int score_move(int move) {
     return 0;
 }
 
-static inline int sort_moves(moves *move_list) {
+static inline int sort_moves(moves *move_list, int best_move) {
     int move_scores[move_list->count];
     for (int count = 0; count < move_list->count; count++) {
+        if (best_move == move_list->moves[count]) {
+            move_scores[count] = 30000;
+        } else {
         move_scores[count] = score_move(move_list->moves[count]);
+        }
     }
 
     for (int current_move = 0; current_move < move_list->count; current_move++) {
@@ -170,7 +174,7 @@ static inline int quiescence(int alpha, int beta) {
 
     moves move_list[1];
     generate_moves(move_list);
-    sort_moves(move_list);
+    sort_moves(move_list, 0);
 
     for (int count = 0; count < move_list->count; count++) {
         copy_board();
@@ -210,6 +214,8 @@ static inline int quiescence(int alpha, int beta) {
 static inline int negamax(int alpha, int beta, int depth) {
 
     int score;
+
+    int best_move = 0;
     
     int hash_flag = hash_flag_alpha;
 
@@ -220,7 +226,7 @@ static inline int negamax(int alpha, int beta, int depth) {
     int pv_node = (beta - alpha > 1);
 
     // read hash from transposition table if not root ply and not a pv node
-    if (ply && (score = read_hash_entry(alpha, beta, depth)) != no_hash_entry && !pv_node) {
+    if (ply && (score = read_hash_entry(alpha, beta, &best_move, depth)) != no_hash_entry && !pv_node) {
         // if move has already been searched and henc
         return score;
     }
@@ -278,7 +284,7 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     if (follow_pv) enable_pv_scoring(move_list);
 
-    sort_moves(move_list);
+    sort_moves(move_list, best_move);
 
     int moves_searched = 0;
 
@@ -346,6 +352,8 @@ static inline int negamax(int alpha, int beta, int depth) {
 
             hash_flag = hash_flag_exact;
 
+            best_move = move_list->moves[count];
+
             // store history moves
             if (get_move_capture(move_list->moves[count]) == 0) {
                 history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
@@ -364,7 +372,7 @@ static inline int negamax(int alpha, int beta, int depth) {
             // fail-hard beta cutoff
             if (score >= beta) {
 
-                write_hash_entry(beta, depth, hash_flag_beta);
+                write_hash_entry(beta, best_move, depth, hash_flag_beta);
 
                 // processing killer moves
 
@@ -387,7 +395,7 @@ static inline int negamax(int alpha, int beta, int depth) {
         }
     }
 
-    write_hash_entry(alpha, depth, hash_flag);
+    write_hash_entry(alpha, best_move, depth, hash_flag);
 
     // node fails high
     return alpha;
