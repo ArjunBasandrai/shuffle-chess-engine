@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board_constants.h"
 #include "bit_manipulation.h"
 #include "moves_list.h"
 #include "pre_calculated_tables.h"
@@ -9,16 +10,16 @@
 
 #define copy_board() \
     U64 bitboards_copy[12],occupancies_copy[3]; \
-    int side_copy, enpaassant_copy,castle_copy; \
+    int side_copy, enpaassant_copy,castle_copy, fifty_copy; \
     memcpy(bitboards_copy, bitboards, sizeof(bitboards)); \
     memcpy(occupancies_copy, occupancies, sizeof(occupancies)); \
-    side_copy = side, enpaassant_copy = enpassant, castle_copy = castle; \
+    side_copy = side, enpaassant_copy = enpassant, castle_copy = castle; fifty_copy=fifty;\
     U64 hash_key_copy = hash_key;
 
 #define take_back() \
     memcpy(bitboards, bitboards_copy, sizeof(bitboards)); \
     memcpy(occupancies,occupancies_copy,sizeof(occupancies)); \
-    side = side_copy, enpassant = enpaassant_copy, castle = castle_copy; \
+    side = side_copy, enpassant = enpaassant_copy, castle = castle_copy; fifty = fifty_copy;\
     hash_key = hash_key_copy;
 
 static inline int is_square_attacked(int square, int side) {
@@ -382,9 +383,17 @@ static inline int make_move(int move, int move_flag) {
         hash_key ^= piece_keys[piece][source_square];
         hash_key ^= piece_keys[piece][target_square];
 
+        fifty++;
+
+        if (piece == P || piece == p) {
+            fifty = 0;
+        }
+
         // handling captures
 
         if (capture) {
+
+            fifty = 0;
 
             int start_piece, end_piece;
             if (side == white) {

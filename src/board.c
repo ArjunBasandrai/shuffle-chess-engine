@@ -44,4 +44,5 @@ void print_board() {
                                         (castle & bk) ? 'k' : '-',
                                         (castle & bq) ? 'q' : '-');
     printf("   Hash Key: %llx\n\n", hash_key);
+    printf("   Fifty move: %d\n\n", fifty);
 }

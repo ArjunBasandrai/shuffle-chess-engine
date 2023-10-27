@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board_constants.h"
 #include "bit_manipulation.h"
 #include "board.h"
 #include "moves_list.h"
@@ -212,7 +213,7 @@ static inline int negamax(int alpha, int beta, int depth) {
     
     int hash_flag = hash_flag_alpha;
 
-    if (ply && is_repetition()) {
+    if (ply && is_repetition() || fifty >= 100) {
         return draw_score;
     }
 

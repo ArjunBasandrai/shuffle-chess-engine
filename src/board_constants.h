@@ -97,6 +97,7 @@ extern const int reduction_limit;
 
 extern U64 hash_key;
 extern int ply;
+extern int fifty;
 
 extern U64 repetitions_table[1000];
 extern int repetition_index;

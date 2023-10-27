@@ -239,5 +239,7 @@ static inline int evaluate() {
         score = score_endgame;
     }
 
+    score = score * (100 - fifty) / 100;
+
     return (side == white) ? score : -score;
 }

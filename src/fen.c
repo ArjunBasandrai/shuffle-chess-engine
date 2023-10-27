@@ -17,6 +17,7 @@ void parse_fen(char *fen) {
     repetition_index = 0;
     memset(repetitions_table, 0ULL, sizeof(repetitions_table));
     ply = 0;
+    fifty = 0;
 
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
