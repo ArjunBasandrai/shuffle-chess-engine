@@ -279,6 +279,30 @@ static inline int negamax(int alpha, int beta, int depth) {
         }
     }
 
+    // Razoring
+    // if (!pv_node && !in_check && depth <= 3) {
+    //     score = evaluate() + 125;
+    //     int new_score;
+
+    //     if (score < beta) {
+    //         if (depth == 1) {
+    //             new_score = quiescence(alpha, beta);
+
+    //             return (new_score > score) ? new_score : score;
+    //         }
+
+    //         score += 175;
+
+    //         if (score < beta && depth <= 2) {
+    //             new_score = quiescence(alpha, beta);
+
+    //             if (new_score < beta) {
+    //                 return (new_score > score) ? new_score : score;
+    //             }
+    //         }
+    //     }
+    // }
+
     moves move_list[1];
     generate_moves(move_list);
 
