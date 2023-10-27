@@ -7,7 +7,6 @@
 > Shuffle is a UCI based chess engine written entirely in C.
 > It is a magic bitboards based engine and has an ELO of about 1900
 
-
 ---
 
 ## Features
@@ -17,6 +16,7 @@
 - Advanced move ordering techniques like Principle Variation Search, Null Move Pruning, Late Move Reduction to reduce search times
 - Tapered Evaluation for static evaluation of given board state
 - Dynamically allocated transposition table to allow allocation of memory from the GUI or UCI command
+- Custom Polyglot Opening Book for enhanced opening performance
 - Ability to play at various time controls
 - UCI compatibility
 
