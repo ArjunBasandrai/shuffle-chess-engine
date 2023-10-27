@@ -180,8 +180,13 @@ void parse_go(char *command)
 
         m_time /= movestogo;
         if (m_time > 1500) m_time -= 50;
+        if (m_time < 0) {
+            m_time = 0;
+            inc -= 50;
+            if (inc < 0) inc = 1;
+        }
         stoptime = starttime + m_time + inc;
-        if (m_time < 1500 && inc && depth == 64) stoptime = starttime + inc - 50;
+        // if (m_time < 1500 && inc && depth == 64) stoptime = starttime + inc - 50;
     }
 
     if(depth == -1)
