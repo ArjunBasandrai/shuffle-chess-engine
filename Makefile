@@ -2,7 +2,14 @@ CC = gcc
 ENGINE = shuffle
 
 C = $(ENGINE).c
-EXE = $(ENGINE).exe
+
+TEST_EXE = $(ENGINE).exe
+
+ifdef v
+EXE = bin/Windows/v$(v).exe
+else
+EXE = $(TEST_EXE)
+endif
 
 R_FLAGS = -Ofast
 
@@ -32,13 +39,16 @@ SRCS = src/bit_manipulation.c \
 		
 all: __release_compile
 
-debug: __debug_compile __run
+debug: __debug_compile __debug_run
 
 __debug_compile:
-	$(CC) -o $(EXE) $(C) $(SRCS)
+	$(CC) -o $(TEST_EXE) $(C) $(SRCS)
 
 __release_compile:
 	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
+
+__debug_run:
+	./$(TEST_EXE)
 
 __run:
 	./$(EXE)
