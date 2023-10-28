@@ -215,7 +215,8 @@ int polymove_to_inmove(unsigned short move) {
     }
 
     int castle;
-    if (((sp == K)||(sp == k)) && (target - source == -3)) {
+    if (((sp == K)||(sp == k)) && (target - source == -4)) {
+        target += 2;
         castle = 1;
     }
     // kingside castling polyglot format has h1 instead of g1
