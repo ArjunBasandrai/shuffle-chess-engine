@@ -20,6 +20,11 @@
 - Ability to play at various time controls
 - UCI compatibility
 
+## Rating
+
+Shuffle's current ratings are:
+- [CCRL Blitz](https://ccrl.chessdom.com/ccrl/4040/) for [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) - [2148](https://ccrl.chessdom.com/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit)
+
 ## Screenshots
 ### Game 1 
 In this game against TSCP 1.81, Shuffle was playing as white and mated black with a Queen and a Bishop <br/><br/>
