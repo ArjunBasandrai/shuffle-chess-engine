@@ -53,7 +53,8 @@ PGN of both the games and puzzles have been provided in the assets folder as [ga
 
 ### Directions to run
 
-- Open the `shuffle.exe` file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or  [Cute Chess GUI](https://cutechess.com/)
+- Go to the `bin/Windows` directory and locate the latest executable file
+- Open the executable file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or  [Cute Chess GUI](https://cutechess.com/)
 - Set any Game Mode/Time Control of choice
 - Have fun!
 
