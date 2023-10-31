@@ -97,15 +97,14 @@ void read_input() {
     }
 }
 
-void print_move_scores(moves *move_list) {
+void print_move_scores(moves *move_list, s_board *pos) {
     for (int count = 0; count < move_list->count; count++) {
         print_move(move_list->moves[count]);
-        printf(" : %d\n", score_move(move_list->moves[count]));
+        printf(" : %d\n", score_move(move_list->moves[count], pos));
     }
 }
 
-void search_position(int depth)
-{
+void search_position(int depth, s_board *pos) {
     int score = 0;
     
     nodes = 0;
@@ -125,7 +124,7 @@ void search_position(int depth)
 
     int best_move = 0;
     if (engine_options->use_book == 1) {
-        best_move = get_book_move();
+        best_move = get_book_move(pos);
         if (best_move){
             printf("bestmove ");
             print_move(best_move);
@@ -141,7 +140,7 @@ void search_position(int depth)
         if (stopped == 1) break;
         follow_pv = 1;
         
-        score = negamax(alpha, beta, current_depth);
+        score = negamax(alpha, beta, current_depth, pos);
 
         if ((score <= alpha) || (score >= beta)) {
             alpha = -infinity;

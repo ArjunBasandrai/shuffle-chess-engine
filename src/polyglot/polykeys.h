@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../board.h"
+
 #ifndef U64
 #define U64 unsigned long long
 #endif
@@ -11,4 +13,4 @@ extern const int polyglot_pieces[12];
 
 extern void init_poly_book();
 extern void clean_poly_book();
-extern int get_book_move();
+extern int get_book_move(s_board *pos);

@@ -38,7 +38,7 @@ static inline int get_game_phase_score() {
     return white_piece_scores + black_piece_scores;
 }
 
-static inline int evaluate() {
+static inline int evaluate(s_board *pos) {
 
     int game_phase_score = get_game_phase_score();
     int game_phase = -1;
@@ -279,5 +279,5 @@ static inline int evaluate() {
 
     score = score * (100 - fifty) / 100;
 
-    return (side == white) ? score : -score;
+    return (pos->side == white) ? score : -score;
 }

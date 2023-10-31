@@ -8,14 +8,13 @@
 #define U64 unsigned long long
 #endif
 
-int side;
 int enpassant = no_sq;
 int castle;
 
 U64 bitboards[12];
 U64 occupancies[3];
 
-void print_board() {
+void print_board(s_board *pos) {
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
             int square = rank * 8 + file;
@@ -37,7 +36,7 @@ void print_board() {
 
     printf("\n   a b c d e f g h\n\n");
 
-    printf("   Side: %s\n", (!side) ? "white" : "black");
+    printf("   Side: %s\n", (!pos->side) ? "white" : "black");
     printf("   Enpassant: %s\n",(enpassant != no_sq) ? sqaure_to_coordinate[enpassant] : "NO");
     printf("   Castling: %c%c%c%c\n",(castle & wk) ? 'K' : '-',
                                         (castle & wq) ? 'Q' : '-',

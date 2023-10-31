@@ -4,13 +4,12 @@
 
 #include "bit_manipulation.h"
 #include "board_constants.h"
-#include "board.h"
 #include "zobrist.h"
 
-void parse_fen(char *fen) {
+void parse_fen(char *fen, s_board *pos) {
     memset(bitboards, 0ULL,sizeof(bitboards));
     memset(occupancies,0ULL,sizeof(occupancies));
-    side = 0;
+    pos->side = 0;
     enpassant = no_sq;
     castle = 0;
     hash_key = 0ULL;
@@ -50,7 +49,7 @@ void parse_fen(char *fen) {
         }
     }
     fen++;
-    side = (*fen=='w') ? white : black;
+    pos->side = (*fen=='w') ? white : black;
     fen += 2;
 
     while (*fen != ' ') {
@@ -98,5 +97,5 @@ void parse_fen(char *fen) {
     occupancies[both] |= occupancies[white];
     occupancies[both] |= occupancies[black];
     
-    hash_key = generate_hash_keys();
+    hash_key = generate_hash_keys(pos);
 }

@@ -38,14 +38,19 @@ void init_all() {
 // Main driver
 int main(){
     init_all();
-
-    int debug = 0;
+    s_board position;
+    int debug = 1;
 
     if (debug) {
-        parse_fen(start_position);
-        get_book_move();
+        parse_fen(start_position, &position);
+        print_board(&position);
+        copy_board(&position);
+        parse_fen(tricky_position, &position);
+        print_board(&position);
+        take_back(&position);
+        print_board(&position);
     } else {
-        uci_loop();
+        uci_loop(&position);
         free(transposition_table);
         clean_poly_book();
     }

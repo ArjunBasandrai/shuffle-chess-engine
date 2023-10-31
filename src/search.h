@@ -58,7 +58,7 @@ static inline void enable_pv_scoring(moves *move_list) {
     }
 }
 
-static inline int score_move(int move) {
+static inline int score_move(int move, s_board *pos) {
 
     if (score_pv) {
         if (pv_table[0][ply] == move) {
@@ -73,7 +73,7 @@ static inline int score_move(int move) {
         int target_piece = P;
 
         int start_piece, end_piece;
-        if (side == white) { start_piece = p; end_piece = k;} 
+        if (pos->side == white) { start_piece = p; end_piece = k;} 
         
         else { start_piece = P; end_piece = K; }
 
@@ -110,13 +110,13 @@ static inline int score_move(int move) {
     return 0;
 }
 
-static inline int sort_moves(moves *move_list, int best_move) {
+static inline int sort_moves(moves *move_list, int best_move, s_board *pos) {
     int move_scores[move_list->count];
     for (int count = 0; count < move_list->count; count++) {
         if (best_move == move_list->moves[count]) {
             move_scores[count] = 30000;
         } else {
-        move_scores[count] = score_move(move_list->moves[count]);
+        move_scores[count] = score_move(move_list->moves[count], pos);
         }
     }
 
@@ -134,7 +134,7 @@ static inline int sort_moves(moves *move_list, int best_move) {
         }
     }
 }
-void print_move_scores(moves *move_list);
+void print_move_scores(moves *move_list, s_board *pos);
 
 static inline int is_repetition() {
 
@@ -147,7 +147,7 @@ static inline int is_repetition() {
     return 0;
 }
 
-static inline int quiescence(int alpha, int beta) {
+static inline int quiescence(int alpha, int beta, s_board *pos) {
 
     if((nodes & 2047) == 0)
         // "listen" to the GUI/user input
@@ -156,10 +156,10 @@ static inline int quiescence(int alpha, int beta) {
     nodes++;
 
     if (ply > max_ply - 1) {
-        return evaluate();
+        return evaluate(pos);
     }
 
-    int evaluation = evaluate();
+    int evaluation = evaluate(pos);
 
     // fail-hard beta cutoff
     if (evaluation >= beta) {
@@ -173,26 +173,26 @@ static inline int quiescence(int alpha, int beta) {
     }
 
     moves move_list[1];
-    generate_moves(move_list);
-    sort_moves(move_list, 0);
+    generate_moves(move_list, pos);
+    sort_moves(move_list, 0, pos);
 
     for (int count = 0; count < move_list->count; count++) {
-        copy_board();
+        copy_board(pos);
         ply++;
 
         repetition_index++;
         repetitions_table[repetition_index] = hash_key;
 
-        if (make_move(move_list->moves[count], only_captures) == 0) {
+        if (make_move(move_list->moves[count], only_captures, pos) == 0) {
             ply--;
             repetition_index--;
             continue;
         }
 
-        int score = -quiescence(-beta, -alpha);
+        int score = -quiescence(-beta, -alpha, pos);
         ply--;
         repetition_index--;
-        take_back();
+        take_back(pos);
 
         if(stopped == 1) return 0;
 
@@ -211,7 +211,7 @@ static inline int quiescence(int alpha, int beta) {
     return alpha;
 }
 
-static inline int negamax(int alpha, int beta, int depth) {
+static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
     int score;
 
@@ -238,14 +238,14 @@ static inline int negamax(int alpha, int beta, int depth) {
     pv_length[ply] = ply;
 
     if (depth == 0) {
-        return quiescence(alpha, beta);
+        return quiescence(alpha, beta, pos);
     }
 
-    if (ply > max_ply - 1) return evaluate();
+    if (ply > max_ply - 1) return evaluate(pos);
 
     nodes++;
 
-    int in_check = is_square_attacked((side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),side ^ 1);
+    int in_check = is_square_attacked((pos->side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),pos->side ^ 1);
 
     if (in_check) depth++;
 
@@ -253,7 +253,7 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     // Null Move Pruning
     if (depth >= 3 && !in_check && ply) {
-        copy_board();
+        copy_board(pos);
 
         ply++;
 
@@ -263,16 +263,16 @@ static inline int negamax(int alpha, int beta, int depth) {
         if (enpassant != no_sq) hash_key ^= enpassant_keys[enpassant];
 
         enpassant = no_sq;
-        side ^= 1;
+        pos->side ^= 1;
 
         hash_key ^= side_key;
 
-        score = -negamax(-beta, -beta + 1, depth - 1 - 2);
+        score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos);
 
         ply--;
         repetition_index--;
 
-        take_back();
+        take_back(pos);
 
         if (score >= beta) {
             return beta;
@@ -281,12 +281,12 @@ static inline int negamax(int alpha, int beta, int depth) {
 
     // Razoring
     if (!pv_node && !in_check && depth <= 3) {
-        score = evaluate() + 125;
+        score = evaluate(pos) + 125;
         int new_score;
 
         if (score < beta) {
             if (depth == 1) {
-                new_score = quiescence(alpha, beta);
+                new_score = quiescence(alpha, beta, pos);
 
                 return (new_score > score) ? new_score : score;
             }
@@ -294,7 +294,7 @@ static inline int negamax(int alpha, int beta, int depth) {
             score += 175;
 
             if (score < beta && depth <= 2) {
-                new_score = quiescence(alpha, beta);
+                new_score = quiescence(alpha, beta, pos);
 
                 if (new_score < beta) {
                     return (new_score > score) ? new_score : score;
@@ -304,22 +304,22 @@ static inline int negamax(int alpha, int beta, int depth) {
     }
 
     moves move_list[1];
-    generate_moves(move_list);
+    generate_moves(move_list, pos);
 
     if (follow_pv) enable_pv_scoring(move_list);
 
-    sort_moves(move_list, best_move);
+    sort_moves(move_list, best_move, pos);
 
     int moves_searched = 0;
 
     for (int count = 0; count < move_list->count; count++) {
-        copy_board();
+        copy_board(pos);
         ply++;
 
         repetition_index++;
         repetitions_table[repetition_index] = hash_key;
 
-        if (make_move(move_list->moves[count], all_moves) == 0) {
+        if (make_move(move_list->moves[count], all_moves, pos) == 0) {
             ply--;
             repetition_index--;
             continue;
@@ -328,7 +328,7 @@ static inline int negamax(int alpha, int beta, int depth) {
         legal_moves++;
 
         if (moves_searched == 0) {
-            score = -negamax(-beta, -alpha, depth - 1);
+            score = -negamax(-beta, -alpha, depth - 1, pos);
         }
         
         else {
@@ -339,7 +339,7 @@ static inline int negamax(int alpha, int beta, int depth) {
                 get_move_capture(move_list->moves[count]) == 0 &&
                 get_move_promoted(move_list->moves[count]) == 0
                 ) {
-                score = -negamax(-alpha - 1, -alpha, depth - 2);
+                score = -negamax(-alpha - 1, -alpha, depth - 2, pos);
                 }
             
             else {score = alpha + 1;}
@@ -350,7 +350,7 @@ static inline int negamax(int alpha, int beta, int depth) {
                 the rest of the moves are searched with the goal of proving that they are all bad.
                 It's possible to do this a bit faster than a search that worries that one
                 of the remaining moves might be good. */
-                score = -negamax(-alpha - 1, -alpha, depth-1);
+                score = -negamax(-alpha - 1, -alpha, depth-1, pos);
             
                 /* If the algorithm finds out that it was wrong, and that one of the
                 subsequent moves was better than the first PV move, it has to search again,
@@ -358,14 +358,14 @@ static inline int negamax(int alpha, int beta, int depth) {
                 but generally not often enough to counteract the savings gained from doing the
                 "bad move proof" search referred to earlier. */
                 if((score > alpha) && (score < beta)) {
-                    score = -negamax(-beta, -alpha, depth-1);
+                    score = -negamax(-beta, -alpha, depth-1, pos);
                 }
             }
         }
         
         ply--;
         repetition_index--;
-        take_back();
+        take_back(pos);
 
         if(stopped == 1) return 0;
 
@@ -425,4 +425,4 @@ static inline int negamax(int alpha, int beta, int depth) {
     return alpha;
 }
 
-void search_position(int depth);
+void search_position(int depth, s_board *pos);

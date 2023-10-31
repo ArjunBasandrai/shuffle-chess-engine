@@ -3,7 +3,6 @@
 #include "random_unsigned.h"
 #include "bit_manipulation.h"
 #include "board_constants.h"
-#include "board.h"
 
 U64 piece_keys[12][64];
 U64 enpassant_keys[64];
@@ -30,7 +29,7 @@ void init_random_keys() {
     
 }
 
-U64 generate_hash_keys() {
+U64 generate_hash_keys(s_board *pos) {
     U64 final_key = 0ULL;
 
     U64 bitboard;
@@ -52,7 +51,7 @@ U64 generate_hash_keys() {
 
     final_key ^= castle_keys[castle];
 
-    if (side == black) final_key ^= side_key;
+    if (pos->side == black) final_key ^= side_key;
 
     return final_key;
 }
