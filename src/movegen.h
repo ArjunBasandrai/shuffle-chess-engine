@@ -21,7 +21,7 @@ struct copy_pos {
     int castle_copy;
     int fifty_copy;
     U64 hash_key_copy;
-} cc[1];
+};
 
 extern void copy_board(s_board *pos, struct copy_pos *cc);
 extern void take_back(s_board *pos, struct copy_pos *cc);
