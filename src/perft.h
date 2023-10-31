@@ -20,7 +20,8 @@ static inline void perft_driver(int depth, s_board *pos) {
     generate_moves(move_list, pos);
 
     for (int move_count = 0; move_count<move_list->count; move_count++) {
-        copy_board(pos);
+        struct copy_pos pdcopy;
+        copy_board(pos, &pdcopy);
 
         if (!make_move(move_list->moves[move_count], all_moves, pos)) { 
             continue;
@@ -28,7 +29,7 @@ static inline void perft_driver(int depth, s_board *pos) {
 
         perft_driver(depth-1, pos);
 
-        take_back(pos);
+        take_back(pos,&pdcopy);
 
         // U64 hash_from_scratch = generate_hash_keys();
 

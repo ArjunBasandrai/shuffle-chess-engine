@@ -9,12 +9,22 @@
 #include "zobrist.h"
 #include "board.h"
 
-U64 bitboards_copy[12],occupancies_copy[3];
-int side_copy, enpaassant_copy,castle_copy, fifty_copy;
-U64 hash_key_copy;
+// U64 bitboards_copy[12],occupancies_copy[3];
+// int side_copy, enpaassant_copy,castle_copy, fifty_copy;
+// U64 hash_key_copy;
 
-extern void copy_board(s_board *pos);
-extern void take_back(s_board *pos);
+struct copy_pos {
+    U64 bitboards_copy[12];
+    U64 occupancies_copy[3];
+    int side_copy;
+    int enpassant_copy;
+    int castle_copy;
+    int fifty_copy;
+    U64 hash_key_copy;
+} cc[1];
+
+extern void copy_board(s_board *pos, struct copy_pos *cc);
+extern void take_back(s_board *pos, struct copy_pos *cc);
 
 static inline int is_square_attacked(int square, int side) {
 
@@ -359,8 +369,8 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
     // quiet move
 
     if (move_flag == all_moves) {
-
-        copy_board(pos);
+        struct copy_pos movecopy;
+        copy_board(pos,&movecopy);
         
         int source_square = get_move_source(move);
         int target_square = get_move_target(move);
@@ -527,7 +537,7 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         // }
 
         if (is_square_attacked(get_lsb_index((pos->side == white) ? bitboards[k] : bitboards[K]), pos->side)) {
-            take_back(pos);
+            take_back(pos,&movecopy);
             return 0;
         }
         else {

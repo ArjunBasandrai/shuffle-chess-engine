@@ -18,7 +18,8 @@ void perft_test(int depth, s_board *pos) {
     int start = get_time_ms();
 
     for (int move_count = 0; move_count<move_list->count; move_count++) {
-        copy_board(pos);
+        struct copy_pos ptcopy;
+        copy_board(pos, &ptcopy);
 
         if (!make_move(move_list->moves[move_count], all_moves, pos)) { 
             continue;
@@ -30,7 +31,7 @@ void perft_test(int depth, s_board *pos) {
 
         long old_nodes = nodes - cumulative_nodes;
 
-        take_back(pos);
+        take_back(pos, &ptcopy);
 
         // print the test results
         printf("  moves: ");

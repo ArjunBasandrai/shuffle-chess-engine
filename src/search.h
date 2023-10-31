@@ -177,7 +177,8 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
     sort_moves(move_list, 0, pos);
 
     for (int count = 0; count < move_list->count; count++) {
-        copy_board(pos);
+        struct copy_pos qcopy;
+        copy_board(pos, &qcopy);
         ply++;
 
         repetition_index++;
@@ -192,7 +193,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
         int score = -quiescence(-beta, -alpha, pos);
         ply--;
         repetition_index--;
-        take_back(pos);
+        take_back(pos, &qcopy);
 
         if(stopped == 1) return 0;
 
@@ -253,7 +254,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
     // Null Move Pruning
     if (depth >= 3 && !in_check && ply) {
-        copy_board(pos);
+        struct copy_pos nmp;
+        copy_board(pos, &nmp);
 
         ply++;
 
@@ -272,7 +274,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         ply--;
         repetition_index--;
 
-        take_back(pos);
+        take_back(pos,&nmp);
 
         if (score >= beta) {
             return beta;
@@ -313,7 +315,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     int moves_searched = 0;
 
     for (int count = 0; count < move_list->count; count++) {
-        copy_board(pos);
+        struct copy_pos ncopy;
+        copy_board(pos, &ncopy);
         ply++;
 
         repetition_index++;
@@ -365,7 +368,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         
         ply--;
         repetition_index--;
-        take_back(pos);
+        take_back(pos, &ncopy);
 
         if(stopped == 1) return 0;
 
