@@ -5,7 +5,7 @@
 <br/>
 
 > Shuffle is a UCI based chess engine written entirely in C.
-> It is a magic bitboards based engine and has an ELO of about 1900
+> It is a magic bitboards based engine and has an ELO of about 2148
 
 ---
 
