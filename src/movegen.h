@@ -13,18 +13,8 @@ U64 bitboards_copy[12],occupancies_copy[3];
 int side_copy, enpaassant_copy,castle_copy, fifty_copy;
 U64 hash_key_copy;
 
-static void copy_board(s_board *pos) {
-    memcpy(bitboards_copy, bitboards, sizeof(bitboards)); 
-    memcpy(occupancies_copy, occupancies, sizeof(occupancies)); 
-    side_copy = pos->side, enpaassant_copy = enpassant, castle_copy = castle; fifty_copy=fifty;
-    hash_key_copy = hash_key;
-}
-static void take_back(s_board *pos) {
-    memcpy(bitboards, bitboards_copy, sizeof(bitboards)); 
-    memcpy(occupancies,occupancies_copy,sizeof(occupancies)); 
-    pos->side = side_copy, enpassant = enpaassant_copy, castle = castle_copy; fifty = fifty_copy;
-    hash_key = hash_key_copy;
-}
+extern void copy_board(s_board *pos);
+extern void take_back(s_board *pos);
 
 static inline int is_square_attacked(int square, int side) {
 

@@ -39,7 +39,7 @@ void init_all() {
 int main(){
     init_all();
     s_board position;
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
         parse_fen(start_position, &position);
