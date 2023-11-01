@@ -12,6 +12,9 @@ typedef struct {
     int side;
     int castle;
     int enpassant;
+
+    int fifty;
+    
     U64 hash_key;
 } s_board;
 

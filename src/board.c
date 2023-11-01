@@ -37,5 +37,5 @@ void print_board(s_board *pos) {
                                         (pos->castle & bk) ? 'k' : '-',
                                         (pos->castle & bq) ? 'q' : '-');
     printf("   Hash Key: %llx\n\n", pos->hash_key);
-    printf("   Fifty move: %d\n\n", fifty);
+    printf("   Fifty move: %d\n\n", pos->fifty);
 }

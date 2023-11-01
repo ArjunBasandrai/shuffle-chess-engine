@@ -387,17 +387,17 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         pos->hash_key ^= piece_keys[piece][source_square];
         pos->hash_key ^= piece_keys[piece][target_square];
 
-        fifty++;
+        pos->fifty++;
 
         if (piece == P || piece == p) {
-            fifty = 0;
+            pos->fifty = 0;
         }
 
         // handling captures
 
         if (capture) {
 
-            fifty = 0;
+            pos->fifty = 0;
 
             int start_piece, end_piece;
             if (pos->side == white) {

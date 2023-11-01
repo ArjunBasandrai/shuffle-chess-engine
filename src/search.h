@@ -220,7 +220,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     
     int hash_flag = hash_flag_alpha;
 
-    if (ply && is_repetition(pos) || fifty >= 100) {
+    if (ply && is_repetition(pos) || pos->fifty >= 100) {
         return draw_score;
     }
 

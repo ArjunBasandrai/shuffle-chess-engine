@@ -277,7 +277,7 @@ static inline int evaluate(s_board *pos) {
         score = score_endgame;
     }
 
-    score = score * (100 - fifty) / 100;
+    score = score * (100 - pos->fifty) / 100;
 
     return (pos->side == white) ? score : -score;
 }
