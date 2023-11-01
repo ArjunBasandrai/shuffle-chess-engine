@@ -8,29 +8,30 @@
 
 U64 nodes;
 
-void perft_test(int depth) {
+void perft_test(int depth, s_board *pos) {
 
     printf("\n  Performance test\n\n");
 
     moves move_list[1];
-    generate_moves(move_list);
+    generate_moves(move_list, pos);
 
     int start = get_time_ms();
 
     for (int move_count = 0; move_count<move_list->count; move_count++) {
-        copy_board();
+        struct copy_pos ptcopy;
+        copy_board(pos, &ptcopy);
 
-        if (!make_move(move_list->moves[move_count], all_moves)) { 
+        if (!make_move(move_list->moves[move_count], all_moves, pos)) { 
             continue;
         }
 
         long cumulative_nodes = nodes;
 
-        perft_driver(depth-1);
+        perft_driver(depth-1, pos);
 
         long old_nodes = nodes - cumulative_nodes;
 
-        take_back();
+        take_back(pos, &ptcopy);
 
         // print the test results
         printf("  moves: ");

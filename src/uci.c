@@ -5,7 +5,6 @@
 #include "uci.h"
 
 #include "board_constants.h"
-#include "board.h"
 #include "moves_list.h"
 #include "movegen.h"
 #include "search.h"
@@ -13,6 +12,26 @@
 #include "transposition_table.h"
 #include "gettime.h"
 #include "polyglot/polykeys.h"
+
+#include "threading/tinycthread.h"
+
+thrd_t main_search_thread;
+
+thrd_t launch_search_thread(int depth, s_board *pos) {
+    s_search_input *search_data = malloc(sizeof(s_search_input));
+    search_data->depth = depth;
+    search_data->pos = pos;
+
+    thrd_t th;
+    thrd_create(&th, &search_position_thread, (void*)search_data);
+
+    return th;
+}
+
+void join_search_thread() {
+    stopped = 1;
+    thrd_join(main_search_thread, NULL);
+}
 
 void reset_time_control() {
     quit = 0;
@@ -26,9 +45,9 @@ void reset_time_control() {
     stopped = 0;
 }
 
-int parse_move(char *move_string) {
+int parse_move(char *move_string, s_board *pos) {
     moves move_list[1];
-    generate_moves(move_list);
+    generate_moves(move_list, pos);
 
     int source_square = (move_string[0] - 'a') + (8 - (move_string[1] - '0')) * 8;
     int target_square = (move_string[2] - 'a') + (8 - (move_string[3] - '0')) * 8;
@@ -69,13 +88,13 @@ int parse_move(char *move_string) {
 }
 
 
-void parse_position(char *command) {
+void parse_position(char *command, s_board *pos) {
     command += 9;
     char *current_char = command;
 
     // parse UCI startpos command
     if (strncmp(command, "startpos", 8) == 0) {
-        parse_fen(start_position);
+        parse_fen(start_position, pos);
     } 
     
     // parse UCI fen command
@@ -83,13 +102,13 @@ void parse_position(char *command) {
         current_char = strstr(command, "fen");
 
         if (current_char == NULL) {
-            parse_fen(start_position);
+            parse_fen(start_position, pos);
         }
 
         else {
             current_char += 4;
 
-            parse_fen(current_char);
+            parse_fen(current_char, pos);
         }
     }
 
@@ -100,15 +119,15 @@ void parse_position(char *command) {
         current_char += 6;
         int make_line = 1;
         while(*current_char) {
-            int move = parse_move(current_char);
+            int move = parse_move(current_char, pos);
 
             if (!move) {
                 break;
             }
 
-            repetition_index++;
-            repetitions_table[repetition_index] = hash_key;
-            make_move(move, all_moves);
+            pos->repetition_index++;
+            pos->repetitions_table[pos->repetition_index] = pos->hash_key;
+            make_move(move, all_moves, pos);
 
             while (*current_char && *current_char != ' ') current_char++;
             current_char++;
@@ -116,8 +135,7 @@ void parse_position(char *command) {
     }
 }
 
-void parse_go(char *command)
-{
+void parse_go(char *command, s_board *pos) {
     reset_time_control();
 
     // init parameters
@@ -129,22 +147,22 @@ void parse_go(char *command)
     // infinite search
     if ((argument = strstr(command,"infinite"))) {}
 
-    if ((argument = strstr(command,"binc")) && side == black) {
+    if ((argument = strstr(command,"binc")) && pos->side == black) {
         // parse black time increment
         inc = atoi(argument + 5);
     }
 
-    if ((argument = strstr(command,"winc")) && side == white) {
+    if ((argument = strstr(command,"winc")) && pos->side == white) {
         // parse white time increment
         inc = atoi(argument + 5);
     }
 
-    if ((argument = strstr(command,"wtime")) && side == white) {
+    if ((argument = strstr(command,"wtime")) && pos->side == white) {
         // parse white time limit
         m_time = atoi(argument + 6);
     }
 
-    if ((argument = strstr(command,"btime")) && side == black) {
+    if ((argument = strstr(command,"btime")) && pos->side == black) {
         // parse black time limit
         m_time = atoi(argument + 6);
     }
@@ -192,10 +210,11 @@ void parse_go(char *command)
     if(depth == -1)
         depth = 64;
 
-        search_position(depth);
+    // search_position(depth, pos);
+    main_search_thread = launch_search_thread(depth, pos);
 }
 
-void uci_loop() {
+void uci_loop(s_board *pos) {
     int max_hash = 1024;
     int mb = 64;
     
@@ -218,21 +237,26 @@ void uci_loop() {
         }
 
         else if (strncmp(input, "position", 8) == 0) { 
-            parse_position(input);
+            parse_position(input, pos);
             clear_transposition_table();
         }
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
-            parse_position("position startpos"); 
+            parse_position("position startpos", pos); 
             engine_options->use_book = 1;
             clear_transposition_table();
         }
 
         else if (strncmp(input, "go", 2) == 0) { 
-            parse_go(input); 
+            parse_go(input, pos); 
         }
 
-        else if (strncmp(input, "quit", 4) == 0) { 
+        else if (strncmp(input, "stop", 4) == 0) {
+            join_search_thread();
+        }
+
+        else if (strncmp(input, "quit", 4) == 0) {
+            join_search_thread();
             break;
         }
 

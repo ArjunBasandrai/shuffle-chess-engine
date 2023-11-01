@@ -7,12 +7,11 @@ TEST_EXE = $(ENGINE).exe
 
 ifdef v
 EXE = bin/Windows/v$(v).exe
+R_FLAGS = -Ofast
 else
 EXE = $(TEST_EXE)
+R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
 endif
-
-DEBUG_FLAGS = -fsanitize=address -fno-omit-frame-pointer
-R_FLAGS = -Ofast
 
 DISTDIR = dist
 SRCDIR = src
@@ -36,7 +35,8 @@ SRCS = src/bit_manipulation.c \
 		src/uci.c \
 		src/zobrist.c \
 		src/polyglot/polykeys.c \
-		src/polyglot/polybook.c 
+		src/polyglot/polybook.c \
+		src/threading/tinycthread.c 
 		
 all: __release_compile
 

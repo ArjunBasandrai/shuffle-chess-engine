@@ -5,7 +5,6 @@
 
 #include "../bit_manipulation.h"
 #include "../board_constants.h"
-#include "../board.h"
 #include "../moves_list.h"
 #include "../pre_calculated_tables.h"
 #include "polykeys.h"
@@ -64,17 +63,17 @@ void clean_poly_book() {
     free(entries);
 }
 
-int has_enpassant_capture() {
+int has_enpassant_capture(s_board *pos) {
     int sq_with_pawn = 0;
-    int target_piece = (side == white) ? P : p;
-    if (enpassant != no_sq) {
-        if (side == white) {
-            sq_with_pawn = enpassant + 8;
+    int target_piece = (pos->side == white) ? P : p;
+    if (pos->enpassant != no_sq) {
+        if (pos->side == white) {
+            sq_with_pawn = pos->enpassant + 8;
         } else {
-            sq_with_pawn = enpassant - 8;
+            sq_with_pawn = pos->enpassant - 8;
         }
 
-        U64 bitboard = bitboards[target_piece];
+        U64 bitboard = pos->bitboards[target_piece];
 
         if (get_bit(bitboard, sq_with_pawn + 1)) return 1;
         else if (get_bit(bitboard, sq_with_pawn - 1)) return 1;
@@ -82,7 +81,7 @@ int has_enpassant_capture() {
     }
 }
 
-U64 polykey_from_board() {
+U64 polykey_from_board(s_board *pos) {
     int sq = 0, rank = 0, file = 0;
     U64 final_key = 0ULL;
     U64 bitboard;
@@ -92,7 +91,7 @@ U64 polykey_from_board() {
 
     // piece keys
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
         while (bitboard) {
             int square = get_lsb_index(bitboard);
             rank = 7 - floor(square/8);
@@ -107,20 +106,20 @@ U64 polykey_from_board() {
 
     // castling keys
     offset = 768;
-    if (castle & wk) final_key ^= polyglot_keys[offset + 0];
-    if (castle & wq) final_key ^= polyglot_keys[offset + 1];
-    if (castle & bk) final_key ^= polyglot_keys[offset + 2];
-    if (castle & bq) final_key ^= polyglot_keys[offset + 3];
+    if (pos->castle & wk) final_key ^= polyglot_keys[offset + 0];
+    if (pos->castle & wq) final_key ^= polyglot_keys[offset + 1];
+    if (pos->castle & bk) final_key ^= polyglot_keys[offset + 2];
+    if (pos->castle & bq) final_key ^= polyglot_keys[offset + 3];
 
     // enpassant keys
     offset = 772;
-    if (has_enpassant_capture()) {
-        file = enpassant % 8;
+    if (has_enpassant_capture(pos)) {
+        file = pos->enpassant % 8;
         final_key ^= polyglot_keys[offset + file];
     }
 
     // side keys
-    if (side == white) final_key ^= polyglot_keys[780];
+    if (pos->side == white) final_key ^= polyglot_keys[780];
 
     return final_key;
 }
@@ -150,7 +149,7 @@ U64 endian_swap_u64(U64 x) {
     return x;
 }
 
-int polymove_to_inmove(unsigned short move) {
+int polymove_to_inmove(unsigned short move, s_board *pos) {
     int ff = ((move >> 6) & 7);
     int fr = 8 - ((move >> 9) & 7);
     int tf = ((move >> 0) & 7);
@@ -161,14 +160,14 @@ int polymove_to_inmove(unsigned short move) {
     int target = (tr-1) * 8 + tf;
 
     int p;
-    if (pp && (side == white)) {
+    if (pp && (pos->side == white)) {
         switch (pp) {
             case 1: p=N; break;
             case 2: p=B; break;
             case 3: p=R; break;
             case 4: p=Q; break;
         }
-    } else if (pp && (side == black)) {
+    } else if (pp && (pos->side == black)) {
         switch (pp) {
             case 1: p=n; break;
             case 2: p=b; break;
@@ -180,7 +179,7 @@ int polymove_to_inmove(unsigned short move) {
     U64 bitboard;
     int sp = -1;
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
         while (bitboard) {
             int square = get_lsb_index(bitboard);
             if (square == source) {
@@ -192,22 +191,22 @@ int polymove_to_inmove(unsigned short move) {
     }
 
     int capture;
-    if (!get_bit(occupancies[both], target)) {
+    if (!get_bit(pos->occupancies[both], target)) {
         capture = 0;
     } else {
         capture = 1;
     }
 
     int db;
-    if (((side == white) && (source >= a2) && (source <= h2) && (source == target + 16)) || ((side == black) && (source >= a7) && (source <= h7) && (source == target - 16))) {
+    if (((pos->side == white) && (source >= a2) && (source <= h2) && (source == target + 16)) || ((pos->side == black) && (source >= a7) && (source <= h7) && (source == target - 16))) {
         db = 1;
     } else {
         db = 0;
     }
 
     int enpass=0;
-    if (enpassant) {
-        U64 enpassant_attacks = pawn_attacks[side][source] & (1ULL << enpassant);
+    if (pos->enpassant) {
+        U64 enpassant_attacks = pawn_attacks[pos->side][source] & (1ULL << pos->enpassant);
         if (enpassant_attacks) {
             int target_enpassant = get_lsb_index(enpassant_attacks);
             if (target_enpassant == target) {enpass = 1;}
@@ -230,8 +229,8 @@ int polymove_to_inmove(unsigned short move) {
     return encode_move(source,target,sp,(pp!=0)?p:0,capture,db,enpass,castle);
 }
 
-int get_book_move() {
-    U64 polykey = polykey_from_board();
+int get_book_move(s_board *pos) {
+    U64 polykey = polykey_from_board(pos);
     s_polyglot_book_entry *entry;
     unsigned short move;
     int temp_move;
@@ -249,7 +248,7 @@ int get_book_move() {
         if (polykey == endian_swap_u64(entry->key)) {
             move = endian_swap_u16(entry->move);
             int source_file = ((move >> 6) & 7);
-            temp_move = polymove_to_inmove(move);
+            temp_move = polymove_to_inmove(move, pos);
             if (temp_move) {
                 book_moves[count++] = temp_move;
 
