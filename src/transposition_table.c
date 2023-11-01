@@ -9,17 +9,19 @@
 int hash_entries = 0;
 tt *transposition_table = NULL;
 
-void clear_transposition_table() {
+void clear_transposition_table(s_board *pos) {
     tt *hash_entry;
     for (hash_entry = transposition_table; hash_entry < transposition_table + hash_entries; hash_entry++) {
         hash_entry->hash_key = 0;
         hash_entry->depth = 0;
         hash_entry->flag = 0;
         hash_entry->score = 0;
+        hash_entry->age = 0;
     }
+    pos->age = 0;
 }
 
-void init_transposition_table(int mb) {
+void init_transposition_table(int mb, s_board *pos) {
     int hash_size = 0x100000 * mb;  
     hash_entries = hash_size / sizeof(tt);
 
@@ -32,9 +34,9 @@ void init_transposition_table(int mb) {
 
     if (transposition_table == NULL) {
         // printf("Couldn't allocate memory for tt, trying size %dMB\n"),mb/2;
-        init_transposition_table(mb/2);
+        init_transposition_table(mb/2,pos);
     } else {
-        clear_transposition_table();
+        clear_transposition_table(pos);
         // printf("tt is initialized with %d entries\n", hash_entries);
     }
 }

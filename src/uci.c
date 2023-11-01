@@ -238,13 +238,13 @@ void uci_loop(s_board *pos) {
 
         else if (strncmp(input, "position", 8) == 0) { 
             parse_position(input, pos);
-            clear_transposition_table();
+            clear_transposition_table(pos);
         }
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos", pos); 
             engine_options->use_book = 1;
-            clear_transposition_table();
+            clear_transposition_table(pos);
         }
 
         else if (strncmp(input, "go", 2) == 0) { 
@@ -274,7 +274,7 @@ void uci_loop(s_board *pos) {
             if (mb < 4) mb = 4;
             if (mb > max_hash) mb = max_hash;
 
-            init_transposition_table(mb);
+            init_transposition_table(mb, pos);
         }
 
         else if (!strncmp(input, "setoption name Book value ", 26)) {

@@ -2,7 +2,7 @@
 
 #include "board.h"
 
-#define version "2.0.0"
+#define version "2.1.0"
 
 void reset_time_control();
 int parse_move(char *move_string, s_board *pos);

@@ -18,6 +18,8 @@ typedef struct {
 
     U64 repetitions_table[1000];
     int repetition_index;
+
+    int age;
     
     U64 hash_key;
 } s_board;

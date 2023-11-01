@@ -21,13 +21,14 @@ typedef struct {
     int flag;
     int score;
     int best_move;
+    int age;
 } tt;
 
 extern tt *transposition_table;
 
-void clear_transposition_table();
+void clear_transposition_table(s_board *pos);
 
-void init_transposition_table(int mb);
+void init_transposition_table(int mb, s_board *pos);
 
 static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth, s_board *pos) {
     tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
@@ -55,6 +56,18 @@ static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth
 static inline void write_hash_entry(int score, int best_move, int depth, int hash_flag, s_board *pos) {
     tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
 
+    int replace = 0;
+
+    if (hash_entry->hash_key != 0ULL) {
+        replace = 1;
+    } else {
+        if (hash_entry->age < pos->age && hash_entry->depth < depth) {
+            replace = 1;
+        } 
+    }
+
+    if (!replace) return;
+
     // store score independent from the actual path from root to current position
     if (score < -mate_score) score -= pos->ply;
     if (score > mate_score) score += pos->ply;
@@ -64,4 +77,5 @@ static inline void write_hash_entry(int score, int best_move, int depth, int has
     hash_entry->flag = hash_flag;
     hash_entry->depth = depth;
     hash_entry->best_move = best_move;
+    hash_entry->age = pos->age;
 }

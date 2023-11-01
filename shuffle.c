@@ -24,22 +24,23 @@
 #define U64 unsigned long long
 #endif
 
-void init_all() {
+void init_all(s_board *pos) {
     init_leaper_attacks();
     init_sliders_attacks(bishop);
     init_sliders_attacks(rook);
     // init_magic_numbers();
     init_random_keys();
     init_evaluation_masks();
-    init_transposition_table(64);
+    init_transposition_table(64, pos);
     init_poly_book();
 }
 
 // Main driver
 int main(){
-    init_all();
     s_board position;
     position.enpassant = no_sq;
+    position.age = 0;
+    init_all(&position);
     int debug = 0;
 
     if (debug) {

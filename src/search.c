@@ -61,6 +61,8 @@ void search_position(int depth, s_board *pos) {
     int alpha = -infinity;
     int beta = infinity;
 
+    pos->age++;
+
     int best_move = 0;
     if (engine_options->use_book == 1) {
         best_move = get_book_move(pos);
