@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 ENGINE = shuffle
 
 C = $(ENGINE).c
@@ -11,6 +11,7 @@ else
 EXE = $(TEST_EXE)
 endif
 
+DEBUG_FLAGS = -fsanitize=address -fno-omit-frame-pointer
 R_FLAGS = -Ofast
 
 DISTDIR = dist
@@ -42,7 +43,7 @@ all: __release_compile
 debug: __debug_compile __debug_run
 
 __debug_compile:
-	$(CC) -o $(TEST_EXE) $(C) $(SRCS)
+	$(CC) $(DEBUG_FLAGS) -o $(TEST_EXE) $(C) $(SRCS)
 
 __release_compile:
 	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
