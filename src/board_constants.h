@@ -95,8 +95,6 @@ static int mvv_lva[12][12] = {
 extern const int full_depth_moves;
 extern const int reduction_limit;
 
-extern int ply;
-
 extern U64 repetitions_table[1000];
 extern int repetition_index;
 

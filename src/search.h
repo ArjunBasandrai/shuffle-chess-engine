@@ -48,10 +48,10 @@ static void communicate() {
 }
 
 
-static inline void enable_pv_scoring(moves *move_list) {
+static inline void enable_pv_scoring(moves *move_list, s_board *pos) {
     follow_pv = 0;
     for (int count = 0; count < move_list->count; count++) {
-        if (pv_table[0][ply] == move_list->moves[count]) {
+        if (pv_table[0][pos->ply] == move_list->moves[count]) {
             score_pv = 1;
             follow_pv = 1;
         }
@@ -61,7 +61,7 @@ static inline void enable_pv_scoring(moves *move_list) {
 static inline int score_move(int move, s_board *pos) {
 
     if (score_pv) {
-        if (pv_table[0][ply] == move) {
+        if (pv_table[0][pos->ply] == move) {
             score_pv = 0;
             
             return 20000;
@@ -90,13 +90,13 @@ static inline int score_move(int move, s_board *pos) {
     else {
         // score 1st killer move
 
-        if (killer_moves[0][ply] == move) {
+        if (killer_moves[0][pos->ply] == move) {
             return 9000;
         }
 
         // score 2nd killer move
 
-        else if (killer_moves[1][ply] == move) {
+        else if (killer_moves[1][pos->ply] == move) {
             return 8000;
         }
 
@@ -155,7 +155,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
 
     nodes++;
 
-    if (ply > max_ply - 1) {
+    if (pos->ply > max_ply - 1) {
         return evaluate(pos);
     }
 
@@ -179,19 +179,19 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
     for (int count = 0; count < move_list->count; count++) {
         struct copy_pos qcopy;
         copy_board(pos, &qcopy);
-        ply++;
+        pos->ply++;
 
         repetition_index++;
         repetitions_table[repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], only_captures, pos) == 0) {
-            ply--;
+            pos->ply--;
             repetition_index--;
             continue;
         }
 
         int score = -quiescence(-beta, -alpha, pos);
-        ply--;
+        pos->ply--;
         repetition_index--;
         take_back(pos, &qcopy);
 
@@ -220,14 +220,14 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     
     int hash_flag = hash_flag_alpha;
 
-    if (ply && is_repetition(pos) || pos->fifty >= 100) {
+    if (pos->ply && is_repetition(pos) || pos->fifty >= 100) {
         return draw_score;
     }
 
     int pv_node = (beta - alpha > 1);
 
     // read hash from transposition table if not root ply and not a pv node
-    if (ply && (score = read_hash_entry(alpha, beta, &best_move, depth, pos)) != no_hash_entry && !pv_node) {
+    if (pos->ply && (score = read_hash_entry(alpha, beta, &best_move, depth, pos)) != no_hash_entry && !pv_node) {
         // if move has already been searched and henc
         return score;
     }
@@ -236,13 +236,13 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         // "listen" to the GUI/user input
 		communicate();
     
-    pv_length[ply] = ply;
+    pv_length[pos->ply] = pos->ply;
 
     if (depth == 0) {
         return quiescence(alpha, beta, pos);
     }
 
-    if (ply > max_ply - 1) return evaluate(pos);
+    if (pos->ply > max_ply - 1) return evaluate(pos);
 
     nodes++;
 
@@ -253,11 +253,11 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     int legal_moves=0;
 
     // Null Move Pruning
-    if (depth >= 3 && !in_check && ply) {
+    if (depth >= 3 && !in_check && pos->ply) {
         struct copy_pos nmp;
         copy_board(pos, &nmp);
 
-        ply++;
+        pos->ply++;
 
         repetition_index++;
         repetitions_table[repetition_index] = pos->hash_key;
@@ -271,7 +271,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
         score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos);
 
-        ply--;
+        pos->ply--;
         repetition_index--;
 
         take_back(pos,&nmp);
@@ -308,7 +308,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     moves move_list[1];
     generate_moves(move_list, pos);
 
-    if (follow_pv) enable_pv_scoring(move_list);
+    if (follow_pv) enable_pv_scoring(move_list, pos);
 
     sort_moves(move_list, best_move, pos);
 
@@ -317,13 +317,13 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     for (int count = 0; count < move_list->count; count++) {
         struct copy_pos ncopy;
         copy_board(pos, &ncopy);
-        ply++;
+        pos->ply++;
 
         repetition_index++;
         repetitions_table[repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], all_moves, pos) == 0) {
-            ply--;
+            pos->ply--;
             repetition_index--;
             continue;
         }
@@ -366,7 +366,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
             }
         }
         
-        ply--;
+        pos->ply--;
         repetition_index--;
         take_back(pos, &ncopy);
 
@@ -388,13 +388,13 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
             alpha = score;
 
-            pv_table[ply][ply] = move_list->moves[count];
+            pv_table[pos->ply][pos->ply] = move_list->moves[count];
 
-            for (int next_ply = ply + 1; next_ply < pv_length[ply + 1]; next_ply++) {
-                pv_table[ply][next_ply] = pv_table[ply + 1][next_ply];
+            for (int next_ply = pos->ply + 1; next_ply < pv_length[pos->ply + 1]; next_ply++) {
+                pv_table[pos->ply][next_ply] = pv_table[pos->ply + 1][next_ply];
             }
 
-            pv_length[ply] = pv_length[ply + 1];
+            pv_length[pos->ply] = pv_length[pos->ply + 1];
 
             // fail-hard beta cutoff
             if (score >= beta) {
@@ -404,8 +404,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
                 // processing killer moves
 
                 if (get_move_capture(move_list->moves[count]) == 0) {
-                    killer_moves[1][ply] = killer_moves[0][ply];
-                    killer_moves[0][ply] = move_list->moves[count];
+                    killer_moves[1][pos->ply] = killer_moves[0][pos->ply];
+                    killer_moves[0][pos->ply] = move_list->moves[count];
                 }
 
                 // node fails high
@@ -416,7 +416,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
     if (legal_moves == 0) {
         if (in_check) {
-            return -mate_value + ply;
+            return -mate_value + pos->ply;
         } else {
             return draw_score;
         }

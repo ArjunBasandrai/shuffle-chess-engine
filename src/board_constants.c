@@ -230,8 +230,6 @@ const int mirror_score[128] = {
 const int full_depth_moves = 4;
 const int reduction_limit = 3;
 
-int ply;
-
 U64 repetitions_table[1000];
 int repetition_index;
 

@@ -13,6 +13,7 @@ typedef struct {
     int castle;
     int enpassant;
 
+    int ply;
     int fifty;
     
     U64 hash_key;

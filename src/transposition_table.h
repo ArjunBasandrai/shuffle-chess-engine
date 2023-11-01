@@ -36,8 +36,8 @@ static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth
 
             int score = hash_entry->score;
             // retrieve score independent from the actual path from root to current position
-            if (score < -mate_score) score += ply;
-            if (score > mate_score) score -= ply;
+            if (score < -mate_score) score += pos->ply;
+            if (score > mate_score) score -= pos->ply;
 
             if (hash_entry->flag == hash_flag_exact) {
                 return score;
@@ -56,8 +56,8 @@ static inline void write_hash_entry(int score, int best_move, int depth, int has
     tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
 
     // store score independent from the actual path from root to current position
-    if (score < -mate_score) score -= ply;
-    if (score > mate_score) score += ply;
+    if (score < -mate_score) score -= pos->ply;
+    if (score > mate_score) score += pos->ply;
 
     hash_entry->hash_key = pos->hash_key;
     hash_entry->score = score;

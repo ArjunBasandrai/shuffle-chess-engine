@@ -15,7 +15,7 @@ void parse_fen(char *fen, s_board *pos) {
     pos->hash_key = 0ULL;
     repetition_index = 0;
     memset(repetitions_table, 0ULL, sizeof(repetitions_table));
-    ply = 0;
+    pos->ply = 0;
     pos->fifty = 0;
 
     for (int rank = 0; rank < 8; rank++) {
