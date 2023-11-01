@@ -35,7 +35,7 @@ U64 generate_hash_keys(s_board *pos) {
     U64 bitboard;
 
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
         while (bitboard) {
             int square = get_lsb_index(bitboard);
 

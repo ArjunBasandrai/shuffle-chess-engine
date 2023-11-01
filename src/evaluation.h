@@ -24,15 +24,15 @@ static const int queen_mobility[2] = {1, 2};
 
 extern const int king_shield_bonus;
 
-static inline int get_game_phase_score() {
+static inline int get_game_phase_score(s_board *pos) {
     int white_piece_scores=0, black_piece_scores=0;
 
     for (int piece = N; piece <= Q; piece++) {
-        white_piece_scores += count_bits(bitboards[piece]) * material_score[opening][piece];
+        white_piece_scores += count_bits(pos->bitboards[piece]) * material_score[opening][piece];
     }
 
     for (int piece = n; piece <= q; piece++) {
-        black_piece_scores += count_bits(bitboards[piece]) * -material_score[opening][piece];
+        black_piece_scores += count_bits(pos->bitboards[piece]) * -material_score[opening][piece];
     }
 
     return white_piece_scores + black_piece_scores;
@@ -40,7 +40,7 @@ static inline int get_game_phase_score() {
 
 static inline int evaluate(s_board *pos) {
 
-    int game_phase_score = get_game_phase_score();
+    int game_phase_score = get_game_phase_score(pos);
     int game_phase = -1;
 
 
@@ -56,7 +56,7 @@ static inline int evaluate(s_board *pos) {
     int double_pawns = 0;
 
     for (int bb_piece = P; bb_piece <= k; bb_piece++) {
-        bitboard = bitboards[bb_piece];
+        bitboard = pos->bitboards[bb_piece];
 
         while (bitboard) {
             piece = bb_piece;
@@ -72,20 +72,20 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][PAWN][square];
 
                     // double pawn penalty
-                    double_pawns = count_bits(bitboards[P] & file_mask[square]);
+                    double_pawns = count_bits(pos->bitboards[P] & file_mask[square]);
                     if (double_pawns > 1) {
                         score_opening += (double_pawns - 1) * double_pawn_penalty[opening];
                         score_endgame += (double_pawns - 1) * double_pawn_penalty[endgame];
                     }
                     
                     // isolated pawn penalty
-                    if ((bitboards[P] & isolated_mask[square]) == 0) {
+                    if ((pos->bitboards[P] & isolated_mask[square]) == 0) {
                         score_opening += isolated_pawn_penalty[opening];
                         score_endgame += isolated_pawn_penalty[endgame];
                     }
 
                     // passed pawn bonus
-                    if ((white_passed_mask[square] & bitboards[p]) == 0) {
+                    if ((white_passed_mask[square] & pos->bitboards[p]) == 0) {
                         score_opening += passed_pawn_bonus[get_rank[square]];
                         score_endgame += passed_pawn_bonus[get_rank[square]];
                     }
@@ -114,14 +114,14 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][ROOK][square]; 
 
                     // semi open file bonus
-                    if ((bitboards[P] & file_mask[square]) == 0) {
+                    if ((pos->bitboards[P] & file_mask[square]) == 0) {
                         // add semi open file bonus
                         score_opening += semi_open_file_score;
                         score_endgame += semi_open_file_score;
                     }
 
                     // open file bonus
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
                         // add semi open file bonus
                         score_opening += open_file_score;
                         score_endgame += open_file_score;
@@ -146,13 +146,13 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][KING][square]; 
 
                     // semi open file penalty
-                    if ((bitboards[p] & file_mask[square]) == 0) {
+                    if ((pos->bitboards[p] & file_mask[square]) == 0) {
                         score_opening += semi_open_file_score;
                         score_endgame += semi_open_file_score;
                     }
 
                     // open file penalty
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
                         score_opening += open_file_score;
                         score_endgame += open_file_score;
                     }
@@ -169,20 +169,20 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
 
                     // double pawn penalty
-                    double_pawns = count_bits(bitboards[p] & file_mask[square]);
+                    double_pawns = count_bits(pos->bitboards[p] & file_mask[square]);
                     if (double_pawns > 1) {
                         score_opening -= (double_pawns - 1) * double_pawn_penalty[opening];
                         score_endgame -= (double_pawns - 1) * double_pawn_penalty[endgame];
                     }
 
                     // isolated pawn penalty
-                    if ((bitboards[p] & isolated_mask[square]) == 0) {
+                    if ((pos->bitboards[p] & isolated_mask[square]) == 0) {
                         score_opening -= isolated_pawn_penalty[opening];
                         score_endgame -= isolated_pawn_penalty[endgame];
                     }
                     
                     // passed pawn bonus
-                    if ((black_passed_mask[square] & bitboards[P]) == 0) {
+                    if ((black_passed_mask[square] & pos->bitboards[P]) == 0) {
                         score_opening -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                         score_endgame -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                     }
@@ -212,14 +212,14 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][ROOK][mirror_score[square]];
 
                     // semi open file bonus
-                    if ((bitboards[p] & file_mask[square]) == 0) {
+                    if ((pos->bitboards[p] & file_mask[square]) == 0) {
                         // add semi open file bonus
                         score_opening -= semi_open_file_score;
                         score_endgame -= semi_open_file_score;
                     }
 
                     // open file bonus
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {    
+                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {    
                         // add semi open file bonus
                         score_opening -= open_file_score;
                         score_endgame -= open_file_score;
@@ -244,13 +244,13 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][KING][mirror_score[square]];
 
                     // semi open file penalty
-                    if ((bitboards[P] & file_mask[square]) == 0) {
+                    if ((pos->bitboards[P] & file_mask[square]) == 0) {
                         score_opening -= semi_open_file_score;
                         score_endgame -= semi_open_file_score;
                     }
 
                     // open file penalty
-                    if (((bitboards[P] | bitboards[p]) & file_mask[square]) == 0) {
+                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
                         score_opening -= open_file_score;
                         score_endgame -= open_file_score;
                     }

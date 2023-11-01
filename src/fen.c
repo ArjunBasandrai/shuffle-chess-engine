@@ -7,7 +7,7 @@
 #include "zobrist.h"
 
 void parse_fen(char *fen, s_board *pos) {
-    memset(bitboards, 0ULL,sizeof(bitboards));
+    memset(pos->bitboards, 0ULL,sizeof(pos->bitboards));
     memset(occupancies,0ULL,sizeof(occupancies));
     pos->side = 0;
     pos->enpassant = no_sq;
@@ -24,7 +24,7 @@ void parse_fen(char *fen, s_board *pos) {
             if ((*fen >= 'a' && *fen <= 'z') || (*fen >= 'A' && *fen <= 'Z')) {
                 int piece  = char_pieces[*fen];
 
-                set_bit(bitboards[piece],square);
+                set_bit(pos->bitboards[piece],square);
 
                 fen++;
             }
@@ -33,7 +33,7 @@ void parse_fen(char *fen, s_board *pos) {
 
                 int piece = -1;
                 for (int bb_piece = P; bb_piece <= k; bb_piece++) {
-                    if (get_bit(bitboards[bb_piece],square)) {
+                    if (get_bit(pos->bitboards[bb_piece],square)) {
                         piece = bb_piece;
                     }
                 }
@@ -87,11 +87,11 @@ void parse_fen(char *fen, s_board *pos) {
     }
 
     for (int piece = P; piece <= K; piece++) {
-        occupancies[white] |= bitboards[piece];
+        occupancies[white] |= pos->bitboards[piece];
     }
 
     for (int piece = p; piece <= k; piece++) {
-        occupancies[black] |= bitboards[piece];
+        occupancies[black] |= pos->bitboards[piece];
     }
 
     occupancies[both] |= occupancies[white];

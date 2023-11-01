@@ -73,7 +73,7 @@ int has_enpassant_capture(s_board *pos) {
             sq_with_pawn = pos->enpassant - 8;
         }
 
-        U64 bitboard = bitboards[target_piece];
+        U64 bitboard = pos->bitboards[target_piece];
 
         if (get_bit(bitboard, sq_with_pawn + 1)) return 1;
         else if (get_bit(bitboard, sq_with_pawn - 1)) return 1;
@@ -91,7 +91,7 @@ U64 polykey_from_board(s_board *pos) {
 
     // piece keys
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
         while (bitboard) {
             int square = get_lsb_index(bitboard);
             rank = 7 - floor(square/8);
@@ -179,7 +179,7 @@ int polymove_to_inmove(unsigned short move, s_board *pos) {
     U64 bitboard;
     int sp = -1;
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
         while (bitboard) {
             int square = get_lsb_index(bitboard);
             if (square == source) {

@@ -8,7 +8,6 @@
 #define U64 unsigned long long
 #endif
 
-U64 bitboards[12];
 U64 occupancies[3];
 
 void print_board(s_board *pos) {
@@ -21,7 +20,7 @@ void print_board(s_board *pos) {
             int piece = -1;
 
             for (int bitboard_piece = P; bitboard_piece <= k; bitboard_piece++) {
-                if (get_bit(bitboards[bitboard_piece],square)) {
+                if (get_bit(pos->bitboards[bitboard_piece],square)) {
                     piece = bitboard_piece;
                 }
             }

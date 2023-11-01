@@ -78,7 +78,7 @@ static inline int score_move(int move, s_board *pos) {
         else { start_piece = P; end_piece = K; }
 
         for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
-            if (get_bit(bitboards[bb_piece], get_move_target(move))) {
+            if (get_bit(pos->bitboards[bb_piece], get_move_target(move))) {
                 target_piece = bb_piece;
                 break;
             }
@@ -246,7 +246,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
     nodes++;
 
-    int in_check = is_square_attacked((pos->side == white) ? get_lsb_index(bitboards[K]) : get_lsb_index(bitboards[k]),pos->side ^ 1);
+    int in_check = is_square_attacked((pos->side == white) ? get_lsb_index(pos->bitboards[K]) : get_lsb_index(pos->bitboards[k]),pos->side ^ 1, pos);
 
     if (in_check) depth++;
 

@@ -26,26 +26,26 @@ struct copy_pos {
 extern void copy_board(s_board *pos, struct copy_pos *cc);
 extern void take_back(s_board *pos, struct copy_pos *cc);
 
-static inline int is_square_attacked(int square, int side) {
+static inline int is_square_attacked(int square, int side, s_board *pos) {
 
-    if ((side == white) && (pawn_attacks[black][square] & bitboards[P])) return 1;
+    if ((side == white) && (pawn_attacks[black][square] & pos->bitboards[P])) return 1;
 
-    if ((side == black) && (pawn_attacks[white][square] & bitboards[p])) return 1;
+    if ((side == black) && (pawn_attacks[white][square] & pos->bitboards[p])) return 1;
 
-    if (knight_attacks[square] & ((side == white) ? bitboards[N] : bitboards[n])) return 1;
+    if (knight_attacks[square] & ((side == white) ? pos->bitboards[N] : pos->bitboards[n])) return 1;
 
-    if (get_bishop_attacks(square,occupancies[both]) & ((side == white) ? bitboards[B] : bitboards[b])) return 1;
+    if (get_bishop_attacks(square,occupancies[both]) & ((side == white) ? pos->bitboards[B] : pos->bitboards[b])) return 1;
 
-    if (get_rook_attacks(square,occupancies[both]) & ((side == white) ? bitboards[R] : bitboards[r])) return 1;
+    if (get_rook_attacks(square,occupancies[both]) & ((side == white) ? pos->bitboards[R] : pos->bitboards[r])) return 1;
 
-    if (get_queen_attacks(square,occupancies[both]) & ((side == white) ? bitboards[Q] : bitboards[q])) return 1;
+    if (get_queen_attacks(square,occupancies[both]) & ((side == white) ? pos->bitboards[Q] : pos->bitboards[q])) return 1;
 
-    if (king_attacks[square] & ((side == white) ? bitboards[K] : bitboards[k])) return 1;
+    if (king_attacks[square] & ((side == white) ? pos->bitboards[K] : pos->bitboards[k])) return 1;
 
     return 0;
 }
 
-void print_attacked_squares(int side);
+void print_attacked_squares(int side, s_board *pos);
 
 static inline void generate_moves(moves *move_list, s_board *pos) {
     move_list->count = 0;
@@ -54,7 +54,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
     U64 bitboard, attacks;
 
     for (int piece = P; piece <= k; piece++) {
-        bitboard = bitboards[piece];
+        bitboard = pos->bitboards[piece];
 
         //pawnn moves and castling
 
@@ -123,7 +123,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], f1) && !get_bit(occupancies[both], g1)) {
                         // checking if king square and f1 are not attacked
-                        if (!is_square_attacked(e1,black) && !is_square_attacked(f1,black)) {
+                        if (!is_square_attacked(e1,black,pos) && !is_square_attacked(f1,black,pos)) {
                             add_move(move_list, encode_move(e1, g1, piece, 0, 0, 0, 0, 1));
                         }
                     }
@@ -133,7 +133,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], d1) && !get_bit(occupancies[both], c1) && !get_bit(occupancies[both], b1)) {
                         // checking if king square and d1 are not attacked
-                        if (!is_square_attacked(e1,black) && !is_square_attacked(d1,black)) {
+                        if (!is_square_attacked(e1,black,pos) && !is_square_attacked(d1,black,pos)) {
                             add_move(move_list, encode_move(e1, c1, piece, 0, 0, 0, 0, 1));
                         }
                     }
@@ -207,7 +207,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], f8) && !get_bit(occupancies[both], g8)) {
                         // checking if king square and f8 are not attacked
-                        if (!is_square_attacked(e8,white) && !is_square_attacked(f8,white)) {
+                        if (!is_square_attacked(e8,white,pos) && !is_square_attacked(f8,white,pos)) {
                             add_move(move_list, encode_move(e8, g8, piece, 0, 0, 0, 0, 1));
                         }
                     }
@@ -217,7 +217,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], d8) && !get_bit(occupancies[both], c8) && !get_bit(occupancies[both], b8)) {
                         // checking if king square and d8 are not attacked
-                        if (!is_square_attacked(e8,white) && !is_square_attacked(d8,white)) {
+                        if (!is_square_attacked(e8,white,pos) && !is_square_attacked(d8,white,pos)) {
                             add_move(move_list, encode_move(e8, c8, piece, 0, 0, 0, 0, 1));
                         }
                     }
@@ -381,8 +381,8 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         int enpass = get_move_enpassant(move);
         int castling = get_move_castling(move);
 
-        pop_bit(bitboards[piece], source_square);
-        set_bit(bitboards[piece], target_square);
+        pop_bit(pos->bitboards[piece], source_square);
+        set_bit(pos->bitboards[piece], target_square);
 
         hash_key ^= piece_keys[piece][source_square];
         hash_key ^= piece_keys[piece][target_square];
@@ -409,8 +409,8 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
             }
 
             for (int bb_piece = start_piece; bb_piece <= end_piece; bb_piece++) {
-                if (get_bit(bitboards[bb_piece], target_square)) {
-                    pop_bit(bitboards[bb_piece], target_square);
+                if (get_bit(pos->bitboards[bb_piece], target_square)) {
+                    pop_bit(pos->bitboards[bb_piece], target_square);
                     hash_key ^= piece_keys[bb_piece][target_square];
                     break;
                 }
@@ -421,13 +421,13 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
 
         if (promoted) {
             if (pos->side == white) {
-                pop_bit(bitboards[P], target_square);
+                pop_bit(pos->bitboards[P], target_square);
                 hash_key ^= piece_keys[P][target_square];
             } else {
-                pop_bit(bitboards[p], target_square);
+                pop_bit(pos->bitboards[p], target_square);
                 hash_key ^= piece_keys[p][target_square];
             }
-            set_bit(bitboards[promoted], target_square);
+            set_bit(pos->bitboards[promoted], target_square);
             hash_key ^= piece_keys[promoted][target_square];
         }
 
@@ -435,10 +435,10 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
 
         if (enpass) {
             if (pos->side == white) {
-                pop_bit(bitboards[p],target_square + 8);
+                pop_bit(pos->bitboards[p],target_square + 8);
                 hash_key ^= piece_keys[p][target_square + 8];
             } else {
-                pop_bit(bitboards[P],target_square - 8);
+                pop_bit(pos->bitboards[P],target_square - 8);
                 hash_key ^= piece_keys[P][target_square - 8];
             }
         }
@@ -470,26 +470,26 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         if (castling) {
             switch (target_square) {
                 case (g1):
-                    pop_bit(bitboards[R],h1);
-                    set_bit(bitboards[R],f1);
+                    pop_bit(pos->bitboards[R],h1);
+                    set_bit(pos->bitboards[R],f1);
                     hash_key ^= piece_keys[R][h1];
                     hash_key ^= piece_keys[R][f1];
                     break;
                 case (c1):
-                    pop_bit(bitboards[R],a1);
-                    set_bit(bitboards[R],d1);
+                    pop_bit(pos->bitboards[R],a1);
+                    set_bit(pos->bitboards[R],d1);
                     hash_key ^= piece_keys[R][a1];
                     hash_key ^= piece_keys[R][d1];
                     break;
                 case (g8):
-                    pop_bit(bitboards[r],h8);
-                    set_bit(bitboards[r],f8);
+                    pop_bit(pos->bitboards[r],h8);
+                    set_bit(pos->bitboards[r],f8);
                     hash_key ^= piece_keys[r][h8];
                     hash_key ^= piece_keys[r][f8];
                     break;
                 case (c8):
-                    pop_bit(bitboards[r],a8);
-                    set_bit(bitboards[r],d8);
+                    pop_bit(pos->bitboards[r],a8);
+                    set_bit(pos->bitboards[r],d8);
                     hash_key ^= piece_keys[r][a8];
                     hash_key ^= piece_keys[r][d8];
                     break;
@@ -510,11 +510,11 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         memset(occupancies, 0ULL, 24);
 
         for (int bb_piece = P; bb_piece <= K; bb_piece++) {
-            occupancies[white] |= bitboards[bb_piece];
+            occupancies[white] |= pos->bitboards[bb_piece];
         }
 
         for (int bb_piece = p; bb_piece <= k; bb_piece++) {
-            occupancies[black] |= bitboards[bb_piece];
+            occupancies[black] |= pos->bitboards[bb_piece];
         }
 
         occupancies[both] |= occupancies[white];
@@ -536,7 +536,7 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         //     getchar();
         // }
 
-        if (is_square_attacked(get_lsb_index((pos->side == white) ? bitboards[k] : bitboards[K]), pos->side)) {
+        if (is_square_attacked(get_lsb_index((pos->side == white) ? pos->bitboards[k] : pos->bitboards[K]), pos->side, pos)) {
             take_back(pos,&movecopy);
             return 0;
         }
