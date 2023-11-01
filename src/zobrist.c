@@ -49,7 +49,7 @@ U64 generate_hash_keys(s_board *pos) {
         final_key ^= enpassant_keys[enpassant];
     }
 
-    final_key ^= castle_keys[castle];
+    final_key ^= castle_keys[pos->castle];
 
     if (pos->side == black) final_key ^= side_key;
 

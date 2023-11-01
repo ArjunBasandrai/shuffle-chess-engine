@@ -106,10 +106,10 @@ U64 polykey_from_board(s_board *pos) {
 
     // castling keys
     offset = 768;
-    if (castle & wk) final_key ^= polyglot_keys[offset + 0];
-    if (castle & wq) final_key ^= polyglot_keys[offset + 1];
-    if (castle & bk) final_key ^= polyglot_keys[offset + 2];
-    if (castle & bq) final_key ^= polyglot_keys[offset + 3];
+    if (pos->castle & wk) final_key ^= polyglot_keys[offset + 0];
+    if (pos->castle & wq) final_key ^= polyglot_keys[offset + 1];
+    if (pos->castle & bk) final_key ^= polyglot_keys[offset + 2];
+    if (pos->castle & bq) final_key ^= polyglot_keys[offset + 3];
 
     // enpassant keys
     offset = 772;

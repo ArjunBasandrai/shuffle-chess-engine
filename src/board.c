@@ -9,7 +9,6 @@
 #endif
 
 int enpassant = no_sq;
-int castle;
 
 U64 bitboards[12];
 U64 occupancies[3];
@@ -38,10 +37,10 @@ void print_board(s_board *pos) {
 
     printf("   Side: %s\n", (!pos->side) ? "white" : "black");
     printf("   Enpassant: %s\n",(enpassant != no_sq) ? sqaure_to_coordinate[enpassant] : "NO");
-    printf("   Castling: %c%c%c%c\n",(castle & wk) ? 'K' : '-',
-                                        (castle & wq) ? 'Q' : '-',
-                                        (castle & bk) ? 'k' : '-',
-                                        (castle & bq) ? 'q' : '-');
+    printf("   Castling: %c%c%c%c\n",(pos->castle & wk) ? 'K' : '-',
+                                        (pos->castle & wq) ? 'Q' : '-',
+                                        (pos->castle & bk) ? 'k' : '-',
+                                        (pos->castle & bq) ? 'q' : '-');
     printf("   Hash Key: %llx\n\n", hash_key);
     printf("   Fifty move: %d\n\n", fifty);
 }

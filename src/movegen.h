@@ -119,7 +119,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
             }
 
             if (piece == K) {
-                if (castle & wk) {
+                if (pos->castle & wk) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], f1) && !get_bit(occupancies[both], g1)) {
                         // checking if king square and f1 are not attacked
@@ -129,7 +129,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     }
                 }
 
-                if (castle & wq) {
+                if (pos->castle & wq) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], d1) && !get_bit(occupancies[both], c1) && !get_bit(occupancies[both], b1)) {
                         // checking if king square and d1 are not attacked
@@ -203,7 +203,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
             }
         
             if (piece == k) {
-                if (castle & bk) {
+                if (pos->castle & bk) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], f8) && !get_bit(occupancies[both], g8)) {
                         // checking if king square and f8 are not attacked
@@ -213,7 +213,7 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
                     }
                 }
 
-                if (castle & bq) {
+                if (pos->castle & bq) {
                     // checking if squares in between are unoccupied
                     if (!get_bit(occupancies[both], d8) && !get_bit(occupancies[both], c8) && !get_bit(occupancies[both], b8)) {
                         // checking if king square and d8 are not attacked
@@ -498,12 +498,12 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
 
         // updating castling rights
 
-        hash_key ^= castle_keys[castle];
+        hash_key ^= castle_keys[pos->castle];
 
-        castle &= castling_rights[source_square];
-        castle &= castling_rights[target_square];
+        pos->castle &= castling_rights[source_square];
+        pos->castle &= castling_rights[target_square];
 
-        hash_key ^= castle_keys[castle];
+        hash_key ^= castle_keys[pos->castle];
 
         // updating occupancies
 

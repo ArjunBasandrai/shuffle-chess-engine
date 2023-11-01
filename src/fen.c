@@ -11,7 +11,7 @@ void parse_fen(char *fen, s_board *pos) {
     memset(occupancies,0ULL,sizeof(occupancies));
     pos->side = 0;
     enpassant = no_sq;
-    castle = 0;
+    pos->castle = 0;
     hash_key = 0ULL;
     repetition_index = 0;
     memset(repetitions_table, 0ULL, sizeof(repetitions_table));
@@ -55,19 +55,19 @@ void parse_fen(char *fen, s_board *pos) {
     while (*fen != ' ') {
         switch (*fen) {
             case 'K':
-            castle |= wk;
+            pos->castle |= wk;
             break;
 
             case 'Q':
-            castle |= wq;
+            pos->castle |= wq;
             break;
 
             case 'k':
-            castle |= bk;
+            pos->castle |= bk;
             break;
 
             case 'q':
-            castle |= bq;
+            pos->castle |= bq;
             break;
 
             case '-':
