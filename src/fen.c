@@ -13,8 +13,8 @@ void parse_fen(char *fen, s_board *pos) {
     pos->enpassant = no_sq;
     pos->castle = 0;
     pos->hash_key = 0ULL;
-    repetition_index = 0;
-    memset(repetitions_table, 0ULL, sizeof(repetitions_table));
+    pos->repetition_index = 0;
+    memset(pos->repetitions_table, 0ULL, sizeof(pos->repetitions_table));
     pos->ply = 0;
     pos->fifty = 0;
 

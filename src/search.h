@@ -138,8 +138,8 @@ void print_move_scores(moves *move_list, s_board *pos);
 
 static inline int is_repetition(s_board *pos) {
 
-    for (int index = 0; index < repetition_index; index++) {
-        if (repetitions_table[index] == pos->hash_key) {
+    for (int index = 0; index < pos->repetition_index; index++) {
+        if (pos->repetitions_table[index] == pos->hash_key) {
             return 1;
         }
     }
@@ -181,18 +181,18 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
         copy_board(pos, &qcopy);
         pos->ply++;
 
-        repetition_index++;
-        repetitions_table[repetition_index] = pos->hash_key;
+        pos->repetition_index++;
+        pos->repetitions_table[pos->repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], only_captures, pos) == 0) {
             pos->ply--;
-            repetition_index--;
+            pos->repetition_index--;
             continue;
         }
 
         int score = -quiescence(-beta, -alpha, pos);
         pos->ply--;
-        repetition_index--;
+        pos->repetition_index--;
         take_back(pos, &qcopy);
 
         if(stopped == 1) return 0;
@@ -259,8 +259,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
         pos->ply++;
 
-        repetition_index++;
-        repetitions_table[repetition_index] = pos->hash_key;
+        pos->repetition_index++;
+        pos->repetitions_table[pos->repetition_index] = pos->hash_key;
 
         if (pos->enpassant != no_sq) pos->hash_key ^= enpassant_keys[pos->enpassant];
 
@@ -272,7 +272,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos);
 
         pos->ply--;
-        repetition_index--;
+        pos->repetition_index--;
 
         take_back(pos,&nmp);
 
@@ -319,12 +319,12 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         copy_board(pos, &ncopy);
         pos->ply++;
 
-        repetition_index++;
-        repetitions_table[repetition_index] = pos->hash_key;
+        pos->repetition_index++;
+        pos->repetitions_table[pos->repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], all_moves, pos) == 0) {
             pos->ply--;
-            repetition_index--;
+            pos->repetition_index--;
             continue;
         }
 
@@ -367,7 +367,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         }
         
         pos->ply--;
-        repetition_index--;
+        pos->repetition_index--;
         take_back(pos, &ncopy);
 
         if(stopped == 1) return 0;
