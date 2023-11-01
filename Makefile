@@ -7,12 +7,11 @@ TEST_EXE = $(ENGINE).exe
 
 ifdef v
 EXE = bin/Windows/v$(v).exe
+R_FLAGS = -Ofast
 else
 EXE = $(TEST_EXE)
+R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
 endif
-
-DEBUG_FLAGS = -fsanitize=address -fno-omit-frame-pointer
-R_FLAGS = -Ofast
 
 DISTDIR = dist
 SRCDIR = src

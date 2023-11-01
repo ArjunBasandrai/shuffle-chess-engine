@@ -1,6 +1,7 @@
 #pragma once
 
 #include "board_constants.h"
+#include "board.h"
 
 #ifndef U64
 #define U64 unsigned long long
@@ -28,15 +29,15 @@ void clear_transposition_table();
 
 void init_transposition_table(int mb);
 
-static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth) {
-    tt *hash_entry = &transposition_table[hash_key % hash_entries];
-    if (hash_entry->hash_key == hash_key) {
+static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth, s_board *pos) {
+    tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
+    if (hash_entry->hash_key == pos->hash_key) {
         if (hash_entry->depth >= depth) {
 
             int score = hash_entry->score;
             // retrieve score independent from the actual path from root to current position
-            if (score < -mate_score) score += ply;
-            if (score > mate_score) score -= ply;
+            if (score < -mate_score) score += pos->ply;
+            if (score > mate_score) score -= pos->ply;
 
             if (hash_entry->flag == hash_flag_exact) {
                 return score;
@@ -51,14 +52,14 @@ static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth
     return no_hash_entry;
 }
 
-static inline void write_hash_entry(int score, int best_move, int depth, int hash_flag) {
-    tt *hash_entry = &transposition_table[hash_key % hash_entries];
+static inline void write_hash_entry(int score, int best_move, int depth, int hash_flag, s_board *pos) {
+    tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
 
     // store score independent from the actual path from root to current position
-    if (score < -mate_score) score -= ply;
-    if (score > mate_score) score += ply;
+    if (score < -mate_score) score -= pos->ply;
+    if (score > mate_score) score += pos->ply;
 
-    hash_entry->hash_key = hash_key;
+    hash_entry->hash_key = pos->hash_key;
     hash_entry->score = score;
     hash_entry->flag = hash_flag;
     hash_entry->depth = depth;

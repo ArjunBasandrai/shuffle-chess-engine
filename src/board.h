@@ -6,11 +6,21 @@
 
 #include "board_constants.h"
 
-extern U64 bitboards[12];
-extern U64 occupancies[3];
+typedef struct {
+    U64 bitboards[12];
+    U64 occupancies[3];
+    int side;
+    int castle;
+    int enpassant;
 
-extern int side;
-extern int enpassant;
-extern int castle;
+    int ply;
+    int fifty;
 
-void print_board();
+    U64 repetitions_table[1000];
+    int repetition_index;
+    
+    U64 hash_key;
+} s_board;
+
+
+void print_board(s_board *pos);

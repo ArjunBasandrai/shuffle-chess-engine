@@ -1,5 +1,7 @@
 #pragma once
 
+#include "board.h"
+
 #ifndef U64
 #define U64 unsigned long long
 #endif
@@ -11,4 +13,4 @@ extern U64 side_key;
 
 void init_random_keys();
 
-U64 generate_hash_keys();
+U64 generate_hash_keys(s_board *pos);
