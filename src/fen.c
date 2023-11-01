@@ -10,7 +10,7 @@ void parse_fen(char *fen, s_board *pos) {
     memset(bitboards, 0ULL,sizeof(bitboards));
     memset(occupancies,0ULL,sizeof(occupancies));
     pos->side = 0;
-    enpassant = no_sq;
+    pos->enpassant = no_sq;
     pos->castle = 0;
     hash_key = 0ULL;
     repetition_index = 0;
@@ -81,9 +81,9 @@ void parse_fen(char *fen, s_board *pos) {
         int file = fen[0] - 'a';
         int rank = 8 - (fen[1] - '0');
 
-        enpassant = rank * 8 + file; 
+        pos->enpassant = rank * 8 + file; 
     } else {
-        enpassant = no_sq;
+        pos->enpassant = no_sq;
     }
 
     for (int piece = P; piece <= K; piece++) {

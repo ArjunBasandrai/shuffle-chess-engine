@@ -45,8 +45,8 @@ U64 generate_hash_keys(s_board *pos) {
         }
     }
 
-    if (enpassant != no_sq) {
-        final_key ^= enpassant_keys[enpassant];
+    if (pos->enpassant != no_sq) {
+        final_key ^= enpassant_keys[pos->enpassant];
     }
 
     final_key ^= castle_keys[pos->castle];

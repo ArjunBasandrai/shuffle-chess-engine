@@ -8,13 +8,13 @@
 void copy_board(s_board *pos, struct copy_pos *cc) {
     memcpy(cc->bitboards_copy, bitboards, sizeof(bitboards)); 
     memcpy(cc->occupancies_copy, occupancies, sizeof(occupancies)); 
-    cc->side_copy = pos->side, cc->enpassant_copy = enpassant, cc->castle_copy = pos->castle; cc->fifty_copy=fifty;
+    cc->side_copy = pos->side, cc->enpassant_copy = pos->enpassant, cc->castle_copy = pos->castle; cc->fifty_copy=fifty;
     cc->hash_key_copy = hash_key;
 }
 void take_back(s_board *pos, struct copy_pos *cc) {
     memcpy(bitboards, cc->bitboards_copy, sizeof(bitboards)); 
     memcpy(occupancies,cc->occupancies_copy,sizeof(occupancies)); 
-    pos->side = cc->side_copy, enpassant = cc->enpassant_copy, pos->castle = cc->castle_copy; fifty = cc->fifty_copy;
+    pos->side = cc->side_copy, pos->enpassant = cc->enpassant_copy, pos->castle = cc->castle_copy; fifty = cc->fifty_copy;
     hash_key = cc->hash_key_copy;
 }
 

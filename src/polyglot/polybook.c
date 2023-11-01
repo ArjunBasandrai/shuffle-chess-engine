@@ -66,11 +66,11 @@ void clean_poly_book() {
 int has_enpassant_capture(s_board *pos) {
     int sq_with_pawn = 0;
     int target_piece = (pos->side == white) ? P : p;
-    if (enpassant != no_sq) {
+    if (pos->enpassant != no_sq) {
         if (pos->side == white) {
-            sq_with_pawn = enpassant + 8;
+            sq_with_pawn = pos->enpassant + 8;
         } else {
-            sq_with_pawn = enpassant - 8;
+            sq_with_pawn = pos->enpassant - 8;
         }
 
         U64 bitboard = bitboards[target_piece];
@@ -114,7 +114,7 @@ U64 polykey_from_board(s_board *pos) {
     // enpassant keys
     offset = 772;
     if (has_enpassant_capture(pos)) {
-        file = enpassant % 8;
+        file = pos->enpassant % 8;
         final_key ^= polyglot_keys[offset + file];
     }
 
@@ -205,8 +205,8 @@ int polymove_to_inmove(unsigned short move, s_board *pos) {
     }
 
     int enpass=0;
-    if (enpassant) {
-        U64 enpassant_attacks = pawn_attacks[pos->side][source] & (1ULL << enpassant);
+    if (pos->enpassant) {
+        U64 enpassant_attacks = pawn_attacks[pos->side][source] & (1ULL << pos->enpassant);
         if (enpassant_attacks) {
             int target_enpassant = get_lsb_index(enpassant_attacks);
             if (target_enpassant == target) {enpass = 1;}

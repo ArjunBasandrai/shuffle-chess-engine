@@ -262,9 +262,9 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         repetition_index++;
         repetitions_table[repetition_index] = hash_key;
 
-        if (enpassant != no_sq) hash_key ^= enpassant_keys[enpassant];
+        if (pos->enpassant != no_sq) hash_key ^= enpassant_keys[pos->enpassant];
 
-        enpassant = no_sq;
+        pos->enpassant = no_sq;
         pos->side ^= 1;
 
         hash_key ^= side_key;

@@ -39,6 +39,7 @@ void init_all() {
 int main(){
     init_all();
     s_board position;
+    position.enpassant = no_sq;
     int debug = 0;
 
     if (debug) {

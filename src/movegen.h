@@ -105,8 +105,8 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
 
                     // enpassant captures for white
 
-                    if (enpassant != no_sq) {
-                        U64 enpassant_attacks = pawn_attacks[pos->side][source_square] & (1ULL << enpassant);
+                    if (pos->enpassant != no_sq) {
+                        U64 enpassant_attacks = pawn_attacks[pos->side][source_square] & (1ULL << pos->enpassant);
 
                         if (enpassant_attacks) {
                             int target_enpassant = get_lsb_index(enpassant_attacks);
@@ -188,8 +188,8 @@ static inline void generate_moves(moves *move_list, s_board *pos) {
 
                     // enpassant captures for black
 
-                    if (enpassant != no_sq) {
-                        U64 enpassant_attacks = pawn_attacks[pos->side][source_square] & (1ULL << enpassant);
+                    if (pos->enpassant != no_sq) {
+                        U64 enpassant_attacks = pawn_attacks[pos->side][source_square] & (1ULL << pos->enpassant);
 
                         if (enpassant_attacks) {
                             int target_enpassant = get_lsb_index(enpassant_attacks);
@@ -446,21 +446,21 @@ static inline int make_move(int move, int move_flag, s_board *pos) {
         /************IMPORTANT************/
         /****reseting enpassant square****/
 
-        if (enpassant != no_sq) {
-            hash_key ^= enpassant_keys[enpassant];
+        if (pos->enpassant != no_sq) {
+            hash_key ^= enpassant_keys[pos->enpassant];
         }
 
-        enpassant = no_sq;
+        pos->enpassant = no_sq;
 
 
         // handling double pawn pushes
 
         if (double_push) {
             if (pos->side == white) {
-                enpassant = target_square + 8;
+                pos->enpassant = target_square + 8;
                 hash_key ^= enpassant_keys[target_square + 8];
             } else {
-                enpassant = target_square - 8;
+                pos->enpassant = target_square - 8;
                 hash_key ^= enpassant_keys[target_square - 8];
             }
         }

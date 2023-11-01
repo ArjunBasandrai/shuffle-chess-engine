@@ -8,8 +8,6 @@
 #define U64 unsigned long long
 #endif
 
-int enpassant = no_sq;
-
 U64 bitboards[12];
 U64 occupancies[3];
 
@@ -36,7 +34,7 @@ void print_board(s_board *pos) {
     printf("\n   a b c d e f g h\n\n");
 
     printf("   Side: %s\n", (!pos->side) ? "white" : "black");
-    printf("   Enpassant: %s\n",(enpassant != no_sq) ? sqaure_to_coordinate[enpassant] : "NO");
+    printf("   Enpassant: %s\n",(pos->enpassant != no_sq) ? sqaure_to_coordinate[pos->enpassant] : "NO");
     printf("   Castling: %c%c%c%c\n",(pos->castle & wk) ? 'K' : '-',
                                         (pos->castle & wq) ? 'Q' : '-',
                                         (pos->castle & bk) ? 'k' : '-',
