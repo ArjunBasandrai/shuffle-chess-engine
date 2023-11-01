@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 ENGINE = shuffle
 
 C = $(ENGINE).c
@@ -7,11 +7,11 @@ TEST_EXE = $(ENGINE).exe
 
 ifdef v
 EXE = bin/Windows/v$(v).exe
+R_FLAGS = -Ofast
 else
 EXE = $(TEST_EXE)
+R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
 endif
-
-R_FLAGS = -Ofast
 
 DISTDIR = dist
 SRCDIR = src

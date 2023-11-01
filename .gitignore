@@ -1,5 +1,7 @@
-.exe executable
 shuffle.exe
+shuffle.exp
+shuffle.lib
+shuffle.pdb
 
 # engine versions folder
 versions
