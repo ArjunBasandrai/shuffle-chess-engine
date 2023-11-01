@@ -43,6 +43,10 @@ int main(){
     init_all(&position);
     int debug = 0;
 
+    // temp_hash(start_position);
+    // temp_hash(tricky_position);
+    // exit(0);
+
     if (debug) {
         struct copy_pos ccc;
         struct copy_pos cc;
