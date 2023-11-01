@@ -230,7 +230,6 @@ const int mirror_score[128] = {
 const int full_depth_moves = 4;
 const int reduction_limit = 3;
 
-U64 hash_key;
 int ply;
 int fifty;
 

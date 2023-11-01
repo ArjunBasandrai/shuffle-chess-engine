@@ -106,7 +106,7 @@ void parse_position(char *command, s_board *pos) {
             }
 
             repetition_index++;
-            repetitions_table[repetition_index] = hash_key;
+            repetitions_table[repetition_index] = pos->hash_key;
             make_move(move, all_moves, pos);
 
             while (*current_char && *current_char != ' ') current_char++;

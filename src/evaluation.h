@@ -104,8 +104,8 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][BISHOP][square]; 
 
                     // mobility score
-                    score_opening += (count_bits(get_bishop_attacks(square, occupancies[both])) - bishop_unit) * bishop_mobility[opening];
-                    score_endgame += (count_bits(get_bishop_attacks(square, occupancies[both])) - bishop_unit) * bishop_mobility[endgame]; 
+                    score_opening += (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];
+                    score_endgame += (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[endgame]; 
 
                     break;
                 case R: 
@@ -135,8 +135,8 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][QUEEN][square]; 
 
                     // mobility score
-                    score_opening += (count_bits(get_queen_attacks(square, occupancies[both])) - queen_unit) * queen_mobility[opening];
-                    score_endgame += (count_bits(get_queen_attacks(square, occupancies[both])) - queen_unit) * queen_mobility[endgame]; 
+                    score_opening += (count_bits(get_queen_attacks(square, pos->occupancies[both])) - queen_unit) * queen_mobility[opening];
+                    score_endgame += (count_bits(get_queen_attacks(square, pos->occupancies[both])) - queen_unit) * queen_mobility[endgame]; 
 
                     break;
 
@@ -158,8 +158,8 @@ static inline int evaluate(s_board *pos) {
                     }
 
                     // king safety bonus
-                    score_opening += count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
-                    score_endgame += count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
+                    score_opening += count_bits(king_attacks[square] & pos->occupancies[black]) * king_shield_bonus;
+                    score_endgame += count_bits(king_attacks[square] & pos->occupancies[black]) * king_shield_bonus;
 
                     break;
 
@@ -202,8 +202,8 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][BISHOP][mirror_score[square]];
 
                     // mobility score
-                    score_opening -= (count_bits(get_bishop_attacks(square, occupancies[both])) - bishop_unit) * bishop_mobility[opening];
-                    score_endgame -= (count_bits(get_bishop_attacks(square, occupancies[both])) - bishop_unit) * bishop_mobility[endgame];
+                    score_opening -= (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];
+                    score_endgame -= (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[endgame];
 
                     break;
                 case r: 
@@ -233,8 +233,8 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][QUEEN][mirror_score[square]];
 
                     // mobility score
-                    score_opening -= (count_bits(get_queen_attacks(square, occupancies[both])) - queen_unit) * queen_mobility[opening];
-                    score_endgame -= (count_bits(get_queen_attacks(square, occupancies[both])) - queen_unit) * queen_mobility[endgame]; 
+                    score_opening -= (count_bits(get_queen_attacks(square, pos->occupancies[both])) - queen_unit) * queen_mobility[opening];
+                    score_endgame -= (count_bits(get_queen_attacks(square, pos->occupancies[both])) - queen_unit) * queen_mobility[endgame]; 
 
                     break;
 
@@ -256,8 +256,8 @@ static inline int evaluate(s_board *pos) {
                     }
 
                     // king safety bonus
-                    score_opening -= count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
-                    score_endgame -= count_bits(king_attacks[square] & occupancies[black]) * king_shield_bonus;
+                    score_opening -= count_bits(king_attacks[square] & pos->occupancies[black]) * king_shield_bonus;
+                    score_endgame -= count_bits(king_attacks[square] & pos->occupancies[black]) * king_shield_bonus;
                     
                     break;
             }

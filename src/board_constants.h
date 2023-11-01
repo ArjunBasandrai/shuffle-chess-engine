@@ -95,7 +95,6 @@ static int mvv_lva[12][12] = {
 extern const int full_depth_moves;
 extern const int reduction_limit;
 
-extern U64 hash_key;
 extern int ply;
 extern int fifty;
 

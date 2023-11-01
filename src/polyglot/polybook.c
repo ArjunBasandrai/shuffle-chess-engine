@@ -191,7 +191,7 @@ int polymove_to_inmove(unsigned short move, s_board *pos) {
     }
 
     int capture;
-    if (!get_bit(occupancies[both], target)) {
+    if (!get_bit(pos->occupancies[both], target)) {
         capture = 0;
     } else {
         capture = 1;

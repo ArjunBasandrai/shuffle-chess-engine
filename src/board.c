@@ -8,8 +8,6 @@
 #define U64 unsigned long long
 #endif
 
-U64 occupancies[3];
-
 void print_board(s_board *pos) {
     for (int rank = 0; rank < 8; rank++) {
         for (int file = 0; file < 8; file++) {
@@ -38,6 +36,6 @@ void print_board(s_board *pos) {
                                         (pos->castle & wq) ? 'Q' : '-',
                                         (pos->castle & bk) ? 'k' : '-',
                                         (pos->castle & bq) ? 'q' : '-');
-    printf("   Hash Key: %llx\n\n", hash_key);
+    printf("   Hash Key: %llx\n\n", pos->hash_key);
     printf("   Fifty move: %d\n\n", fifty);
 }

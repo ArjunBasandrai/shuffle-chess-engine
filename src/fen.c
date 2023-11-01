@@ -8,11 +8,11 @@
 
 void parse_fen(char *fen, s_board *pos) {
     memset(pos->bitboards, 0ULL,sizeof(pos->bitboards));
-    memset(occupancies,0ULL,sizeof(occupancies));
+    memset(pos->occupancies,0ULL,sizeof(pos->occupancies));
     pos->side = 0;
     pos->enpassant = no_sq;
     pos->castle = 0;
-    hash_key = 0ULL;
+    pos->hash_key = 0ULL;
     repetition_index = 0;
     memset(repetitions_table, 0ULL, sizeof(repetitions_table));
     ply = 0;
@@ -87,15 +87,15 @@ void parse_fen(char *fen, s_board *pos) {
     }
 
     for (int piece = P; piece <= K; piece++) {
-        occupancies[white] |= pos->bitboards[piece];
+        pos->occupancies[white] |= pos->bitboards[piece];
     }
 
     for (int piece = p; piece <= k; piece++) {
-        occupancies[black] |= pos->bitboards[piece];
+        pos->occupancies[black] |= pos->bitboards[piece];
     }
 
-    occupancies[both] |= occupancies[white];
-    occupancies[both] |= occupancies[black];
+    pos->occupancies[both] |= pos->occupancies[white];
+    pos->occupancies[both] |= pos->occupancies[black];
     
-    hash_key = generate_hash_keys(pos);
+    pos->hash_key = generate_hash_keys(pos);
 }

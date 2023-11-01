@@ -7,12 +7,13 @@
 #include "board_constants.h"
 
 typedef struct {
-     U64 bitboards[12];
+    U64 bitboards[12];
+    U64 occupancies[3];
     int side;
     int castle;
     int enpassant;
+    U64 hash_key;
 } s_board;
 
-extern U64 occupancies[3];
 
 void print_board(s_board *pos);

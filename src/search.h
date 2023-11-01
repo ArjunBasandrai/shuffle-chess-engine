@@ -136,10 +136,10 @@ static inline int sort_moves(moves *move_list, int best_move, s_board *pos) {
 }
 void print_move_scores(moves *move_list, s_board *pos);
 
-static inline int is_repetition() {
+static inline int is_repetition(s_board *pos) {
 
     for (int index = 0; index < repetition_index; index++) {
-        if (repetitions_table[index] == hash_key) {
+        if (repetitions_table[index] == pos->hash_key) {
             return 1;
         }
     }
@@ -182,7 +182,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
         ply++;
 
         repetition_index++;
-        repetitions_table[repetition_index] = hash_key;
+        repetitions_table[repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], only_captures, pos) == 0) {
             ply--;
@@ -220,14 +220,14 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     
     int hash_flag = hash_flag_alpha;
 
-    if (ply && is_repetition() || fifty >= 100) {
+    if (ply && is_repetition(pos) || fifty >= 100) {
         return draw_score;
     }
 
     int pv_node = (beta - alpha > 1);
 
     // read hash from transposition table if not root ply and not a pv node
-    if (ply && (score = read_hash_entry(alpha, beta, &best_move, depth)) != no_hash_entry && !pv_node) {
+    if (ply && (score = read_hash_entry(alpha, beta, &best_move, depth, pos)) != no_hash_entry && !pv_node) {
         // if move has already been searched and henc
         return score;
     }
@@ -260,14 +260,14 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         ply++;
 
         repetition_index++;
-        repetitions_table[repetition_index] = hash_key;
+        repetitions_table[repetition_index] = pos->hash_key;
 
-        if (pos->enpassant != no_sq) hash_key ^= enpassant_keys[pos->enpassant];
+        if (pos->enpassant != no_sq) pos->hash_key ^= enpassant_keys[pos->enpassant];
 
         pos->enpassant = no_sq;
         pos->side ^= 1;
 
-        hash_key ^= side_key;
+        pos->hash_key ^= side_key;
 
         score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos);
 
@@ -320,7 +320,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         ply++;
 
         repetition_index++;
-        repetitions_table[repetition_index] = hash_key;
+        repetitions_table[repetition_index] = pos->hash_key;
 
         if (make_move(move_list->moves[count], all_moves, pos) == 0) {
             ply--;
@@ -399,7 +399,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
             // fail-hard beta cutoff
             if (score >= beta) {
 
-                write_hash_entry(beta, best_move, depth, hash_flag_beta);
+                write_hash_entry(beta, best_move, depth, hash_flag_beta,pos);
 
                 // processing killer moves
 
@@ -422,7 +422,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         }
     }
 
-    write_hash_entry(alpha, best_move, depth, hash_flag);
+    write_hash_entry(alpha, best_move, depth, hash_flag,pos);
 
     // node fails high
     return alpha;
