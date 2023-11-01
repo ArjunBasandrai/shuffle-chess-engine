@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <windows.h>
 
 #include "search.h"
@@ -26,82 +27,20 @@ int stoptime = 0;
 int timeset = 0;
 int stopped = 0;
 
-int input_waiting() {
-    static int init = 0, pipe;
-    static HANDLE inh;
-    DWORD dw;
-
-    if (!init) {
-        init = 1;
-        inh = GetStdHandle(STD_INPUT_HANDLE);
-        pipe = !GetConsoleMode(inh, &dw);
-        if (!pipe) {
-            SetConsoleMode(inh, dw & ~(ENABLE_MOUSE_INPUT|ENABLE_WINDOW_INPUT));
-            FlushConsoleInputBuffer(inh);
-        }
-    }
-    
-    if (pipe) {
-        if (!PeekNamedPipe(inh, NULL, 0, NULL, &dw, NULL)) return 1;
-        return dw;
-    }
-    
-    else {
-        GetNumberOfConsoleInputEvents(inh, &dw);
-        return dw <= 1 ? 0 : dw;
-    }
-}
-
-
-void read_input() {
-    // bytes to read holder
-    int bytes;
-    
-    // GUI/user input
-    char input[256] = "", *endc;
-
-    // "listen" to STDIN
-    if (input_waiting()) {
-        // tell engine to stop calculating
-        stopped = 1;
-        
-        do
-        {
-            // read bytes from STDIN
-            bytes=_read(fileno(stdin), input, 256);
-        }
-        
-        // until bytes available
-        while (bytes < 0);
-        
-        // searches for the first occurrence of '\n'
-        endc = strchr(input,'\n');
-        
-        // if found new line set value at pointer to 0
-        if (endc) *endc=0;
-        
-        // if input is available
-        if (strlen(input) > 0) {
-            // match UCI "quit" command
-            if (!strncmp(input, "quit", 4)) {
-                // tell engine to terminate exacution    
-                quit = 1;
-            }
-
-            // // match UCI "stop" command
-            else if (!strncmp(input, "stop", 4)) {
-                // tell engine to terminate exacution
-                quit = 1;
-            }
-        }   
-    }
-}
-
 void print_move_scores(moves *move_list, s_board *pos) {
     for (int count = 0; count < move_list->count; count++) {
         print_move(move_list->moves[count]);
         printf(" : %d\n", score_move(move_list->moves[count], pos));
     }
+}
+
+int search_position_thread(void *data) {
+    s_search_input *search_data = (s_search_input*)data;
+    s_board *pos = malloc(sizeof(s_board));
+    memcpy(pos, search_data->pos, sizeof(s_board));
+    search_position(search_data->depth, pos);
+    free(pos);
+    return 0;
 }
 
 void search_position(int depth, s_board *pos) {

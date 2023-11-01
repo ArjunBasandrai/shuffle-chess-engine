@@ -13,6 +13,26 @@
 #include "gettime.h"
 #include "polyglot/polykeys.h"
 
+#include "threading/tinycthread.h"
+
+thrd_t main_search_thread;
+
+thrd_t launch_search_thread(int depth, s_board *pos) {
+    s_search_input *search_data = malloc(sizeof(s_search_input));
+    search_data->depth = depth;
+    search_data->pos = pos;
+
+    thrd_t th;
+    thrd_create(&th, &search_position_thread, (void*)search_data);
+
+    return th;
+}
+
+void join_search_thread() {
+    stopped = 1;
+    thrd_join(main_search_thread, NULL);
+}
+
 void reset_time_control() {
     quit = 0;
     movestogo = 30;
@@ -190,7 +210,8 @@ void parse_go(char *command, s_board *pos) {
     if(depth == -1)
         depth = 64;
 
-    search_position(depth, pos);
+    // search_position(depth, pos);
+    main_search_thread = launch_search_thread(depth, pos);
 }
 
 void uci_loop(s_board *pos) {
@@ -226,15 +247,16 @@ void uci_loop(s_board *pos) {
             clear_transposition_table();
         }
 
-        else if (strncmp(input, "pp", 2) == 0) { 
-            print_board(pos); 
-        }
-
         else if (strncmp(input, "go", 2) == 0) { 
             parse_go(input, pos); 
         }
 
-        else if (strncmp(input, "quit", 4) == 0) { 
+        else if (strncmp(input, "stop", 4) == 0) {
+            join_search_thread();
+        }
+
+        else if (strncmp(input, "quit", 4) == 0) {
+            join_search_thread();
             break;
         }
 

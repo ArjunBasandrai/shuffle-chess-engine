@@ -30,10 +30,12 @@ extern int stoptime;
 extern int timeset;
 extern int stopped;
 
-int input_waiting();
-void read_input();
-static void communicate();
+typedef struct {
+    int depth;
+    s_board *pos;
+} s_search_input;
 
+static void communicate();
 
 // a bridge function to interact between search and GUI input
 static void communicate() {
@@ -42,11 +44,7 @@ static void communicate() {
 		// tell engine to stop calculating
 		stopped = 1;
 	}
-	
-    // read GUI input
-	read_input();
 }
-
 
 static inline void enable_pv_scoring(moves *move_list, s_board *pos) {
     follow_pv = 0;
@@ -428,4 +426,5 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
     return alpha;
 }
 
-void search_position(int depth, s_board *pos);
+extern int search_position_thread(void *data);
+extern void search_position(int depth, s_board *pos);

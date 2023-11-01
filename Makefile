@@ -35,7 +35,8 @@ SRCS = src/bit_manipulation.c \
 		src/uci.c \
 		src/zobrist.c \
 		src/polyglot/polykeys.c \
-		src/polyglot/polybook.c 
+		src/polyglot/polybook.c \
+		src/threading/tinycthread.c 
 		
 all: __release_compile
 

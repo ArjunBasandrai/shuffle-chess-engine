@@ -22,5 +22,4 @@ typedef struct {
     U64 hash_key;
 } s_board;
 
-
 void print_board(s_board *pos);
