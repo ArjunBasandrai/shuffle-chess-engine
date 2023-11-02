@@ -6,9 +6,8 @@
 #include "board_constants.h"
 #include "gettime.h"
 
-U64 nodes;
 
-void perft_test(int depth, s_board *pos) {
+void perft_test(int depth, s_board *pos, s_info *info) {
 
     printf("\n  Performance test\n\n");
 
@@ -25,11 +24,11 @@ void perft_test(int depth, s_board *pos) {
             continue;
         }
 
-        long cumulative_nodes = nodes;
+        long cumulative_nodes = info->nodes;
 
-        perft_driver(depth-1, pos);
+        perft_driver(depth-1, pos, info);
 
-        long old_nodes = nodes - cumulative_nodes;
+        long old_nodes = info->nodes - cumulative_nodes;
 
         take_back(pos, &ptcopy);
 
@@ -40,6 +39,6 @@ void perft_test(int depth, s_board *pos) {
     } 
 
     printf("\n  Depth: %d\n", depth);
-    printf("  Nodes: %lld\n", nodes);
+    printf("  Nodes: %lld\n", info->nodes);
     printf("  Time: %d ms\n", get_time_ms() - start);
 }

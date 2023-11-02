@@ -7,7 +7,6 @@
 #include "movegen.h"
 #include "evaluation.h"
 #include "transposition_table.h"
-#include "perft.h"
 #include "gettime.h"
 
 #define max_ply 64
@@ -33,6 +32,7 @@ typedef struct {
     int quit;
     int movestogo;
     int depth;
+    U64 nodes;
 } s_info;
 
 typedef struct {
@@ -150,11 +150,11 @@ static inline int is_repetition(s_board *pos) {
 
 static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
 
-    if((nodes & 2047) == 0)
+    if((info->nodes & 2047) == 0)
         // "listen" to the GUI/user input
 		communicate(info);
 
-    nodes++;
+    info->nodes++;
 
     if (pos->ply > max_ply - 1) {
         return evaluate(pos);
@@ -233,7 +233,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
         return score;
     }
 
-    if((nodes & 2047 ) == 0)
+    if((info->nodes & 2047 ) == 0)
         // "listen" to the GUI/user input
 		communicate(info);
     
@@ -245,7 +245,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
     if (pos->ply > max_ply - 1) return evaluate(pos);
 
-    nodes++;
+    info->nodes++;
 
     int in_check = is_square_attacked((pos->side == white) ? get_lsb_index(pos->bitboards[K]) : get_lsb_index(pos->bitboards[k]),pos->side ^ 1, pos);
 

@@ -40,7 +40,7 @@ int search_position_thread(void *data) {
 void search_position(int depth, s_board *pos, s_info *info) {
     int score = 0;
     
-    nodes = 0;
+    info->nodes = 0;
 
     info->stopped = 0;
     
@@ -88,11 +88,11 @@ void search_position(int depth, s_board *pos, s_info *info) {
 
         if (pv_length[0]) {
             if (score > -mate_value && score < -mate_score) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - info->starttime);
+                printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, info->nodes, get_time_ms() - info->starttime);
             } else if (score > mate_score && score < mate_value) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - info->starttime);
+                printf("info score mate %d depth %d nodes %llu time %d pv ", (mate_value - score)/2 + 1, current_depth, info->nodes, get_time_ms() - info->starttime);
             } else {
-                printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, nodes, get_time_ms() - info->starttime);
+                printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, info->nodes, get_time_ms() - info->starttime);
             }
             for (int count = 0; count < pv_length[0]; count++)
             {
