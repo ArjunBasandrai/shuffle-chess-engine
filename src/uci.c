@@ -267,7 +267,7 @@ void uci_loop(s_board *pos, s_info *info) {
             printf("id name %s %s\n",engine_name, version);
             printf("id author Arjun Basandrai\n");
             printf("option name Hash type spin default 64 min 4 max %d\n",max_hash);
-            printf("option name Threads type spin default 1 min 1 max  %d\n",max_threads);
+            printf("option name Threads type spin default 1 min 1 max %d\n",max_threads);
             printf("option name OwnBook type check default true\n");
             printf("uciok\n");
         }

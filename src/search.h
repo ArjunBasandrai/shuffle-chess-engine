@@ -36,7 +36,6 @@ typedef struct {
 
     int thread_id;
     int depth;
-    int best_move;
 } s_search_worker_data;
 
 extern int movetime;

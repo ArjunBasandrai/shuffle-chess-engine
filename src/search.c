@@ -34,7 +34,6 @@ int search_position_thread(void *data) {
 
 void iterative_deepen(s_search_worker_data* worker_data) {
     
-    worker_data->best_move = 0;
     int score = 0;
     
     int alpha = -infinity;
@@ -82,9 +81,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
 
 int start_worker_thread(void *data) {
     s_search_worker_data *worker_data = (s_search_worker_data*)data;
-    printf("Worker thread %d started\n", worker_data->thread_id);
     iterative_deepen(worker_data);
-    printf("Worker thread %d ended\n", worker_data->thread_id);
     if (worker_data->thread_id == 0) {
         printf("bestmove ");
         print_move(worker_data->pos->pv_table[0][0]);
@@ -104,7 +101,6 @@ void setup_worker_data(int thread_id, thrd_t *worker_thread, s_board *pos, s_inf
 }
 
 void create_search_workers(s_board *pos, s_info *info, tt *hash_table) {
-    printf("Creating %d search workers...\n",info->threads);
     for (int i = 0; i < info->threads; i++) {
         setup_worker_data(i, &worker_threads[i], pos, info, hash_table);
     }
