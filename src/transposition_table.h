@@ -31,15 +31,9 @@ extern void temp_hash(char *fen);
 extern void verify_smp_entry(int score, int depth, int flag, int move, U64 hash_key, U64 smp_data, U64 smp_key);
 
 typedef struct {
-    U64 hash_key;
-    int depth;
-    int flag;
-    int score;
-    int best_move;
-    int age;
-
     U64 smp_data;
     U64 smp_key;
+    int age;
 } tt;
 
 extern tt *transposition_table;
@@ -50,31 +44,29 @@ void init_transposition_table(int mb, s_board *pos);
 
 static inline int read_hash_entry(int alpha, int beta, int *best_move, int depth, s_board *pos) {
     tt *hash_entry = &transposition_table[pos->hash_key % hash_entries];
-    if (hash_entry->hash_key == pos->hash_key) {
+    U64 test_key = pos->hash_key ^ hash_entry->smp_data;
+    if (hash_entry->smp_key == test_key) {
+        
+        int smp_depth = get_hash_depth(hash_entry->smp_data);
+        int smp_flag = get_hash_flag(hash_entry->smp_data);
+        int smp_move = get_hash_move(hash_entry->smp_data);
+        int smp_score = get_hash_score(hash_entry->smp_data);
 
-        U64 test_key = pos->hash_key ^ hash_entry->smp_data;
-        if (test_key != hash_entry->smp_key) {
-            printf("Hash key error!\n");
-            exit(0);
-        }
+        if (smp_depth >= depth) {
 
-        verify_smp_entry(hash_entry->score, hash_entry->depth, hash_entry->flag, hash_entry->best_move, pos->hash_key, hash_entry->smp_data, hash_entry->smp_key);
-
-        if (hash_entry->depth >= depth) {
-
-            int score = hash_entry->score;
+            int score = smp_score;
             // retrieve score independent from the actual path from root to current position
             if (score < -mate_score) score += pos->ply;
             if (score > mate_score) score -= pos->ply;
 
-            if (hash_entry->flag == hash_flag_exact) {
+            if (smp_flag == hash_flag_exact) {
                 return score;
-            } else if ((hash_entry->flag == hash_flag_alpha) && (score <= alpha)) {
+            } else if ((smp_flag == hash_flag_alpha) && (score <= alpha)) {
                 return alpha;
-            } else if ((hash_entry->flag == hash_flag_beta) && (score >= beta)) {
+            } else if ((smp_flag == hash_flag_beta) && (score >= beta)) {
                 return beta;
             } 
-            *best_move = hash_entry->best_move;
+            *best_move = smp_move;
         }
     }
     return no_hash_entry;
@@ -85,10 +77,10 @@ static inline void write_hash_entry(int score, int best_move, int depth, int has
 
     int replace = 0;
 
-    if (hash_entry->hash_key != 0ULL) {
+    if (hash_entry->smp_key != 0ULL) {
         replace = 1;
     } else {
-        if (hash_entry->age < pos->age && hash_entry->depth < depth) {
+        if (hash_entry->age < pos->age && get_hash_depth(hash_entry->smp_data) < depth) {
             replace = 1;
         } 
     }
@@ -102,14 +94,7 @@ static inline void write_hash_entry(int score, int best_move, int depth, int has
     U64 smp_data = fold_data(score, depth, hash_flag, best_move);
     U64 smp_key = pos->hash_key ^ smp_data;
 
-    hash_entry->hash_key = pos->hash_key;
-    hash_entry->score = score;
-    hash_entry->flag = hash_flag;
-    hash_entry->depth = depth;
-    hash_entry->best_move = best_move;
     hash_entry->age = pos->age;
     hash_entry->smp_data = smp_data;
     hash_entry->smp_key = smp_key;
-
-    verify_smp_entry(score, depth, hash_flag, best_move, pos->hash_key, smp_data, smp_key);
 }

@@ -39,31 +39,26 @@ void temp_hash(char *fen) {
 }
 
 void verify_smp_entry(int score, int depth, int flag, int move, U64 hash_key, U64 smp_data, U64 smp_key) {
-    U64 data = fold_data(score, depth, flag, move);
-    U64 key = hash_key ^ data;
+    // U64 data = fold_data(score, depth, flag, move);
+    // U64 key = hash_key ^ data;
 
-    if (data != smp_data) {printf("Data Error!\n"); exit(0);}
-    if (key != smp_key) {printf("Key Error!\n"); exit(0);}
+    // if (data != smp_data) {printf("Data Error!\n"); exit(0);}
+    // if (key != smp_key) {printf("Key Error!\n"); exit(0);}
 
-    int move2 = get_hash_move(data);
-    int flag2 = get_hash_flag(data);
-    int depth2 = get_hash_depth(data);
-    int score2 = get_hash_score(data);
+    // int move2 = get_hash_move(data);
+    // int flag2 = get_hash_flag(data);
+    // int depth2 = get_hash_depth(data);
+    // int score2 = get_hash_score(data);
 
-    if (move != move2) {printf("Move Error!\n"); exit(0);}
-    if (flag != flag2) {printf("Flag Error!\n"); exit(0);}
-    if (depth != depth2) {printf("Depth Error!\n"); exit(0);}
-    if (score != score2) {printf("Score Error!\n"); exit(0);}
-    
+    // if (move != move2) {printf("Move Error!\n"); exit(0);}
+    // if (flag != flag2) {printf("Flag Error!\n"); exit(0);}
+    // if (depth != depth2) {printf("Depth Error!\n"); exit(0);}
+    // if (score != score2) {printf("Score Error!\n"); exit(0);}
 }
 
 void clear_transposition_table(s_board *pos) {
     tt *hash_entry;
     for (hash_entry = transposition_table; hash_entry < transposition_table + hash_entries; hash_entry++) {
-        hash_entry->hash_key = 0;
-        hash_entry->depth = 0;
-        hash_entry->flag = 0;
-        hash_entry->score = 0;
         hash_entry->age = 0;
         hash_entry->smp_data = 0ULL;
         hash_entry->smp_key = 0ULL;
@@ -72,6 +67,7 @@ void clear_transposition_table(s_board *pos) {
 }
 
 void init_transposition_table(int mb, s_board *pos) {
+
     int hash_size = 0x100000 * mb;  
     hash_entries = hash_size / sizeof(tt);
 
