@@ -80,7 +80,9 @@ static inline void write_hash_entry(int score, int best_move, int depth, int has
     if (hash_entry->smp_key != 0ULL) {
         replace = 1;
     } else {
-        if (hash_entry->age < pos->age && get_hash_depth(hash_entry->smp_data) < depth) {
+        if (hash_entry->age < pos->age) {
+            replace = 1;
+        } else if (get_hash_depth(hash_entry->smp_data) <= depth) {
             replace = 1;
         } 
     }
