@@ -20,29 +20,32 @@ extern int pv_table[max_ply][max_ply];
 
 extern int follow_pv, score_pv;
 
-extern int quit;
-extern int movestogo;
+// extern int 
 extern int movetime;
 extern int m_time;
 extern int inc;
-extern int starttime;
-extern int stoptime;
-extern int timeset;
-extern int stopped;
+
+typedef struct {
+    int starttime;
+    int stoptime;
+    int timeset;
+    int stopped;
+    int quit;
+    int movestogo;
+    int depth;
+} s_info;
 
 typedef struct {
     int depth;
     s_board *pos;
+    s_info *info;
 } s_search_input;
 
-static void communicate();
-
-// a bridge function to interact between search and GUI input
-static void communicate() {
+static void communicate(s_info *info) {
 	// if time is up break here
-    if (timeset == 1 && get_time_ms() > stoptime) {
+    if (info->timeset == 1 && get_time_ms() > info->stoptime) {
 		// tell engine to stop calculating
-		stopped = 1;
+		info->stopped = 1;
 	}
 }
 
@@ -145,11 +148,11 @@ static inline int is_repetition(s_board *pos) {
     return 0;
 }
 
-static inline int quiescence(int alpha, int beta, s_board *pos) {
+static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
 
     if((nodes & 2047) == 0)
         // "listen" to the GUI/user input
-		communicate();
+		communicate(info);
 
     nodes++;
 
@@ -188,12 +191,12 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
             continue;
         }
 
-        int score = -quiescence(-beta, -alpha, pos);
+        int score = -quiescence(-beta, -alpha, pos, info);
         pos->ply--;
         pos->repetition_index--;
         take_back(pos, &qcopy);
 
-        if(stopped == 1) return 0;
+        if(info->stopped == 1) return 0;
 
         // found a better move
         if (score > alpha) {
@@ -210,7 +213,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos) {
     return alpha;
 }
 
-static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
+static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *info) {
 
     int score;
 
@@ -232,12 +235,12 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
     if((nodes & 2047 ) == 0)
         // "listen" to the GUI/user input
-		communicate();
+		communicate(info);
     
     pv_length[pos->ply] = pos->ply;
 
     if (depth == 0) {
-        return quiescence(alpha, beta, pos);
+        return quiescence(alpha, beta, pos, info);
     }
 
     if (pos->ply > max_ply - 1) return evaluate(pos);
@@ -267,7 +270,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
         pos->hash_key ^= side_key;
 
-        score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos);
+        score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos, info);
 
         pos->ply--;
         pos->repetition_index--;
@@ -286,7 +289,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 
         if (score < beta) {
             if (depth == 1) {
-                new_score = quiescence(alpha, beta, pos);
+                new_score = quiescence(alpha, beta, pos, info);
 
                 return (new_score > score) ? new_score : score;
             }
@@ -294,7 +297,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
             score += 175;
 
             if (score < beta && depth <= 2) {
-                new_score = quiescence(alpha, beta, pos);
+                new_score = quiescence(alpha, beta, pos, info);
 
                 if (new_score < beta) {
                     return (new_score > score) ? new_score : score;
@@ -329,7 +332,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         legal_moves++;
 
         if (moves_searched == 0) {
-            score = -negamax(-beta, -alpha, depth - 1, pos);
+            score = -negamax(-beta, -alpha, depth - 1, pos, info);
         }
         
         else {
@@ -340,7 +343,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
                 get_move_capture(move_list->moves[count]) == 0 &&
                 get_move_promoted(move_list->moves[count]) == 0
                 ) {
-                score = -negamax(-alpha - 1, -alpha, depth - 2, pos);
+                score = -negamax(-alpha - 1, -alpha, depth - 2, pos, info);
                 }
             
             else {score = alpha + 1;}
@@ -351,7 +354,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
                 the rest of the moves are searched with the goal of proving that they are all bad.
                 It's possible to do this a bit faster than a search that worries that one
                 of the remaining moves might be good. */
-                score = -negamax(-alpha - 1, -alpha, depth-1, pos);
+                score = -negamax(-alpha - 1, -alpha, depth-1, pos, info);
             
                 /* If the algorithm finds out that it was wrong, and that one of the
                 subsequent moves was better than the first PV move, it has to search again,
@@ -359,7 +362,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
                 but generally not often enough to counteract the savings gained from doing the
                 "bad move proof" search referred to earlier. */
                 if((score > alpha) && (score < beta)) {
-                    score = -negamax(-beta, -alpha, depth-1, pos);
+                    score = -negamax(-beta, -alpha, depth-1, pos, info);
                 }
             }
         }
@@ -368,7 +371,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
         pos->repetition_index--;
         take_back(pos, &ncopy);
 
-        if(stopped == 1) return 0;
+        if(info->stopped == 1) return 0;
 
         moves_searched++;
 
@@ -427,4 +430,4 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos) {
 }
 
 extern int search_position_thread(void *data);
-extern void search_position(int depth, s_board *pos);
+extern void search_position(int depth, s_board *pos, s_info *info);

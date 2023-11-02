@@ -37,9 +37,10 @@ void init_all(s_board *pos) {
 
 // Main driver
 int main(){
-    s_board position;
-    position.enpassant = no_sq;
-    position.age = 0;
+    s_board position[1];
+    s_info info[1];
+    position->enpassant = no_sq;
+    position->age = 0;
     init_all(&position);
     int debug = 0;
 
@@ -48,21 +49,21 @@ int main(){
     // exit(0);
 
     if (debug) {
-        struct copy_pos ccc;
-        struct copy_pos cc;
-        parse_fen(start_position, &position);
-        print_board(&position);
-        copy_board(&position, &ccc);
-        make_move(encode_move(e2,e3,P,0,0,0,0,0), all_moves, &position);
-        copy_board(&position, &cc);
-        make_move(encode_move(e7,e6,p,0,0,0,0,0), all_moves, &position);
-        take_back(&position, &cc);
-        make_move(encode_move(d2,d3,P,0,0,0,0,0), all_moves, &position);
-        print_bitboard(ccc.bitboards_copy[P]);
-        take_back(&position, &ccc);
-        print_board(&position);
+        // struct copy_pos ccc;
+        // struct copy_pos cc;
+        // parse_fen(start_position, position);
+        // print_board(position);
+        // copy_board(&position, &ccc);
+        // make_move(encode_move(e2,e3,P,0,0,0,0,0), all_moves, &position);
+        // copy_board(&position, &cc);
+        // make_move(encode_move(e7,e6,p,0,0,0,0,0), all_moves, &position);
+        // take_back(&position, &cc);
+        // make_move(encode_move(d2,d3,P,0,0,0,0,0), all_moves, &position);
+        // print_bitboard(ccc.bitboards_copy[P]);
+        // take_back(&position, &ccc);
+        // print_board(&position);
     } else {
-        uci_loop(&position);
+        uci_loop(position, info);
         free(transposition_table);
         clean_poly_book();
     }

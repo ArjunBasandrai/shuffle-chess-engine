@@ -17,15 +17,9 @@ int pv_table[max_ply][max_ply];
 
 int follow_pv, score_pv;
 
-int quit = 0;
-int movestogo = 30;
 int movetime = -1;
 int m_time = -1;
 int inc = 0;
-int starttime = 0;
-int stoptime = 0;
-int timeset = 0;
-int stopped = 0;
 
 void print_move_scores(moves *move_list, s_board *pos) {
     for (int count = 0; count < move_list->count; count++) {
@@ -38,17 +32,17 @@ int search_position_thread(void *data) {
     s_search_input *search_data = (s_search_input*)data;
     s_board *pos = malloc(sizeof(s_board));
     memcpy(pos, search_data->pos, sizeof(s_board));
-    search_position(search_data->depth, pos);
+    search_position(search_data->depth, pos, search_data->info);
     free(pos);
     return 0;
 }
 
-void search_position(int depth, s_board *pos) {
+void search_position(int depth, s_board *pos, s_info *info) {
     int score = 0;
     
     nodes = 0;
 
-    stopped = 0;
+    info->stopped = 0;
     
     follow_pv = 0;
     score_pv = 0;
@@ -78,10 +72,10 @@ void search_position(int depth, s_board *pos) {
     // iterative deepening
     for (int current_depth = 1; current_depth <= depth; current_depth++)
     {
-        if (stopped == 1) break;
+        if (info->stopped == 1) break;
         follow_pv = 1;
         
-        score = negamax(alpha, beta, current_depth, pos);
+        score = negamax(alpha, beta, current_depth, pos, info);
 
         if ((score <= alpha) || (score >= beta)) {
             alpha = -infinity;
@@ -94,11 +88,11 @@ void search_position(int depth, s_board *pos) {
 
         if (pv_length[0]) {
             if (score > -mate_value && score < -mate_score) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - starttime);
+                printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, nodes, get_time_ms() - info->starttime);
             } else if (score > mate_score && score < mate_value) {
-                printf("info score mate %d depth %d nodes %llu time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - starttime);
+                printf("info score mate %d depth %d nodes %llu time %d pv ", (mate_value - score)/2 + 1, current_depth, nodes, get_time_ms() - info->starttime);
             } else {
-                printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, nodes, get_time_ms() - starttime);
+                printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, nodes, get_time_ms() - info->starttime);
             }
             for (int count = 0; count < pv_length[0]; count++)
             {

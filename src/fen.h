@@ -15,5 +15,4 @@
 #define WAC_ "8/7p/5k2/5p2/p1p2P2/Pr1pPK2/1P1R3P/8 b - -"
 #define LCT_1 "r3kb1r/3n1pp1/p6p/2pPp2q/Pp2N3/3B2PP/1PQ2P2/R3K2R w KQkq -"
 
-
 void parse_fen(char *fen, s_board *pos);

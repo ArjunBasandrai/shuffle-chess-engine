@@ -17,10 +17,11 @@
 
 thrd_t main_search_thread;
 
-thrd_t launch_search_thread(int depth, s_board *pos) {
+thrd_t launch_search_thread(int depth, s_board *pos, s_info *info) {
     s_search_input *search_data = malloc(sizeof(s_search_input));
     search_data->depth = depth;
     search_data->pos = pos;
+    search_data->info = info;
 
     thrd_t th;
     thrd_create(&th, &search_position_thread, (void*)search_data);
@@ -28,21 +29,21 @@ thrd_t launch_search_thread(int depth, s_board *pos) {
     return th;
 }
 
-void join_search_thread() {
-    stopped = 1;
+void join_search_thread(s_info *info) {
+    info->stopped = 1;
     thrd_join(main_search_thread, NULL);
 }
 
-void reset_time_control() {
-    quit = 0;
-    movestogo = 30;
+void reset_time_control(s_info *info) {
+    info->quit = 0;
+    info->movestogo = 30;
     movetime = -1;
     m_time = -1;
     inc = 0;
-    starttime = 0;
-    stoptime = 0;
-    timeset = 0;
-    stopped = 0;
+    info->starttime = 0;
+    info->stoptime = 0;
+    info->timeset = 0;
+    info->stopped = 0;
 }
 
 int parse_move(char *move_string, s_board *pos) {
@@ -135,11 +136,12 @@ void parse_position(char *command, s_board *pos) {
     }
 }
 
-void parse_go(char *command, s_board *pos) {
-    reset_time_control();
+void parse_go(char *command, s_board *pos, s_info *info) {
+    reset_time_control(info);
 
-    // init parameters
-    int depth = -1;
+    int depth = -1, movestogo = 30,movetime = -1;
+	int time = -1, inc = 0;
+    info->timeset = 0;
 
     // init argument
     char *argument = NULL;
@@ -184,17 +186,17 @@ void parse_go(char *command, s_board *pos) {
     if (movetime != -1) {
         m_time = movetime;
 
-        movestogo = 1;
+        info->movestogo = 1;
     }
 
-    starttime = get_time_ms();
+    info->starttime = get_time_ms();
 
-    depth = depth;
+    info->depth = depth;
 
     // if time control is available
     if(m_time != -1)
     {
-        timeset = 1;
+        info->timeset = 1;
 
         m_time /= movestogo;
         if (m_time > 1500) m_time -= 50;
@@ -203,18 +205,18 @@ void parse_go(char *command, s_board *pos) {
             inc -= 50;
             if (inc < 0) inc = 1;
         }
-        stoptime = starttime + m_time + inc;
+        info->stoptime = info->starttime + m_time + inc;
         // if (m_time < 1500 && inc && depth == 64) stoptime = starttime + inc - 50;
     }
 
-    if(depth == -1)
-        depth = 64;
+    if(info->depth == -1)
+        info->depth = 64;
 
     // search_position(depth, pos);
-    main_search_thread = launch_search_thread(depth, pos);
+    main_search_thread = launch_search_thread(info->depth, pos, info);
 }
 
-void uci_loop(s_board *pos) {
+void uci_loop(s_board *pos, s_info *info) {
     int max_hash = 1024;
     int mb = 64;
     
@@ -248,15 +250,15 @@ void uci_loop(s_board *pos) {
         }
 
         else if (strncmp(input, "go", 2) == 0) { 
-            parse_go(input, pos); 
+            parse_go(input, pos, info); 
         }
 
         else if (strncmp(input, "stop", 4) == 0) {
-            join_search_thread();
+            join_search_thread(info);
         }
 
         else if (strncmp(input, "quit", 4) == 0) {
-            join_search_thread();
+            join_search_thread(info);
             break;
         }
 
