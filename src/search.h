@@ -9,9 +9,7 @@
 #include "transposition_table.h"
 #include "gettime.h"
 
-extern int movetime;
-extern int m_time;
-extern int inc;
+#define max_threads 32
 
 typedef struct {
     int starttime;
@@ -22,6 +20,7 @@ typedef struct {
     int movestogo;
     int depth;
     U64 nodes;
+    int threads;
 } s_info;
 
 typedef struct {
@@ -29,6 +28,20 @@ typedef struct {
     s_board *pos;
     s_info *info;
 } s_search_input;
+
+typedef struct {
+    s_board *pos;
+    s_info *info;
+    tt *hash_table;
+
+    int thread_id;
+    int depth;
+    int best_move;
+} s_search_worker_data;
+
+extern int movetime;
+extern int m_time;
+extern int inc;
 
 static void communicate(s_info *info) {
 	// if time is up break here

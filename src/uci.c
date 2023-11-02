@@ -219,6 +219,7 @@ void parse_go(char *command, s_board *pos, s_info *info) {
 void uci_loop(s_board *pos, s_info *info) {
     int max_hash = 1024;
     int mb = 64;
+    int threads = 1;
     
     setbuf(stdout, NULL);
 
@@ -277,6 +278,14 @@ void uci_loop(s_board *pos, s_info *info) {
             if (mb > max_hash) mb = max_hash;
 
             init_transposition_table(mb, pos);
+        }
+
+        else if (!strncmp(input, "setoption name Threads value ", 29)) {
+            sscanf(input,"%*s %*s %*s %*s %d",&threads);
+
+            if (threads < 1) threads = 1;
+            if (threads > max_threads) threads = max_threads;
+            info->threads = threads;
         }
 
         else if (!strncmp(input, "setoption name Book value ", 26)) {

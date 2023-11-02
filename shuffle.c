@@ -41,6 +41,8 @@ int main(){
     s_info info[1];
     position->enpassant = no_sq;
     position->age = 0;
+    info->quit = 0;
+    info->threads = 1;
     init_all(&position);
     int debug = 0;
 
