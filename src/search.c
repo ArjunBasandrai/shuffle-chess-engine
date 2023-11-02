@@ -9,13 +9,6 @@
 #include "zobrist.h"
 #include "polyglot/polykeys.h"
 
-int killer_moves[2][max_ply];
-int history_moves[12][max_ply];
-
-int pv_length[max_ply];
-int pv_table[max_ply][max_ply];
-
-int follow_pv, score_pv;
 
 int movetime = -1;
 int m_time = -1;
@@ -44,13 +37,13 @@ void search_position(int depth, s_board *pos, s_info *info) {
 
     info->stopped = 0;
     
-    follow_pv = 0;
-    score_pv = 0;
+    pos->follow_pv = 0;
+    pos->score_pv = 0;
     
-    memset(killer_moves, 0, sizeof(killer_moves));
-    memset(history_moves, 0, sizeof(history_moves));
-    memset(pv_table, 0, sizeof(pv_table));
-    memset(pv_length, 0, sizeof(pv_length));
+    memset(pos->killer_moves, 0, sizeof(pos->killer_moves));
+    memset(pos->history_moves, 0, sizeof(pos->history_moves));
+    memset(pos->pv_table, 0, sizeof(pos->pv_table));
+    memset(pos->pv_length, 0, sizeof(pos->pv_length));
     
     int alpha = -infinity;
     int beta = infinity;
@@ -73,7 +66,7 @@ void search_position(int depth, s_board *pos, s_info *info) {
     for (int current_depth = 1; current_depth <= depth; current_depth++)
     {
         if (info->stopped == 1) break;
-        follow_pv = 1;
+        pos->follow_pv = 1;
         
         score = negamax(alpha, beta, current_depth, pos, info);
 
@@ -86,7 +79,7 @@ void search_position(int depth, s_board *pos, s_info *info) {
         alpha = score - 50;
         beta = score + 50;
 
-        if (pv_length[0]) {
+        if (pos->pv_length[0]) {
             if (score > -mate_value && score < -mate_score) {
                 printf("info score mate %d depth %d nodes %llu time %d pv ", -(score + mate_value)/2 - 1, current_depth, info->nodes, get_time_ms() - info->starttime);
             } else if (score > mate_score && score < mate_value) {
@@ -94,9 +87,9 @@ void search_position(int depth, s_board *pos, s_info *info) {
             } else {
                 printf("info score cp %d depth %d nodes %llu time %d pv ", score, current_depth, info->nodes, get_time_ms() - info->starttime);
             }
-            for (int count = 0; count < pv_length[0]; count++)
+            for (int count = 0; count < pos->pv_length[0]; count++)
             {
-                print_move(pv_table[0][count]);
+                print_move(pos->pv_table[0][count]);
                 // printf(" ");
             }
             printf("\n");
@@ -105,6 +98,6 @@ void search_position(int depth, s_board *pos, s_info *info) {
     }
 
     printf("bestmove ");
-    print_move(pv_table[0][0]);
+    print_move(pos->pv_table[0][0]);
     printf("\n");
 }

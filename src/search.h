@@ -9,17 +9,6 @@
 #include "transposition_table.h"
 #include "gettime.h"
 
-#define max_ply 64
-
-extern int killer_moves[2][max_ply];
-extern int history_moves[12][max_ply];
-
-extern int pv_length[max_ply];
-extern int pv_table[max_ply][max_ply];
-
-extern int follow_pv, score_pv;
-
-// extern int 
 extern int movetime;
 extern int m_time;
 extern int inc;
@@ -50,20 +39,20 @@ static void communicate(s_info *info) {
 }
 
 static inline void enable_pv_scoring(moves *move_list, s_board *pos) {
-    follow_pv = 0;
+    pos->follow_pv = 0;
     for (int count = 0; count < move_list->count; count++) {
-        if (pv_table[0][pos->ply] == move_list->moves[count]) {
-            score_pv = 1;
-            follow_pv = 1;
+        if (pos->pv_table[0][pos->ply] == move_list->moves[count]) {
+            pos->score_pv = 1;
+            pos->follow_pv = 1;
         }
     }
 }
 
 static inline int score_move(int move, s_board *pos) {
 
-    if (score_pv) {
-        if (pv_table[0][pos->ply] == move) {
-            score_pv = 0;
+    if (pos->score_pv) {
+        if (pos->pv_table[0][pos->ply] == move) {
+            pos->score_pv = 0;
             
             return 20000;
         }
@@ -91,20 +80,20 @@ static inline int score_move(int move, s_board *pos) {
     else {
         // score 1st killer move
 
-        if (killer_moves[0][pos->ply] == move) {
+        if (pos->killer_moves[0][pos->ply] == move) {
             return 9000;
         }
 
         // score 2nd killer move
 
-        else if (killer_moves[1][pos->ply] == move) {
+        else if (pos->killer_moves[1][pos->ply] == move) {
             return 8000;
         }
 
         // score history move
 
         else {
-            return history_moves[get_move_piece(move)][get_move_target(move)];
+            return pos->history_moves[get_move_piece(move)][get_move_target(move)];
         }
     }
 
@@ -237,7 +226,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
         // "listen" to the GUI/user input
 		communicate(info);
     
-    pv_length[pos->ply] = pos->ply;
+    pos->pv_length[pos->ply] = pos->ply;
 
     if (depth == 0) {
         return quiescence(alpha, beta, pos, info);
@@ -309,7 +298,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
     moves move_list[1];
     generate_moves(move_list, pos);
 
-    if (follow_pv) enable_pv_scoring(move_list, pos);
+    if (pos->follow_pv) enable_pv_scoring(move_list, pos);
 
     sort_moves(move_list, best_move, pos);
 
@@ -384,18 +373,18 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
             // store history moves
             if (get_move_capture(move_list->moves[count]) == 0) {
-                history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
+                pos->history_moves[get_move_piece(move_list->moves[count])][get_move_target(move_list->moves[count])] += depth;
             }
 
             alpha = score;
 
-            pv_table[pos->ply][pos->ply] = move_list->moves[count];
+            pos->pv_table[pos->ply][pos->ply] = move_list->moves[count];
 
-            for (int next_ply = pos->ply + 1; next_ply < pv_length[pos->ply + 1]; next_ply++) {
-                pv_table[pos->ply][next_ply] = pv_table[pos->ply + 1][next_ply];
+            for (int next_ply = pos->ply + 1; next_ply < pos->pv_length[pos->ply + 1]; next_ply++) {
+                pos->pv_table[pos->ply][next_ply] = pos->pv_table[pos->ply + 1][next_ply];
             }
 
-            pv_length[pos->ply] = pv_length[pos->ply + 1];
+            pos->pv_length[pos->ply] = pos->pv_length[pos->ply + 1];
 
             // fail-hard beta cutoff
             if (score >= beta) {
@@ -405,8 +394,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
                 // processing killer moves
 
                 if (get_move_capture(move_list->moves[count]) == 0) {
-                    killer_moves[1][pos->ply] = killer_moves[0][pos->ply];
-                    killer_moves[0][pos->ply] = move_list->moves[count];
+                    pos->killer_moves[1][pos->ply] = pos->killer_moves[0][pos->ply];
+                    pos->killer_moves[0][pos->ply] = move_list->moves[count];
                 }
 
                 // node fails high

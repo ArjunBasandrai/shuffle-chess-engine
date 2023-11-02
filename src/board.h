@@ -4,6 +4,8 @@
 #define U64 unsigned long long
 #endif
 
+#define max_ply 64
+
 #include "board_constants.h"
 
 typedef struct {
@@ -19,8 +21,16 @@ typedef struct {
     U64 repetitions_table[1000];
     int repetition_index;
 
+    int pv_length[max_ply];
+    int pv_table[max_ply][max_ply];
+
+    int killer_moves[2][max_ply];
+    int history_moves[max_ply][max_ply];
+
+    int follow_pv;
+    int score_pv;
+
     int age;
-    
     U64 hash_key;
 } s_board;
 
