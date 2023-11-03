@@ -29,6 +29,11 @@ const int connected_pawn_bonus[2][64] = {
     0,  0,  0,  0,  0,  0,  0,  0}
 };
 
+const int backward_pawn_penalty[2][8] = {
+  { 8, 12, 14, 14, 14, 14, 12, 8 },
+  { 2,  3,  3,  3,  3,  3,  3, 2 }
+};
+
 const int semi_open_file_score = 10;
 const int open_file_score = 15;
 

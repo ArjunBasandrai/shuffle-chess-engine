@@ -6,6 +6,7 @@
 #include "bit_manipulation.h"
 #include "pre_calculated_tables.h"
 #include "board.h"
+#include "masks.h"
 
 #ifndef U64
 #define U64 unsigned long long
@@ -15,6 +16,7 @@ extern const int double_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int passed_pawn_bonus[8];
 extern const int connected_pawn_bonus[2][64];
+extern const int backward_pawn_penalty[2][8];
 
 extern const int semi_open_file_score;
 extern const int open_file_score;
@@ -56,12 +58,13 @@ static inline int evaluate(s_board *pos) {
     U64 bitboard;
     int piece, square;
 
-    int double_pawns = 0;
-
     for (int bb_piece = P; bb_piece <= k; bb_piece++) {
         bitboard = pos->bitboards[bb_piece];
 
         while (bitboard) {
+            int doubled = 0, isolated = 0, passed = 0, connected = 0;
+            U64 backward = 0;
+
             piece = bb_piece;
             square = get_lsb_index(bitboard);
 
@@ -75,28 +78,42 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][PAWN][square];
 
                     // double pawn penalty
-                    double_pawns = count_bits(pos->bitboards[P] & file_mask[square]);
-                    if (double_pawns > 1) {
-                        score_opening += (double_pawns - 1) * double_pawn_penalty[opening];
-                        score_endgame += (double_pawns - 1) * double_pawn_penalty[endgame];
+                    doubled = count_bits(pos->bitboards[P] & file_mask[square]);
+                    if (doubled > 1) {
+                        score_opening += (doubled - 1) * double_pawn_penalty[opening];
+                        score_endgame += (doubled - 1) * double_pawn_penalty[endgame];
                     }
                     
                     // isolated pawn penalty
-                    if ((pos->bitboards[P] & isolated_mask[square]) == 0) {
+                    isolated = !(pos->bitboards[P] & isolated_mask[square]);
+                    if (isolated) {
                         score_opening -= isolated_pawn_penalty[opening][get_file(square)];
                         score_endgame -= isolated_pawn_penalty[endgame][get_file(square)];
                     }
 
                     // passed pawn bonus
-                    if ((white_passed_mask[square] & pos->bitboards[p]) == 0) {
+                    passed = !(white_passed_mask[square] & pos->bitboards[p]);
+                    if (passed) {
                         score_opening += passed_pawn_bonus[get_rank[square]];
                         score_endgame += passed_pawn_bonus[get_rank[square]];
                     }
 
                     // connected pawn bonus
-                    if (pos->bitboards[P] & connected_mask[white][square]) {
+                    connected = (pos->bitboards[P] & connected_mask[white][square]);
+                    if (connected) {
                         score_opening += connected_pawn_bonus[opening][square];
                         score_endgame += connected_pawn_bonus[endgame][square];
+                    }
+
+                    // backward pawn penalty
+                    backward = 0ULL;
+                    if (!(isolated | passed | connected | 
+                        (pos->bitboards[p] & mask_pawn_attacks(square, white)))) {
+                        backward = (pos->bitboards[p] & mask_pawn_attacks(square - 8, white));
+                    }
+                    if (backward) {
+                        score_opening -= backward_pawn_penalty[opening][get_file(square)];
+                        score_endgame -= backward_pawn_penalty[endgame][get_file(square)];
                     }
 
                     break;
@@ -178,28 +195,42 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
 
                     // double pawn penalty
-                    double_pawns = count_bits(pos->bitboards[p] & file_mask[square]);
-                    if (double_pawns > 1) {
-                        score_opening -= (double_pawns - 1) * double_pawn_penalty[opening];
-                        score_endgame -= (double_pawns - 1) * double_pawn_penalty[endgame];
+                    doubled = count_bits(pos->bitboards[p] & file_mask[square]);
+                    if (doubled > 1) {
+                        score_opening -= (doubled - 1) * double_pawn_penalty[opening];
+                        score_endgame -= (doubled - 1) * double_pawn_penalty[endgame];
                     }
 
                     // isolated pawn penalty
-                    if ((pos->bitboards[p] & isolated_mask[square]) == 0) {
+                    isolated = !(pos->bitboards[p] & isolated_mask[square]);
+                    if (isolated) {
                         score_opening += isolated_pawn_penalty[opening][get_file(mirror_score[square])];
                         score_endgame += isolated_pawn_penalty[endgame][get_file(mirror_score[square])];
                     }
                     
                     // passed pawn bonus
-                    if ((black_passed_mask[square] & pos->bitboards[P]) == 0) {
+                    passed = !(black_passed_mask[square] & pos->bitboards[P]);
+                    if (passed) {
                         score_opening -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                         score_endgame -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                     }
 
                     // connected pawn bonus
-                    if (pos->bitboards[p] & connected_mask[black][square]) {
+                    connected = (pos->bitboards[p] & connected_mask[black][square]);
+                    if (connected) {
                         score_opening -= connected_pawn_bonus[opening][mirror_score[square]];
                         score_endgame -= connected_pawn_bonus[endgame][mirror_score[square]];
+                    }
+
+                    // backward pawn penalty
+                    backward = 0ULL;
+                    if (!(isolated | passed | connected | 
+                        (pos->bitboards[P] & mask_pawn_attacks(square, black)))) {
+                        backward = (pos->bitboards[P] & mask_pawn_attacks(square + 8, black));
+                    }
+                    if (backward) {
+                        score_opening += backward_pawn_penalty[opening][get_file(square)];
+                        score_endgame += backward_pawn_penalty[endgame][get_file(square)];
                     }
 
                     break;

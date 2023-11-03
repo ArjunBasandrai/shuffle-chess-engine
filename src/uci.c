@@ -85,7 +85,7 @@ int parse_move(char *move_string, s_board *pos) {
 
     return 0;
 
-    // printf("source square: %s\n",sqaure_to_coordinate[target_square]);
+    // printf("source square: %s\n",square_to_coordinate[target_square]);
 }
 
 
