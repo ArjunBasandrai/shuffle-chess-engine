@@ -10,7 +10,7 @@
 #endif
 
 extern const int double_pawn_penalty[2];
-extern const int isolated_pawn_penalty[2];
+extern const int isolated_pawn_penalty[2][8];
 extern const int passed_pawn_bonus[8];
 
 extern const int semi_open_file_score;
@@ -80,8 +80,8 @@ static inline int evaluate(s_board *pos) {
                     
                     // isolated pawn penalty
                     if ((pos->bitboards[P] & isolated_mask[square]) == 0) {
-                        score_opening += isolated_pawn_penalty[opening];
-                        score_endgame += isolated_pawn_penalty[endgame];
+                        score_opening -= isolated_pawn_penalty[opening][get_file(square)];
+                        score_endgame -= isolated_pawn_penalty[endgame][get_file(square)];
                     }
 
                     // passed pawn bonus
@@ -177,8 +177,8 @@ static inline int evaluate(s_board *pos) {
 
                     // isolated pawn penalty
                     if ((pos->bitboards[p] & isolated_mask[square]) == 0) {
-                        score_opening -= isolated_pawn_penalty[opening];
-                        score_endgame -= isolated_pawn_penalty[endgame];
+                        score_opening += isolated_pawn_penalty[opening][get_file(mirror_score[square])];
+                        score_endgame += isolated_pawn_penalty[endgame][get_file(mirror_score[square])];
                     }
                     
                     // passed pawn bonus
