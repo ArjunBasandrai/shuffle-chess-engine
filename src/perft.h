@@ -3,16 +3,15 @@
 #include "moves_list.h"
 #include "movegen.h"
 #include "board.h"
+#include "search.h"
 
 #ifndef U64
 #define U64 unsigned long long
 #endif
 
-extern U64 nodes;
-
-static inline void perft_driver(int depth, s_board *pos) {
+static inline void perft_driver(int depth, s_board *pos, s_info *info) {
     if (depth == 0) {
-        nodes++;
+        info->nodes++;
         return;
     }
 
@@ -27,7 +26,7 @@ static inline void perft_driver(int depth, s_board *pos) {
             continue;
         }
 
-        perft_driver(depth-1, pos);
+        perft_driver(depth-1, pos, info);
 
         take_back(pos,&pdcopy);
 
@@ -44,4 +43,4 @@ static inline void perft_driver(int depth, s_board *pos) {
     }
 }
 
-void perft_test(int depth, s_board *pos);
+void perft_test(int depth, s_board *pos, s_info *info);

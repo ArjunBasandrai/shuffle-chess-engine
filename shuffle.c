@@ -24,40 +24,48 @@
 #define U64 unsigned long long
 #endif
 
-void init_all() {
+void init_all(s_board *pos) {
     init_leaper_attacks();
     init_sliders_attacks(bishop);
     init_sliders_attacks(rook);
     // init_magic_numbers();
     init_random_keys();
     init_evaluation_masks();
-    init_transposition_table(64);
+    init_transposition_table(64, pos);
     init_poly_book();
 }
 
 // Main driver
 int main(){
-    init_all();
-    s_board position;
-    position.enpassant = no_sq;
+    s_board position[1];
+    s_info info[1];
+    position->enpassant = no_sq;
+    position->age = 0;
+    info->quit = 0;
+    info->threads = 1;
+    init_all(&position);
     int debug = 0;
 
+    // temp_hash(start_position);
+    // temp_hash(tricky_position);
+    // exit(0);
+
     if (debug) {
-        struct copy_pos ccc;
-        struct copy_pos cc;
-        parse_fen(start_position, &position);
-        print_board(&position);
-        copy_board(&position, &ccc);
-        make_move(encode_move(e2,e3,P,0,0,0,0,0), all_moves, &position);
-        copy_board(&position, &cc);
-        make_move(encode_move(e7,e6,p,0,0,0,0,0), all_moves, &position);
-        take_back(&position, &cc);
-        make_move(encode_move(d2,d3,P,0,0,0,0,0), all_moves, &position);
-        print_bitboard(ccc.bitboards_copy[P]);
-        take_back(&position, &ccc);
-        print_board(&position);
+        // struct copy_pos ccc;
+        // struct copy_pos cc;
+        // parse_fen(start_position, position);
+        // print_board(position);
+        // copy_board(&position, &ccc);
+        // make_move(encode_move(e2,e3,P,0,0,0,0,0), all_moves, &position);
+        // copy_board(&position, &cc);
+        // make_move(encode_move(e7,e6,p,0,0,0,0,0), all_moves, &position);
+        // take_back(&position, &cc);
+        // make_move(encode_move(d2,d3,P,0,0,0,0,0), all_moves, &position);
+        // print_bitboard(ccc.bitboards_copy[P]);
+        // take_back(&position, &ccc);
+        // print_board(&position);
     } else {
-        uci_loop(&position);
+        uci_loop(position, info);
         free(transposition_table);
         clean_poly_book();
     }
