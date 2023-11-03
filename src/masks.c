@@ -192,6 +192,24 @@ void init_evaluation_masks() {
         }
     }
 
+    // init connected masks
+
+    for (int rank = 1; rank < 7; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            if (file > 0 && file < 7) {
+                connected_mask[white][square] |= ((file_mask[square - 1] | file_mask[square + 1]) & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= ((file_mask[square - 1] | file_mask[square + 1]) & (rank_mask[square] | rank_mask[square - 8]));
+            } else if (file == 0) {
+                connected_mask[white][square] |= (file_mask[square + 1] & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= (file_mask[square + 1] & (rank_mask[square] | rank_mask[square - 8]));
+            } else if (file == 7) {
+                connected_mask[white][square] |= (file_mask[square - 1] & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= (file_mask[square - 1] & (rank_mask[square] | rank_mask[square - 8]));
+            }
+        }
+    }
+
     // init white passed pawn masks
 
     for (int rank = 0; rank < 8; rank++) {

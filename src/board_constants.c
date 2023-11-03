@@ -235,6 +235,7 @@ U64 rank_mask[64];
 U64 isolated_mask[64];
 U64 white_passed_mask[64];
 U64 black_passed_mask[64];
+U64 connected_mask[2][64];
 
 int get_rank[64] = {
     7, 7, 7, 7, 7, 7, 7, 7,

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #include "board_constants.h"
 #include "bit_manipulation.h"
 #include "pre_calculated_tables.h"
@@ -12,6 +14,7 @@
 extern const int double_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int passed_pawn_bonus[8];
+extern const int connected_pawn_bonus[2][64];
 
 extern const int semi_open_file_score;
 extern const int open_file_score;
@@ -88,6 +91,12 @@ static inline int evaluate(s_board *pos) {
                     if ((white_passed_mask[square] & pos->bitboards[p]) == 0) {
                         score_opening += passed_pawn_bonus[get_rank[square]];
                         score_endgame += passed_pawn_bonus[get_rank[square]];
+                    }
+
+                    // connected pawn bonus
+                    if (pos->bitboards[P] & connected_mask[white][square]) {
+                        score_opening += connected_pawn_bonus[opening][square];
+                        score_endgame += connected_pawn_bonus[endgame][square];
                     }
 
                     break;
@@ -185,6 +194,12 @@ static inline int evaluate(s_board *pos) {
                     if ((black_passed_mask[square] & pos->bitboards[P]) == 0) {
                         score_opening -= passed_pawn_bonus[get_rank[mirror_score[square]]];
                         score_endgame -= passed_pawn_bonus[get_rank[mirror_score[square]]];
+                    }
+
+                    // connected pawn bonus
+                    if (pos->bitboards[p] & connected_mask[black][square]) {
+                        score_opening -= connected_pawn_bonus[opening][mirror_score[square]];
+                        score_endgame -= connected_pawn_bonus[endgame][mirror_score[square]];
                     }
 
                     break;
