@@ -48,10 +48,10 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("8/8/8/1p1p4/2p5/2P5/1P6/8 w - - 0 1", position);
+        parse_fen("P7/8/8/1p1p4/2p5/2P5/1P6/8 w - - 0 1", position);
         print_board(position);
-        // print_bitboard(mask_pawn_attacks(a2 - 8, white) & position->bitboards[p]);
-        evaluate(position);
+        printf("MSB at:%s\n",square_to_coordinate[get_msb_index(position->bitboards[p])]);
+        printf("LSB at:%s\n",square_to_coordinate[get_lsb_index(position->bitboards[p])]);
     } else {
         uci_loop(position, info);
         free(transposition_table);

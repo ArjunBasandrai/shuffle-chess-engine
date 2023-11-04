@@ -30,4 +30,16 @@ static inline int get_lsb_index(U64 bitboard){
     }
 }
 
+static inline int get_msb_index(U64 bitboard) {
+    if (bitboard) {
+        int msb_index = 0;
+        while (bitboard >>= 1) {
+            msb_index++;
+        }
+        return msb_index;
+    } else {
+        return -1;
+    }
+}
+
 void print_bitboard(U64 bitboard);

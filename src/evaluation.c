@@ -34,7 +34,15 @@ const int backward_pawn_penalty[2][8] = {
   { 2,  3,  3,  3,  3,  3,  3, 2 }
 };
 
-const int semi_open_file_score = 10;
-const int open_file_score = 15;
+const int rook_semi_open_file_score = 10;
+const int rook_open_file_score[2] = {5, 20};
+
+const int king_open_file_penalty[8] = {6, 5, 4, 4, 4, 4, 5, 6};
+const int king_semi_open_file_penalty[8] = {4, 4, 3, 3, 3, 3, 4, 4};
+
+const int pawn_defects[2][8] = {
+  { 0, 0, 3, 2, 1, 0, 0, 0 },
+  { 0, 0, 0, 1, 2, 3, 0, 0 }
+};
 
 const int king_shield_bonus = 5;

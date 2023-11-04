@@ -18,8 +18,12 @@ extern const int passed_pawn_bonus[8];
 extern const int connected_pawn_bonus[2][64];
 extern const int backward_pawn_penalty[2][8];
 
-extern const int semi_open_file_score;
-extern const int open_file_score;
+extern const int rook_semi_open_file_score;
+extern const int rook_open_file_score[2];
+
+extern const int king_open_file_penalty[8];
+extern const int king_semi_open_file_penalty[8];
+extern const int pawn_defects[2][8];
 
 static const int bishop_unit = 4;
 static const int queen_unit = 9;
@@ -139,19 +143,19 @@ static inline int evaluate(s_board *pos) {
                     score_opening += positional_score[opening][ROOK][square];
                     score_endgame += positional_score[endgame][ROOK][square]; 
 
-                    // semi open file bonus
-                    if ((pos->bitboards[P] & file_mask[square]) == 0) {
+                    if (!(pos->bitboards[P] & file_mask[square])) {
+                        // open file bonus
+                        if (!((pos->bitboards[p]) & file_mask[square])) {
+                            score_opening += rook_open_file_score[opening];
+                            score_endgame += rook_open_file_score[endgame];
+                        } 
                         // add semi open file bonus
-                        score_opening += semi_open_file_score;
-                        score_endgame += semi_open_file_score;
+                        else {
+                            score_opening += rook_semi_open_file_score;
+                            score_endgame += rook_semi_open_file_score;
+                        }
                     }
 
-                    // open file bonus
-                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
-                        // add semi open file bonus
-                        score_opening += open_file_score;
-                        score_endgame += open_file_score;
-                    }
 
                     break;
                 
@@ -171,17 +175,30 @@ static inline int evaluate(s_board *pos) {
                     score_opening += positional_score[opening][KING][square];
                     score_endgame += positional_score[endgame][KING][square]; 
 
-                    // semi open file penalty
-                    if ((pos->bitboards[p] & file_mask[square]) == 0) {
-                        score_opening += semi_open_file_score;
-                        score_endgame += semi_open_file_score;
+                    if (!((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square])) {
+                        score_opening -= king_open_file_penalty[get_file(square)];
+                        score_endgame -= king_open_file_penalty[get_file(square)];
+                    } else {
+                        if (!(pos->bitboards[p] & file_mask[square])) {
+                            score_opening -= king_semi_open_file_penalty[get_file(square)] / 2;
+                            score_endgame -= king_semi_open_file_penalty[get_file(square)] / 2;
+                        } else {
+                            score_opening -= pawn_defects[white][get_rank[get_msb_index(pos->bitboards[p] & get_file(square))]];
+                            score_endgame -= pawn_defects[white][get_rank[get_msb_index(pos->bitboards[p] & get_file(square))]];
+                        }
                     }
 
-                    // open file penalty
-                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
-                        score_opening += open_file_score;
-                        score_endgame += open_file_score;
-                    }
+                    // // semi open file penalty
+                    // if ((pos->bitboards[p] & file_mask[square]) == 0) {
+                    //     // score_opening += semi_open_file_score;
+                    //     // score_endgame += semi_open_file_score;
+                    // }
+
+                    // // open file penalty
+                    // if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
+                    //     // score_opening += open_file_score;
+                    //     // score_endgame += open_file_score;
+                    // }
 
                     // king safety bonus
                     score_opening += count_bits(king_attacks[square] & pos->occupancies[black]) * king_shield_bonus;
@@ -257,18 +274,17 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][ROOK][mirror_score[square]];
                     score_endgame -= positional_score[endgame][ROOK][mirror_score[square]];
 
-                    // semi open file bonus
-                    if ((pos->bitboards[p] & file_mask[square]) == 0) {
+                    if (!(pos->bitboards[p] & file_mask[square])) {
+                        // open file bonus
+                        if (!((pos->bitboards[P]) & file_mask[square])) {
+                            score_opening -= rook_open_file_score[opening];
+                            score_endgame -= rook_open_file_score[endgame];
+                        } 
                         // add semi open file bonus
-                        score_opening -= semi_open_file_score;
-                        score_endgame -= semi_open_file_score;
-                    }
-
-                    // open file bonus
-                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {    
-                        // add semi open file bonus
-                        score_opening -= open_file_score;
-                        score_endgame -= open_file_score;
+                        else {
+                            score_opening -= rook_semi_open_file_score;
+                            score_endgame -= rook_semi_open_file_score;
+                        }
                     }
 
                     break;
@@ -289,16 +305,17 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][KING][mirror_score[square]];
                     score_endgame -= positional_score[endgame][KING][mirror_score[square]];
 
-                    // semi open file penalty
-                    if ((pos->bitboards[P] & file_mask[square]) == 0) {
-                        score_opening -= semi_open_file_score;
-                        score_endgame -= semi_open_file_score;
-                    }
-
-                    // open file penalty
-                    if (((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square]) == 0) {
-                        score_opening -= open_file_score;
-                        score_endgame -= open_file_score;
+                    if (!((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square])) {
+                        score_opening += king_open_file_penalty[get_file(square)];
+                        score_endgame += king_open_file_penalty[get_file(square)];
+                    } else {
+                        if (!(pos->bitboards[P] & file_mask[square])) {
+                            score_opening += king_semi_open_file_penalty[get_file(square)] / 2;
+                            score_endgame += king_semi_open_file_penalty[get_file(square)] / 2;
+                        } else {
+                            score_opening += pawn_defects[black][get_rank[get_lsb_index(pos->bitboards[P] & get_file(square))]];
+                            score_endgame += pawn_defects[black][get_rank[get_lsb_index(pos->bitboards[P] & get_file(square))]];
+                        }
                     }
 
                     // king safety bonus
