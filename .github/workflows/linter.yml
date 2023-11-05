@@ -54,7 +54,7 @@ jobs:
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_YAML: false
-          DEFAULT_BRANCH: master
+          DEFAULT_BRANCH: main
           VALIDATE_DOCKERFILE: false
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_PYTHON_FLAKE8: false
