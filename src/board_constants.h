@@ -101,6 +101,8 @@ extern U64 isolated_mask[64];
 extern U64 white_passed_mask[64];
 extern U64 black_passed_mask[64];
 extern U64 connected_mask[2][64];
+extern U64 file_ahead_mask[64];
+extern U64 file_behind_mask[64];
 
 extern int get_rank[64];
 

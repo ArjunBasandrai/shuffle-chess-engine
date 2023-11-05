@@ -11,6 +11,13 @@
 
 #define get_file(square) (square & 7)
 
+#define abs(x) ((x) < 0 ? -(x) : (x))
+#define file_distance(a, b) abs(get_file(a) - get_file(b))
+#define rank_distance(a, b) abs((a >> 3) - (b >> 3))
+
+#define distance(a, b) (max(file_distance(a, b), rank_distance(a, b)))
+#define most_advanced(file, side) ((side) ? get_msb_index(file) : get_lsb_index(file))
+
 static inline int count_bits(U64 bitboard){
     int count = 0;
 
