@@ -48,10 +48,9 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("P7/8/8/1p1p4/2p5/2P5/1P6/8 w - - 0 1", position);
+        parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
         print_board(position);
-        printf("MSB at:%s\n",square_to_coordinate[get_msb_index(position->bitboards[p])]);
-        printf("LSB at:%s\n",square_to_coordinate[get_lsb_index(position->bitboards[p])]);
+        evaluate(position);
     } else {
         uci_loop(position, info);
         free(transposition_table);

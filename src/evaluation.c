@@ -5,9 +5,6 @@ const int isolated_pawn_penalty[2][8] = {
   {14, 21, 23, 23, 23, 23, 21, 14},
   { 5,  7,  8,  8,  8,  8,  7,  5}
 };
-const int passed_pawn_bonus[8] = { 
-    0, 5, 15, 25, 50, 75, 125, 175,
-};
 
 const int connected_pawn_bonus[2][64] = {
   { 0,  0,  0,  0,  0,  0,  0,  0,
@@ -33,6 +30,13 @@ const int backward_pawn_penalty[2][8] = {
   { 8, 12, 14, 14, 14, 14, 12, 8 },
   { 2,  3,  3,  3,  3,  3,  3, 2 }
 };
+
+const int passed_pawn[8] = { 0, 0, 0, 2, 6, 12, 21, 0 };
+const int passed_pawn_base[2] = { 4, 8 };
+const int passed_pawn_free_advance = 8;
+const int passed_pawn_partial_advance = 5;
+const int passed_pawn_defended = 7;
+const int passed_pawn_partial_defended = 4;
 
 const int rook_semi_open_file_score = 10;
 const int rook_open_file_score[2] = {5, 20};

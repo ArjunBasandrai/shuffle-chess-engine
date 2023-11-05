@@ -5,6 +5,7 @@
 #include "board_constants.h"
 #include "bit_manipulation.h"
 #include "pre_calculated_tables.h"
+#include "movegen.h"
 #include "board.h"
 #include "masks.h"
 
@@ -14,9 +15,15 @@
 
 extern const int double_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
-extern const int passed_pawn_bonus[8];
 extern const int connected_pawn_bonus[2][64];
 extern const int backward_pawn_penalty[2][8];
+
+extern const int passed_pawn[8];
+extern const int passed_pawn_base[2];
+extern const int passed_pawn_free_advance;
+extern const int passed_pawn_partial_advance;
+extern const int passed_pawn_defended;
+extern const int passed_pawn_partial_defended;
 
 extern const int rook_semi_open_file_score;
 extern const int rook_open_file_score[2];
@@ -57,6 +64,8 @@ static inline int evaluate(s_board *pos) {
     else game_phase = middlegame;
 
     int score = 0, score_opening = 0, score_endgame = 0;
+    int w_passer[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    int b_passer[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     U64 bitboard;
     int piece, square;
@@ -65,7 +74,7 @@ static inline int evaluate(s_board *pos) {
         bitboard = pos->bitboards[bb_piece];
 
         while (bitboard) {
-            int doubled = 0, isolated = 0, passed = 0, connected = 0;
+            int doubled = 0, isolated = 0, passed = 0, connected = 0, most_adv = 0;
             U64 backward = 0;
 
             piece = bb_piece;
@@ -95,10 +104,89 @@ static inline int evaluate(s_board *pos) {
                     }
 
                     // passed pawn bonus
+                    most_adv = most_advanced(pos->bitboards[P] & file_mask[square], white);
                     passed = !(white_passed_mask[square] & pos->bitboards[p]);
-                    if (passed) {
-                        score_opening += passed_pawn_bonus[get_rank[square]];
-                        score_endgame += passed_pawn_bonus[get_rank[square]];
+                    if (most_adv && !(w_passer[get_file(square)]) && passed) {
+                        int score = 0, next_sq = 0, bonus = 0, rank = get_rank[square];
+                        U64 behind, fwd, bwd, attacked, defended;
+                        U64 fsliders = pos->bitboards[Q] | pos->bitboards[R];
+                        U64 esliders = pos->bitboards[q] | pos->bitboards[r];
+
+                        w_passer[get_file(square)] = 1;
+                        score = passed_pawn[rank];
+
+                        if (score) {
+                            score_opening += score * passed_pawn_base[opening];
+                            score_endgame += score * passed_pawn_base[endgame];
+                            next_sq = square - 8;
+                            /*
+                                For endgames, adding a bonus based on how close 
+                                white king is to this pawn and a penalty based on how     
+                                close the black king is. 
+                            */
+                            int fk = get_lsb_index(pos->bitboards[K]), ek = get_lsb_index(pos->bitboards[k]);
+                            score_endgame += distance(ek, next_sq) * 2 * score - distance(fk, next_sq) * score;
+                            /*
+                                Keeping the white king ahead of the pawn, so it can escort it to promotion square
+                            */
+                            if (rank < 6) {
+                                score_endgame -= distance(fk, next_sq - 8) * score / 2;
+                            }
+
+                            if (!(pos->occupancies[both] & (1ULL << next_sq))) {
+                                bonus = 0;
+                                if (pos->bitboards[P] & mask_pawn_attacks(next_sq, black)) {
+                                    bonus = passed_pawn_free_advance;
+                                } else {
+                                    attacked = 0ULL;
+                                    fwd = file_ahead_mask[square];
+                                    bwd = file_behind_mask[square];
+                                    if ((behind = bwd & esliders) && 
+                                        (rook_attacks_on_the_fly(square, pos->occupancies[both]) & file_mask[square] & behind)) {
+                                        attacked = fwd;
+                                    } else {
+                                        U64 bb = fwd;
+                                        while (bb) {
+                                            int sq = get_lsb_index(bb);
+                                            if (is_square_attacked(sq, black, pos)) {
+                                                attacked |= (1ULL << sq);
+                                            }
+                                            pop_bit(bb, sq);
+                                        }
+                                    }
+
+                                    if (!attacked) {
+                                        bonus = passed_pawn_free_advance;
+                                    } else if (!(attacked & (1ULL << next_sq))) {
+                                        bonus = passed_pawn_partial_advance;
+                                    }
+
+                                    defended = 0ULL;
+                                    if ((behind = bwd & fsliders) && 
+                                        (rook_attacks_on_the_fly(square, pos->occupancies[both]) & file_mask[square] & behind)) {
+                                        defended = fwd;
+                                    } else {
+                                        U64 bb = fwd;
+                                        while (bb) {
+                                            int sq = get_lsb_index(bb);
+                                            if (is_square_attacked(sq, white, pos)) {
+                                                defended |= (1ULL << sq);
+                                            }
+                                            pop_bit(bb, sq);
+                                        }
+                                    }
+                                    if (defended == fwd) {
+                                        bonus += passed_pawn_defended;
+                                    } else if (defended & (1ULL << next_sq)) {
+                                        bonus += passed_pawn_partial_defended;
+                                    }
+                                }
+                                score_opening += bonus * score;
+                                score_endgame += bonus * score;
+                            }
+                        } else {
+                            score_endgame += 4;
+                        }
                     }
 
                     // connected pawn bonus
@@ -212,10 +300,89 @@ static inline int evaluate(s_board *pos) {
                     }
                     
                     // passed pawn bonus
+                    most_adv = most_advanced(pos->bitboards[p] & file_mask[square], black);
                     passed = !(black_passed_mask[square] & pos->bitboards[P]);
-                    if (passed) {
-                        score_opening -= passed_pawn_bonus[get_rank[mirror_score[square]]];
-                        score_endgame -= passed_pawn_bonus[get_rank[mirror_score[square]]];
+                    if (most_adv && !(b_passer[get_file(square)]) && passed) {
+                        int score = 0, next_sq = 0, bonus = 0, rank = get_rank[mirror_score[square]];
+                        U64 behind, fwd, bwd, attacked, defended;
+                        U64 fsliders = pos->bitboards[q] | pos->bitboards[r];
+                        U64 esliders = pos->bitboards[Q] | pos->bitboards[R];
+
+                        b_passer[get_file(square)] = 1;
+                        score = passed_pawn[rank];
+
+                        if (score) {
+                            score_opening -= score * passed_pawn_base[opening];
+                            score_endgame -= score * passed_pawn_base[endgame];
+                            next_sq = square + 8;
+                            /*
+                                For endgames, adding a bonus based on how close 
+                                white king is to this pawn and a penalty based on how     
+                                close the black king is. 
+                            */
+                            int fk = get_lsb_index(pos->bitboards[k]), ek = get_lsb_index(pos->bitboards[K]);
+                            score_endgame -= distance(ek, next_sq) * 2 * score - distance(fk, next_sq) * score;
+                            /*
+                                Keeping the white king ahead of the pawn, so it can escort it to promotion square
+                            */
+                            if (rank < 6) {
+                                score_endgame += distance(fk, next_sq + 8) * score / 2;
+                            }
+
+                            if (!(pos->occupancies[both] & (1ULL << next_sq))) {
+                                bonus = 0;
+                                if (pos->bitboards[p] & mask_pawn_attacks(next_sq, white)) {
+                                    bonus = passed_pawn_free_advance;
+                                } else {
+                                    attacked = 0ULL;
+                                    fwd = file_behind_mask[square];
+                                    bwd = file_ahead_mask[square];
+                                    if ((behind = bwd & esliders) && 
+                                        (rook_attacks_on_the_fly(square, pos->occupancies[both]) & file_mask[square] & behind)) {
+                                        attacked = fwd;
+                                    } else {
+                                        U64 bb = fwd;
+                                        while (bb) {
+                                            int sq = get_lsb_index(bb);
+                                            if (is_square_attacked(sq, white, pos)) {
+                                                attacked |= (1ULL << sq);
+                                            }
+                                            pop_bit(bb, sq);
+                                        }
+                                    }
+
+                                    if (!attacked) {
+                                        bonus = passed_pawn_free_advance;
+                                    } else if (!(attacked & (1ULL << next_sq))) {
+                                        bonus = passed_pawn_partial_advance;
+                                    }
+
+                                    defended = 0ULL;
+                                    if ((behind = bwd & fsliders) && 
+                                        (rook_attacks_on_the_fly(square, pos->occupancies[both]) & file_mask[square] & behind)) {
+                                        defended = fwd;
+                                    } else {
+                                        U64 bb = fwd;
+                                        while (bb) {
+                                            int sq = get_lsb_index(bb);
+                                            if (is_square_attacked(sq, black, pos)) {
+                                                defended |= (1ULL << sq);
+                                            }
+                                            pop_bit(bb, sq);
+                                        }
+                                    }
+                                    if (defended == fwd) {
+                                        bonus += passed_pawn_defended;
+                                    } else if (defended & (1ULL << next_sq)) {
+                                        bonus += passed_pawn_partial_defended;
+                                    }
+                                }
+                                score_opening -= bonus * score;
+                                score_endgame -= bonus * score;
+                            }
+                        } else {
+                            score_endgame -= 4;
+                        }
                     }
 
                     // connected pawn bonus
