@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include <assert.h>
 
 #include "board_constants.h"
 #include "bit_manipulation.h"
@@ -28,6 +29,7 @@ extern void take_back(s_board *pos, struct copy_pos *cc);
 
 static inline int is_square_attacked(int square, int side, s_board *pos) {
 
+    assert(square > -1 && square < 64);
     if ((side == white) && (pawn_attacks[black][square] & pos->bitboards[P])) return 1;
 
     if ((side == black) && (pawn_attacks[white][square] & pos->bitboards[p])) return 1;

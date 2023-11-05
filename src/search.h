@@ -215,7 +215,6 @@ static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
 }
 
 static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *info) {
-
     int score;
 
     int best_move = 0;
@@ -249,7 +248,6 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
     info->nodes++;
 
     int in_check = is_square_attacked((pos->side == white) ? get_lsb_index(pos->bitboards[K]) : get_lsb_index(pos->bitboards[k]),pos->side ^ 1, pos);
-
     if (in_check) depth++;
 
     int legal_moves=0;
