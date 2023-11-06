@@ -1,6 +1,7 @@
 #include "evaluation.h"
 
 const int double_pawn_penalty[2] = {-5, -10};
+const int unsupported_pawn_penalty[2] = {8, 4};
 const int isolated_pawn_penalty[2][8] = {
   {14, 21, 23, 23, 23, 23, 21, 14},
   { 5,  7,  8,  8,  8,  8,  7,  5}

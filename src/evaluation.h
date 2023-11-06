@@ -14,6 +14,7 @@
 #endif
 
 extern const int double_pawn_penalty[2];
+extern const int unsupported_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int connected_pawn_bonus[2][64];
 extern const int backward_pawn_penalty[2][8];
@@ -74,7 +75,7 @@ static inline int evaluate(s_board *pos) {
         bitboard = pos->bitboards[bb_piece];
 
         while (bitboard) {
-            int doubled = 0, isolated = 0, passed = 0, connected = 0, most_adv = 0;
+            int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0;
             U64 backward = 0;
 
             piece = bb_piece;
@@ -89,6 +90,7 @@ static inline int evaluate(s_board *pos) {
                     score_opening += positional_score[opening][PAWN][square];
                     score_endgame += positional_score[endgame][PAWN][square];
 
+                    
                     // double pawn penalty
                     doubled = count_bits(pos->bitboards[P] & file_mask[square]);
                     if (doubled > 1) {
@@ -101,6 +103,13 @@ static inline int evaluate(s_board *pos) {
                     if (isolated) {
                         score_opening -= isolated_pawn_penalty[opening][get_file(square)];
                         score_endgame -= isolated_pawn_penalty[endgame][get_file(square)];
+                    }
+
+                    // unsupported pawn penalty
+                    unsupported = !(pos->bitboards[P] & mask_pawn_attacks(square, black));
+                    if (unsupported && !isolated) {
+                        score_opening -= unsupported_pawn_penalty[opening];
+                        score_endgame -= unsupported_pawn_penalty[endgame];
                     }
 
                     // passed pawn bonus
@@ -297,6 +306,13 @@ static inline int evaluate(s_board *pos) {
                     if (isolated) {
                         score_opening += isolated_pawn_penalty[opening][get_file(mirror_score[square])];
                         score_endgame += isolated_pawn_penalty[endgame][get_file(mirror_score[square])];
+                    }
+
+                    // unsupported pawn penalty
+                    unsupported = !(pos->bitboards[p] & mask_pawn_attacks(square, white));
+                    if (unsupported && !isolated) {
+                        score_opening += unsupported_pawn_penalty[opening];
+                        score_endgame += unsupported_pawn_penalty[endgame];
                     }
                     
                     // passed pawn bonus
