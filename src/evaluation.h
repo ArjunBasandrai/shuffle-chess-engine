@@ -25,6 +25,7 @@ extern const int passed_pawn_free_advance;
 extern const int passed_pawn_partial_advance;
 extern const int passed_pawn_defended;
 extern const int passed_pawn_partial_defended;
+extern const int candidate_passed_pawn_bonus[2][8];
 
 extern const int rook_semi_open_file_score;
 extern const int rook_open_file_score[2];
@@ -77,6 +78,7 @@ static inline int evaluate(s_board *pos) {
         while (bitboard) {
             int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0;
             U64 backward = 0;
+            U64 attackers, defenders;
 
             piece = bb_piece;
             square = get_lsb_index(bitboard);
@@ -213,6 +215,17 @@ static inline int evaluate(s_board *pos) {
                     if (backward) {
                         score_opening -= backward_pawn_penalty[opening][get_file(square)];
                         score_endgame -= backward_pawn_penalty[endgame][get_file(square)];
+                    }
+
+                    // Candidate Passed Pawn Bonus
+                    if (!(passed | backward | isolated) &&
+                        !(pos->bitboards[p] & file_ahead_mask[square])) {
+                        defenders = pos->bitboards[P] & mask_pawn_attacks(square - 8, white);
+                        attackers = pos->bitboards[p] & mask_pawn_attacks(square, black);
+                        if (count_bits(defenders) >= count_bits(attackers)) {
+                            score_opening += candidate_passed_pawn_bonus[opening][get_rank[square]];
+                            score_endgame += candidate_passed_pawn_bonus[endgame][get_rank[square]];
+                        }
                     }
 
                     break;
@@ -415,6 +428,17 @@ static inline int evaluate(s_board *pos) {
                     if (backward) {
                         score_opening += backward_pawn_penalty[opening][get_file(square)];
                         score_endgame += backward_pawn_penalty[endgame][get_file(square)];
+                    }
+
+                    // Candidate Passed Pawn Bonus
+                    if (!(passed | backward | isolated) &&
+                        !(pos->bitboards[P] & file_behind_mask[square])) {
+                        defenders = pos->bitboards[p] & mask_pawn_attacks(square + 8, black);
+                        attackers = pos->bitboards[P] & mask_pawn_attacks(square, white);
+                        if (count_bits(defenders) >= count_bits(attackers)) {
+                            score_opening -= candidate_passed_pawn_bonus[opening][get_rank[mirror_score[square]]];
+                            score_endgame -= candidate_passed_pawn_bonus[endgame][get_rank[mirror_score[square]]];
+                        }
                     }
 
                     break;

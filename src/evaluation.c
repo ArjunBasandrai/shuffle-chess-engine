@@ -41,6 +41,10 @@ const int passed_pawn_free_advance = 8;
 const int passed_pawn_partial_advance = 5;
 const int passed_pawn_defended = 7;
 const int passed_pawn_partial_defended = 4;
+const int candidate_passed_pawn_bonus[2][8] = {
+  { 0, 2, 2,  6, 13, 32, 0, 0 },
+  { 0, 5, 5, 11, 27, 65, 0, 0 }
+};
 
 const int rook_semi_open_file_score = 10;
 const int rook_open_file_score[2] = {5, 20};
