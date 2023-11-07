@@ -13,7 +13,7 @@
 #define U64 unsigned long long
 #endif
 
-extern const int double_pawn_penalty[2];
+extern const int double_pawn_penalty[2][8];
 extern const int unsupported_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int connected_pawn_bonus[2][64];
@@ -89,13 +89,12 @@ static inline int evaluate(s_board *pos) {
                     // positional score
                     score_opening += positional_score[opening][PAWN][square];
                     score_endgame += positional_score[endgame][PAWN][square];
-
                     
                     // double pawn penalty
-                    doubled = count_bits(pos->bitboards[P] & file_mask[square]);
-                    if (doubled > 1) {
-                        score_opening += (doubled - 1) * double_pawn_penalty[opening];
-                        score_endgame += (doubled - 1) * double_pawn_penalty[endgame];
+                    doubled = pos->bitboards[P] & file_ahead_mask[square];
+                    if (doubled) {
+                        score_opening -= double_pawn_penalty[opening][get_file(square)] / rank_distance(square, most_advanced(doubled, white));
+                        score_endgame -= double_pawn_penalty[endgame][get_file(square)] / rank_distance(square, most_advanced(doubled, white));
                     }
                     
                     // isolated pawn penalty
@@ -252,7 +251,6 @@ static inline int evaluate(s_board *pos) {
                         }
                     }
 
-
                     break;
                 
                 case Q:
@@ -295,10 +293,10 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
 
                     // double pawn penalty
-                    doubled = count_bits(pos->bitboards[p] & file_mask[square]);
-                    if (doubled > 1) {
-                        score_opening -= (doubled - 1) * double_pawn_penalty[opening];
-                        score_endgame -= (doubled - 1) * double_pawn_penalty[endgame];
+                    doubled = pos->bitboards[p] & file_behind_mask[square];
+                    if (doubled) {
+                        score_opening += double_pawn_penalty[opening][get_file(square)] / rank_distance(square, most_advanced(doubled, black));
+                        score_endgame += double_pawn_penalty[endgame][get_file(square)] / rank_distance(square, most_advanced(doubled, black));
                     }
 
                     // isolated pawn penalty
