@@ -1,8 +1,8 @@
 #include "evaluation.h"
 
 const int double_pawn_penalty[2][8] = {
-  { 5,  6,  7,  8,  8,  7,  6,  5},
-  {18, 15, 14, 13, 13, 14, 15, 18}
+  { 7,  8,  9,  9,  9,  9,  8,  7},
+  {22, 19, 19, 19, 19, 19, 19, 22}
 };
 const int unsupported_pawn_penalty[2] = {8, 4};
 const int isolated_pawn_penalty[2][8] = {
@@ -39,8 +39,8 @@ const int passed_pawn[8] = { 0, 0, 0, 2, 6, 12, 21, 0 };
 const int passed_pawn_base[2] = { 4, 8 };
 const int passed_pawn_free_advance = 8;
 const int passed_pawn_partial_advance = 5;
-const int passed_pawn_defended = 7;
-const int passed_pawn_partial_defended = 4;
+const int passed_pawn_defended = 4;
+const int passed_pawn_partial_defended = 3;
 const int candidate_passed_pawn_bonus[2][8] = {
   { 0, 2, 2,  6, 13, 32, 0, 0 },
   { 0, 5, 5, 11, 27, 65, 0, 0 }

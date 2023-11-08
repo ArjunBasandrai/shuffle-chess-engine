@@ -70,6 +70,7 @@ static inline int evaluate(s_board *pos) {
     int b_passer[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
     U64 bitboard;
+    U64 pawn_files[2];
     int piece, square;
 
     for (int bb_piece = P; bb_piece <= k; bb_piece++) {
@@ -85,9 +86,10 @@ static inline int evaluate(s_board *pos) {
 
             score_opening += material_score[opening][piece];
             score_endgame += material_score[endgame][piece];
-        
             switch (piece) {
                 case P: 
+                    pawn_files[white] |= get_file(square);
+
                     // positional score
                     score_opening += positional_score[opening][PAWN][square];
                     score_endgame += positional_score[endgame][PAWN][square];
@@ -301,6 +303,8 @@ static inline int evaluate(s_board *pos) {
                     break;
 
                 case p: 
+                    pawn_files[black] |= get_file(square);
+                
                     // positional score
                     score_opening -= positional_score[opening][PAWN][mirror_score[square]];
                     score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
@@ -519,6 +523,9 @@ static inline int evaluate(s_board *pos) {
             pop_bit(bitboard, square);
         }
     }
+
+    score_endgame += 8 * distance(get_msb_index(pawn_files[white]), get_lsb_index(pawn_files[white]));
+    score_endgame -= 8 * distance(get_msb_index(pawn_files[black]), get_lsb_index(pawn_files[black]));
 
     if (game_phase == middlegame) {
         score = (
