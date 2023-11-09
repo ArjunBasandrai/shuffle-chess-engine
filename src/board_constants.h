@@ -51,7 +51,7 @@ extern int char_pieces[];
 
 extern char files[8];
 
-extern const char *sqaure_to_coordinate[];
+extern const char *square_to_coordinate[];
 
 extern const U64 not_a_file;
 extern const U64 not_h_file;
@@ -100,6 +100,9 @@ extern U64 rank_mask[64];
 extern U64 isolated_mask[64];
 extern U64 white_passed_mask[64];
 extern U64 black_passed_mask[64];
+extern U64 connected_mask[2][64];
+extern U64 file_ahead_mask[64];
+extern U64 file_behind_mask[64];
 
 extern int get_rank[64];
 

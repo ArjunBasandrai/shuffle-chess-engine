@@ -43,27 +43,15 @@ int main(){
     position->age = 0;
     info->quit = 0;
     info->threads = 1;
-    init_all(&position);
+    init_all(position);
+
     int debug = 0;
 
-    // temp_hash(start_position);
-    // temp_hash(tricky_position);
-    // exit(0);
-
     if (debug) {
-        // struct copy_pos ccc;
-        // struct copy_pos cc;
-        // parse_fen(start_position, position);
+        parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
+        print_bitboard(file_ahead_mask[a3]);
         // print_board(position);
-        // copy_board(&position, &ccc);
-        // make_move(encode_move(e2,e3,P,0,0,0,0,0), all_moves, &position);
-        // copy_board(&position, &cc);
-        // make_move(encode_move(e7,e6,p,0,0,0,0,0), all_moves, &position);
-        // take_back(&position, &cc);
-        // make_move(encode_move(d2,d3,P,0,0,0,0,0), all_moves, &position);
-        // print_bitboard(ccc.bitboards_copy[P]);
-        // take_back(&position, &ccc);
-        // print_board(&position);
+        // evaluate(position);
     } else {
         uci_loop(position, info);
         free(transposition_table);

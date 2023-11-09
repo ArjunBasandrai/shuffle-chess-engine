@@ -43,7 +43,6 @@ void iterative_deepen(s_search_worker_data* worker_data) {
         
         worker_data->pos->follow_pv = 1;
         score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info);
-        
         if (worker_data->info->stopped == 1) break;
 
         if ((score <= alpha) || (score >= beta)) {
@@ -133,7 +132,7 @@ void search_position(int depth, s_board *pos, s_info *info) {
             printf("\n");
             return;
         }
-        engine_options->use_book == 0;
+        engine_options->use_book = 0;
     }
 
     create_search_workers(pos, info , transposition_table);

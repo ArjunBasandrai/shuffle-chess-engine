@@ -31,7 +31,7 @@ void print_board(s_board *pos) {
     printf("\n   a b c d e f g h\n\n");
 
     printf("   Side: %s\n", (!pos->side) ? "white" : "black");
-    printf("   Enpassant: %s\n",(pos->enpassant != no_sq) ? sqaure_to_coordinate[pos->enpassant] : "NO");
+    printf("   Enpassant: %s\n",(pos->enpassant != no_sq) ? square_to_coordinate[pos->enpassant] : "NO");
     printf("   Castling: %c%c%c%c\n",(pos->castle & wk) ? 'K' : '-',
                                         (pos->castle & wq) ? 'Q' : '-',
                                         (pos->castle & bk) ? 'k' : '-',

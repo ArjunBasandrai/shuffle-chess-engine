@@ -35,7 +35,7 @@ void perft_test(int depth, s_board *pos, s_info *info) {
         // print the test results
         printf("  moves: ");
         print_move(move_list->moves[move_count]);
-        printf(" nodes: %lld\n",old_nodes);
+        printf(" nodes: %ld\n",old_nodes);
     } 
 
     printf("\n  Depth: %d\n", depth);

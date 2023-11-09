@@ -192,6 +192,44 @@ void init_evaluation_masks() {
         }
     }
 
+    // init connected masks
+
+    for (int rank = 1; rank < 7; rank++) {
+        for (int file = 0; file < 8; file++) {
+            int square = rank * 8 + file;
+            if (file > 0 && file < 7) {
+                connected_mask[white][square] |= ((file_mask[square - 1] | file_mask[square + 1]) & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= ((file_mask[square - 1] | file_mask[square + 1]) & (rank_mask[square] | rank_mask[square - 8]));
+            } else if (file == 0) {
+                connected_mask[white][square] |= (file_mask[square + 1] & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= (file_mask[square + 1] & (rank_mask[square] | rank_mask[square - 8]));
+            } else if (file == 7) {
+                connected_mask[white][square] |= (file_mask[square - 1] & (rank_mask[square] | rank_mask[square + 8]));
+                connected_mask[black][square] |= (file_mask[square - 1] & (rank_mask[square] | rank_mask[square - 8]));
+            }
+        }
+    }
+
+    // init file ahead and behind masks
+
+    for (int file = 0; file < 8; file++) {
+        for (int rank = 0; rank < 8; rank++) {
+            int square = rank * 8 + file;
+            if (rank > 0) {
+                for (int i = rank - 1; i >= 0; i--) {
+                    file_ahead_mask[square] |= rank_mask[i * 8 + file];
+                }
+            }
+            if (rank < 7) {
+                for (int i = rank + 1; i < 8; i++) {
+                    file_behind_mask[square] |= rank_mask[i * 8 + file];
+                }
+            }
+            file_ahead_mask[square] &= file_mask[square];
+            file_behind_mask[square] &= file_mask[square];
+        }
+    }
+
     // init white passed pawn masks
 
     for (int rank = 0; rank < 8; rank++) {

@@ -32,7 +32,7 @@ char files[8] = {
     'h'
 };
 
-const char *sqaure_to_coordinate[] = {
+const char *square_to_coordinate[] = {
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
     "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
@@ -235,6 +235,9 @@ U64 rank_mask[64];
 U64 isolated_mask[64];
 U64 white_passed_mask[64];
 U64 black_passed_mask[64];
+U64 connected_mask[2][64];
+U64 file_ahead_mask[64];
+U64 file_behind_mask[64];
 
 int get_rank[64] = {
     7, 7, 7, 7, 7, 7, 7, 7,
