@@ -48,10 +48,9 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
-        print_bitboard(file_ahead_mask[a3]);
-        // print_board(position);
-        // evaluate(position);
+        parse_fen("B7/8/8/8/8/8/8/8 w - -", position);
+        print_board(position);
+        evaluate(position);
     } else {
         uci_loop(position, info);
         free(transposition_table);

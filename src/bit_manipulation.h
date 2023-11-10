@@ -21,6 +21,8 @@
 #define distance(a, b) (max(file_distance(a, b), rank_distance(a, b)))
 #define most_advanced(file, side) ((side) ? get_msb_index(file) : get_lsb_index(file))
 
+#define color(s) ((square_color[s]) ? light_squares : ~light_squares)
+
 static inline int count_bits(U64 bitboard){
     int count = 0;
 

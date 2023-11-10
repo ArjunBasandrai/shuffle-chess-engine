@@ -18,7 +18,7 @@ extern const int unsupported_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int connected_pawn_bonus[2][64];
 extern const int backward_pawn_penalty[2][8];
-
+extern const int pawn_defects[2][8];
 extern const int passed_pawn[8];
 extern const int passed_pawn_base[2];
 extern const int passed_pawn_free_advance;
@@ -32,7 +32,10 @@ extern const int rook_open_file_score[2];
 
 extern const int king_open_file_penalty[8];
 extern const int king_semi_open_file_penalty[8];
-extern const int pawn_defects[2][8];
+
+extern const int bishop_outpost[2][64];
+extern const int bishop_pawns_on_color[2];
+extern const int bishop_pair[2];
 
 static const int bishop_unit = 4;
 static const int queen_unit = 9;
@@ -73,6 +76,9 @@ static inline int evaluate(s_board *pos) {
     U64 pawn_files[2];
     int piece, square;
 
+    int black_bishops = count_bits(pos->bitboards[b]);
+    int white_bishops = count_bits(pos->bitboards[B]);
+
     for (int bb_piece = P; bb_piece <= k; bb_piece++) {
         bitboard = pos->bitboards[bb_piece];
 
@@ -80,6 +86,7 @@ static inline int evaluate(s_board *pos) {
             int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0;
             U64 backward = 0;
             U64 attackers, defenders;
+            int  outpost, b_same_color_pawns;
 
             piece = bb_piece;
             square = get_lsb_index(bitboard);
@@ -242,6 +249,33 @@ static inline int evaluate(s_board *pos) {
                     // positional score
                     score_opening += positional_score[opening][BISHOP][square];
                     score_endgame += positional_score[endgame][BISHOP][square]; 
+
+                    // outpost evaluation
+                    outpost = bishop_outpost[white][square];
+                    if (outpost) {
+                        if (!(pos->bitboards[p] & mask_pawn_attacks(square, white))) {
+                            if (pos->bitboards[P] & mask_pawn_attacks(square, black)) {
+                                outpost += outpost / 2;
+                                if (!(pos->bitboards[n]) && !(color(square) & pos->bitboards[b])) {
+                                    outpost += bishop_outpost[white][square];
+                                }
+                            } 
+                            score_opening += outpost;
+                            score_endgame += outpost;
+                        }
+                    }
+
+
+                    // same color pawn penalty
+                    if (white_bishops == 1) {
+                        if (light_squares & (1ULL << square)) {
+                            b_same_color_pawns = count_bits(pos->bitboards[P] & light_squares);
+                        } else {
+                            b_same_color_pawns = count_bits(pos->bitboards[P] & ~light_squares);
+                        }
+                        score_opening -= b_same_color_pawns * bishop_pawns_on_color[opening];
+                        score_endgame -= b_same_color_pawns * bishop_pawns_on_color[endgame];
+                    }
 
                     // mobility score
                     score_opening += (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];
@@ -459,6 +493,32 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][BISHOP][mirror_score[square]];
                     score_endgame -= positional_score[endgame][BISHOP][mirror_score[square]];
 
+                    // outpost evaluation
+                    outpost = bishop_outpost[black][square];
+                    if (outpost) {
+                        if (!(pos->bitboards[P] & mask_pawn_attacks(square, black))) {
+                            if (pos->bitboards[p] & mask_pawn_attacks(square, white)) {
+                                outpost += outpost / 2;
+                                if (!(pos->bitboards[N]) && !(color(square) & pos->bitboards[P])) {
+                                    outpost += bishop_outpost[black][square];
+                                }
+                            } 
+                            score_opening -= outpost;
+                            score_endgame -= outpost;
+                        }
+                    }
+
+                    // Same color pawn penalty
+                    if (black_bishops == 1) {
+                        if (light_squares & (1ULL << square)) {
+                            b_same_color_pawns = count_bits(pos->bitboards[p] & light_squares);
+                        } else {
+                            b_same_color_pawns = count_bits(pos->bitboards[p] & ~light_squares);
+                        }
+                        score_opening += b_same_color_pawns * bishop_pawns_on_color[opening];
+                        score_endgame += b_same_color_pawns * bishop_pawns_on_color[endgame];
+                    }
+
                     // mobility score
                     score_opening -= (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];
                     score_endgame -= (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[endgame];
@@ -522,6 +582,16 @@ static inline int evaluate(s_board *pos) {
         
             pop_bit(bitboard, square);
         }
+    }
+
+    // bishop pair bonus
+    if (black_bishops > 1) {
+        score_opening -= bishop_pair[opening];
+        score_endgame -= bishop_pair[endgame];
+    }
+    if (white_bishops > 1) {
+        score_opening += bishop_pair[opening];
+        score_endgame += bishop_pair[endgame];
     }
 
     score_endgame += 8 * distance(get_msb_index(pawn_files[white]), get_lsb_index(pawn_files[white]));

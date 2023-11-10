@@ -238,6 +238,18 @@ U64 black_passed_mask[64];
 U64 connected_mask[2][64];
 U64 file_ahead_mask[64];
 U64 file_behind_mask[64];
+U64 light_squares = 0xaa55aa55aa55aa55ULL;
+
+const int square_color[64] = {
+  1, 0, 1, 0, 1, 0, 1, 0,
+  0, 1, 0, 1, 0, 1, 0, 1,
+  1, 0, 1, 0, 1, 0, 1, 0,
+  0, 1, 0, 1, 0, 1, 0, 1,
+  1, 0, 1, 0, 1, 0, 1, 0,
+  0, 1, 0, 1, 0, 1, 0, 1,
+  1, 0, 1, 0, 1, 0, 1, 0,
+  0, 1, 0, 1, 0, 1, 0, 1
+};
 
 int get_rank[64] = {
     7, 7, 7, 7, 7, 7, 7, 7,
