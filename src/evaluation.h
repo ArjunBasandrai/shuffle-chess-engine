@@ -37,6 +37,8 @@ extern const int bishop_outpost[2][64];
 extern const int bishop_pawns_on_color[2];
 extern const int bishop_pair[2];
 
+extern const int knight_outpost[2][64];
+
 static const int bishop_unit = 4;
 static const int queen_unit = 9;
 
@@ -86,7 +88,8 @@ static inline int evaluate(s_board *pos) {
             int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0;
             U64 backward = 0;
             U64 attackers, defenders;
-            int  outpost, b_same_color_pawns;
+            int b_outpost, b_same_color_pawns;
+            int n_outpost;
 
             piece = bb_piece;
             square = get_lsb_index(bitboard);
@@ -244,6 +247,21 @@ static inline int evaluate(s_board *pos) {
                     score_opening += positional_score[opening][KNIGHT][square];
                     score_endgame += positional_score[endgame][KNIGHT][square]; 
 
+                    // outpost evaluation
+                    n_outpost = knight_outpost[white][square];
+                    if (n_outpost) {
+                        if (!(pos->bitboards[p] & mask_pawn_attacks(square, white))) {
+                            if (pos->bitboards[P] & mask_pawn_attacks(square, black)) {
+                                n_outpost += n_outpost / 2;
+                                if (!(pos->bitboards[b]) && !(color(square) & pos->bitboards[n])) {
+                                    n_outpost += knight_outpost[white][square];
+                                }
+                            } 
+                            score_opening += n_outpost;
+                            score_endgame += n_outpost;
+                        }
+                    }
+                    
                     break;
                 case B: 
                     // positional score
@@ -251,17 +269,17 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][BISHOP][square]; 
 
                     // outpost evaluation
-                    outpost = bishop_outpost[white][square];
-                    if (outpost) {
+                    b_outpost = bishop_outpost[white][square];
+                    if (b_outpost) {
                         if (!(pos->bitboards[p] & mask_pawn_attacks(square, white))) {
                             if (pos->bitboards[P] & mask_pawn_attacks(square, black)) {
-                                outpost += outpost / 2;
+                                b_outpost += b_outpost / 2;
                                 if (!(pos->bitboards[n]) && !(color(square) & pos->bitboards[b])) {
-                                    outpost += bishop_outpost[white][square];
+                                    b_outpost += bishop_outpost[white][square];
                                 }
                             } 
-                            score_opening += outpost;
-                            score_endgame += outpost;
+                            score_opening += b_outpost;
+                            score_endgame += b_outpost;
                         }
                     }
 
@@ -317,6 +335,8 @@ static inline int evaluate(s_board *pos) {
                     // positional score
                     score_opening += positional_score[opening][KING][square];
                     score_endgame += positional_score[endgame][KING][square]; 
+
+                    // open / semi open file penalty
                     if (!((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square])) {
                         score_opening -= king_open_file_penalty[get_file(square)];
                         score_endgame -= king_open_file_penalty[get_file(square)];
@@ -486,6 +506,21 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][KNIGHT][mirror_score[square]];
                     score_endgame -= positional_score[endgame][KNIGHT][mirror_score[square]];
 
+                    // outpost evaluation
+                    n_outpost = knight_outpost[black][square];
+                    if (n_outpost) {
+                        if (!(pos->bitboards[P] & mask_pawn_attacks(square, black))) {
+                            if (pos->bitboards[p] & mask_pawn_attacks(square, white)) {
+                                n_outpost += n_outpost / 2;
+                                if (!(pos->bitboards[B]) && !(color(square) & pos->bitboards[N])) {
+                                    n_outpost += knight_outpost[black][square];
+                                }
+                            } 
+                            score_opening -= n_outpost;
+                            score_endgame -= n_outpost;
+                        }
+                    }
+
                     break;
                 
                 case b: 
@@ -494,17 +529,17 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][BISHOP][mirror_score[square]];
 
                     // outpost evaluation
-                    outpost = bishop_outpost[black][square];
-                    if (outpost) {
+                    b_outpost = bishop_outpost[black][square];
+                    if (b_outpost) {
                         if (!(pos->bitboards[P] & mask_pawn_attacks(square, black))) {
                             if (pos->bitboards[p] & mask_pawn_attacks(square, white)) {
-                                outpost += outpost / 2;
+                                b_outpost += b_outpost / 2;
                                 if (!(pos->bitboards[N]) && !(color(square) & pos->bitboards[P])) {
-                                    outpost += bishop_outpost[black][square];
+                                    b_outpost += bishop_outpost[black][square];
                                 }
                             } 
-                            score_opening -= outpost;
-                            score_endgame -= outpost;
+                            score_opening -= b_outpost;
+                            score_endgame -= b_outpost;
                         }
                     }
 
@@ -560,6 +595,7 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][KING][mirror_score[square]];
                     score_endgame -= positional_score[endgame][KING][mirror_score[square]];
 
+                    // open / semi open file penalty
                     if (!((pos->bitboards[P] | pos->bitboards[p]) & file_mask[square])) {
                         score_opening += king_open_file_penalty[get_file(square)];
                         score_endgame += king_open_file_penalty[get_file(square)];

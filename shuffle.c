@@ -45,11 +45,11 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
         parse_fen("B7/8/8/8/8/8/8/8 w - -", position);
-        print_board(position);
+        print_bitboard(0x007e7e7e7e7e7e00ull);
         evaluate(position);
     } else {
         uci_loop(position, info);
