@@ -15,11 +15,14 @@ ifdef v
 	ifdef os
 		ifeq ($(os), MacOS)
 			EXE = bin/$(os)/v$(v)
-			R_FLAGS = -Ofast
+			R_FLAGS = -Ofast -arch arm64
 		else
 			EXE = bin/$(os)/v$(v).exe
-			R_FLAGS = -Ofast -arch arm64
+			R_FLAGS = -Ofast
 		endif
+	else
+		EXE = bin/Windows/v$(v).exe
+		R_FLAGS = -Ofast
 	endif
 else
 	EXE = $(TEST_EXE)
