@@ -3,14 +3,27 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
-TEST_EXE = $(ENGINE).exe
+ifdef os
+	ifeq ($(os), MacOS)
+		TEST_EXE = $(ENGINE)
+	endif
+else
+	TEST_EXE = $(ENGINE).exe
+endif
 
 ifdef v
-EXE = bin/Windows/v$(v).exe
-R_FLAGS = -Ofast
+	ifdef os
+		ifeq ($(os), MacOS)
+			EXE = bin/$(os)/v$(v)
+			R_FLAGS = -Ofast
+		else
+			EXE = bin/$(os)/v$(v).exe
+			R_FLAGS = -Ofast -arch arm64
+		endif
+	endif
 else
-EXE = $(TEST_EXE)
-R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
+	EXE = $(TEST_EXE)
+	R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
 endif
 
 DISTDIR = dist

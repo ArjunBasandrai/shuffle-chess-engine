@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
-#include <windows.h>
+#include <stdlib.h>
 
 #include "search.h"
 
 #include "board_constants.h"
-#include "io.h"
 #include "zobrist.h"
 #include "polyglot/polykeys.h"
 #include "threading/tinycthread.h"
