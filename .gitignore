@@ -2,6 +2,7 @@ shuffle.exe
 shuffle.exp
 shuffle.lib
 shuffle.pdb
+shuffle
 
 # engine versions folder
 versions
