@@ -23,7 +23,7 @@
 ## Rating
 
 Shuffle's current ratings are:
-- [CCRL Blitz](https://ccrl.chessdom.com/ccrl/4040/) for [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) - [2145](https://ccrl.chessdom.com/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit)
+- [CCRL Blitz](https://www.computerchess.org.uk/ccrl/404/) for [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) - [2145](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit)
 
 ## Screenshots
 ### Game 1 
