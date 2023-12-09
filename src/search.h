@@ -149,6 +149,20 @@ static inline int is_repetition(s_board *pos) {
     return 0;
 }
 
+static inline int is_insufficient_material(s_board *pos) {
+    if (pos->bitboards[P] || pos->bitboards[p]) return 0;
+    if (pos->bitboards[Q] || pos->bitboards[q] || pos->bitboards[R] || pos->bitboards[r]) return 0;
+    if (pos->bitboards[B] && pos->bitboards[b]) return 0;
+    if (pos->bitboards[N] && pos->bitboards[n]) return 0;
+    if (pos->bitboards[N] && pos->bitboards[b]) return 0;
+    if (pos->bitboards[n] && pos->bitboards[B]) return 0;
+    if (count_bits(pos->bitboards[B]) > 1 || count_bits(pos->bitboards[b]) > 1 ||
+        count_bits(pos->bitboards[N]) > 1 || count_bits(pos->bitboards[n]) > 1) {
+        return 0;
+    }
+    return 1;
+}
+
 static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
 
     if((info->nodes & 2047) == 0)
@@ -221,7 +235,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
     
     int hash_flag = hash_flag_alpha;
 
-    if (pos->ply && is_repetition(pos) || pos->fifty >= 100) {
+    if (pos->ply && is_repetition(pos) || pos->fifty >= 100 ) {
         return draw_score;
     }
 
