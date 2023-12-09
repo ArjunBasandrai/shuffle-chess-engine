@@ -3,7 +3,7 @@
 #include "board.h"
 #include "search.h"
 
-#define version "4.0.0"
+#define version "4.0.1"
 
 void reset_time_control(s_info *info);
 int parse_move(char *move_string, s_board *pos);
