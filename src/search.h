@@ -263,6 +263,12 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
     int legal_moves=0;
 
+    // Reverse Futility Pruning
+    int eval = evaluate(pos);
+    if (depth <= 6 && eval - 80 * depth + 45 >= beta) {
+      return eval;
+    }
+
     // Null Move Pruning
     if (depth >= 3 && !in_check && pos->ply) {
         struct copy_pos nmp;
@@ -294,7 +300,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
     // Razoring
     if (!pv_node && !in_check && depth <= 3) {
-        score = evaluate(pos) + 125;
+        score = eval + 125;
         int new_score;
 
         if (score < beta) {
