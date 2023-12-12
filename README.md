@@ -5,7 +5,7 @@
 <br/>
 
 > Shuffle is a UCI based chess engine written entirely in C.
-> It is a magic bitboards based engine and has an ELO of 2148
+> It is a magic bitboards based engine with an ELO of around 2200
 
 ---
 
@@ -20,43 +20,36 @@
 - Ability to play at various time controls
 - UCI compatibility
 
-## Rating
+## Ratings
 
-Shuffle's current ratings are:
-- [CCRL Blitz](https://www.computerchess.org.uk/ccrl/404/) for [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) - [2145](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit)
-
-## Screenshots
-### Game 1 
-In this game against TSCP 1.81, Shuffle was playing as white and mated black with a Queen and a Bishop <br/><br/>
-![game 1](assets/game1.png)  
-
-### Game 2
-In this game against TSCP 1.81, Shuffle was playing as black and made 3 Queens before mating the white king on the _a_ file <br/><br/>
-![game 2](assets/game2.png)
-
-### Puzzle 1
-In this position, Shuffle finds the brilliant move that leads to Mate in 2 <br/><br/>
-![puzzle 1](assets/puzzle1.png)
-
-### Puzzle 2
-In this position, Shuffle found a Queen Sacrifice, that would lead to Mate in 1 and prevent a stalemate <br/><br/>
-![puzzle 2](assets/puzzle2.png)
-
-### Game and Puzzle PGNs
-PGN of both the games and puzzles have been provided in the assets folder as [game1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game1.pgn), [game2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/game2.pgn), [puzzle1.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/puzzle1.pgn) and [puzzle2.pgn](https://github.com/ArjunBasandrai/shuffle-chess-engine/blob/main/assets/puzzle2.pgn)
+#### [CCRL Blitz](https://www.computerchess.org.uk/ccrl/404/)
+| Version | ELO |
+| :-----: | :-: |
+| [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) | [2146](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit) |
 
 ## Instructions
 
 ### Directions to install
 
-- `git clone https://github.com/ArjunBasandrai/shuffle-chess-engine.git`
+```
+git clone https://github.com/ArjunBasandrai/shuffle-chess-engine.git
+```
 
 ### Directions to run
 
-- Go to the `bin/Windows` directory and locate the latest executable file
-- Open the executable file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or  [Cute Chess GUI](https://cutechess.com/)
-- Set any Game Mode/Time Control of choice
+- Go to the `bin/Windows` or `bin/MacOS` directory depending on your oeprating system and locate the latest executable file
+- Open the executable file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or [Cute Chess GUI](https://cutechess.com/)
+- Set any time control of choice
 - Have fun!
+
+### Directions to build
+
+- Type the following command in the terminal to create a fresh build for your system
+```
+make v=<executable-name-without-extension> os=<your-os>
+```
+- the `<your-os>` parameter can be either `Windows` or `MacOS`
+- Once compilation is completed, the executable can be found at `bin/<your-os>/<executable-name>`
 
 ## Contributors
 
@@ -80,6 +73,6 @@ PGN of both the games and puzzles have been provided in the assets folder as [ga
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 ## Note
-- Shuffle is currently not compatible with Unix-based systems
+- Shuffle is currently not compatible with Linux machines.
 - If you're in India and using the Jio Network, you may experience difficulties viewing the images in this file. Please consider switching to a different network provider or utilizing a VPN to access the images
 
