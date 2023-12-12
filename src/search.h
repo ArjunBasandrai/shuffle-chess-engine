@@ -265,8 +265,8 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
     // Reverse Futility Pruning
     int eval = evaluate(pos);
-    if (depth <= 6 && eval - 80 * depth + 45 >= beta) {
-      return eval;
+    if (depth <= 6 && eval - 80 * depth >= beta) {
+      return (eval + beta) / 2;
     }
 
     // Null Move Pruning
