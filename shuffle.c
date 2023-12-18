@@ -45,11 +45,12 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
         parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
         print_board(position);
+        print_bitboard(get_attackers(position, g7));
         evaluate(position);
     } else {
         uci_loop(position, info);

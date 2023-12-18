@@ -141,6 +141,18 @@ U64 rook_attacks_on_the_fly(int square, U64 block){
     return attacks;
 }
 
+U64 get_attackers(const s_board *pos, int square) {
+    U64 attacks = 0ULL;
+
+    attacks |= (mask_pawn_attacks(square, black) & pos->bitboards[P]) | (mask_pawn_attacks(square, white) & pos->bitboards[p]);
+    attacks |= (mask_knight_attacks(square) & (pos->bitboards[N] | pos->bitboards[n]));
+    attacks |= (mask_king_attacks(square) & (pos->bitboards[K] | pos->bitboards[k]));
+    attacks |= (bishop_attacks_on_the_fly(square,pos->occupancies[both]) & (pos->bitboards[B] | pos->bitboards[b] | pos->bitboards[Q] | pos->bitboards[q]));
+    attacks |= (rook_attacks_on_the_fly(square, pos->occupancies[both]) & (pos->bitboards[R] | pos->bitboards[r] | pos->bitboards[Q] | pos->bitboards[q]));
+
+    return attacks;
+}
+
 U64 set_file_rank_mask(int file_number, int rank_number) {
     U64 mask = 0ULL;
 
