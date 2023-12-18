@@ -50,8 +50,10 @@ int main(){
     if (debug) {
         parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
         print_board(position);
-        print_bitboard(get_attackers(position, g7));
-        evaluate(position);
+        // print_bitboard(get_attackers(position, g7));
+        // evaluate(position);
+        int move = encode_move(a4, b3, p, 0, 1, 0, 0, 0);
+        printf("%c\n", ascii_pieces[get_captured_piece(move, position)]);
     } else {
         uci_loop(position, info);
         free(transposition_table);
