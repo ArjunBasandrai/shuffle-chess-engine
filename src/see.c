@@ -20,14 +20,26 @@ U64 get_least_valuable_piece(U64 attadef, int side, int *piece, const s_board *p
 
 int see(const s_board *pos, const int move) {
     int gain[32], d = 0;
+    U64 pawns = pos->bitboards[P] | pos->bitboards[p];
     U64 diagnols = pos->bitboards[B] | pos->bitboards[Q] | pos->bitboards[b] | pos->bitboards[q];
     U64 horizontals = pos->bitboards[R] | pos->bitboards[Q] | pos->bitboards[r] | pos->bitboards[q];
-    U64 sliders = diagnols | horizontals;
+    U64 sliders = diagnols | horizontals | pawns;
     U64 fromSet = 1ULL << get_move_source(move);
     U64 occ = pos->occupancies[both];
     U64 attadef = get_attackers(pos, get_move_target(move));
     int piece = get_move_piece(move);
-    gain[d] = (get_captured_piece(move, pos)) != -1 ? abs(material_score[opening][get_captured_piece(move, pos)]) : 0;
+    if (piece == P && get_rank[get_move_target(move)] == 7) {
+        piece = get_move_promoted(move);
+        gain[d] = abs(material_score[opening][piece]) - abs(material_score[opening][P]);
+    } else if (piece == p && get_rank[get_move_target(move)] == 1) {
+        piece = get_move_promoted(move);
+        gain[d] = abs(material_score[opening][piece]) - abs(material_score[opening][p]);
+    } else {
+        gain[d] = (get_captured_piece(move, pos)) != -1 ? abs(material_score[opening][get_captured_piece(move, pos)]) : 0;
+    }
+    if (get_move_enpassant(move)) {
+        gain[d] = material_score[opening][P];
+    }
     int side = pos->side;
     do {
         d++;
@@ -39,7 +51,7 @@ int see(const s_board *pos, const int move) {
             if (piece == R || piece == r || piece == Q || piece == q) {
                 attadef |= rook_attacks_on_the_fly(get_move_target(move), occ) & horizontals;
             } 
-            if (piece == B || piece == b || piece == Q || piece == q) {
+            if (piece == P || piece == p || piece == B || piece == b || piece == Q || piece == q) {
                 attadef |= bishop_attacks_on_the_fly(get_move_target(move), occ) & diagnols;
             }
             attadef ^= fromSet;
@@ -47,6 +59,11 @@ int see(const s_board *pos, const int move) {
         attadef &= occ;
         side ^= 1;
         fromSet = get_least_valuable_piece(attadef, side, &piece, pos);
+        if (piece == P && get_rank[get_move_target(move)] == 7) {
+            piece = Q;
+        } else if (piece == p && get_rank[get_move_target(move)] == 0) {
+            piece = q;
+        }
     } while (fromSet);
 
     while (--d)

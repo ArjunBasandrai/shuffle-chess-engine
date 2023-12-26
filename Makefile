@@ -47,6 +47,7 @@ SRCS = src/bit_manipulation.c \
 		src/random_unsigned.c \
 		src/search.c \
 		src/see.c \
+		src/see_test.c \
 		src/gettime.c \
 		src/transposition_table.c \
 		src/uci.c \
@@ -63,7 +64,7 @@ __debug_compile:
 	$(CC) $(R_FLAGS) -o $(TEST_EXE) $(C) $(SRCS)
 
 __release_compile:
-	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
+	$(CC) $(R_FLAGS) -Wno-everything -o $(EXE) $(C) $(SRCS)
 
 __debug_run:
 	./$(TEST_EXE)

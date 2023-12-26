@@ -14,6 +14,7 @@
 #include "src/moves_list.h"
 #include "src/perft.h"
 #include "src/see.h"
+#include "src/see_test.h"
 #include "src/pre_calculated_tables.h"
 #include "src/transposition_table.h"
 #include "src/uci.h"
@@ -49,10 +50,12 @@ int main(){
     int debug = 1;
 
     if (debug) {
-        parse_fen("7r/5qpk/2Qp1b1p/1N1r3n/BB3p2/5p2/P1P2P2/4RK1R w - -", position);
-        print_board(position);
-        int move = encode_move(e1, e8, R, 0, 0, 0, 0, 0);
-        printf("%d\n", see(position, move));
+        // parse_fen("2r5/1P4pk/p2p1b1p/5b1n/BB3p2/2R2p2/P1P2P2/4RK2 w - -", position);
+        // print_board(position);
+        // int move = encode_move(c3, c8, R, 0, 1, 0, 0, 0);
+        // printf("%d\n", see(position, move));
+
+        test_see();
     } else {
         uci_loop(position, info);
         free(transposition_table);
