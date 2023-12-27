@@ -47,7 +47,7 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
         test_see();
