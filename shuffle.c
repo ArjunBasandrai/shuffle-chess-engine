@@ -50,11 +50,6 @@ int main(){
     int debug = 1;
 
     if (debug) {
-        // parse_fen("2r5/1P4pk/p2p1b1p/5b1n/BB3p2/2R2p2/P1P2P2/4RK2 w - -", position);
-        // print_board(position);
-        // int move = encode_move(c3, c8, R, 0, 1, 0, 0, 0);
-        // printf("%d\n", see(position, move));
-
         test_see();
     } else {
         uci_loop(position, info);

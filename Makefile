@@ -64,7 +64,7 @@ __debug_compile:
 	$(CC) $(R_FLAGS) -o $(TEST_EXE) $(C) $(SRCS)
 
 __release_compile:
-	$(CC) $(R_FLAGS) -Wno-everything -o $(EXE) $(C) $(SRCS)
+	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
 
 __debug_run:
 	./$(TEST_EXE)

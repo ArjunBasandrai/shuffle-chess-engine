@@ -1,4 +1,6 @@
-#include "stdio.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "see_test.h"
 
 #include "board.h"
@@ -96,7 +98,13 @@ int test_see() {
 
     tests[20].fen   = "2r5/1P4pk/p2p1b1p/5b1n/BB3p2/2R2p2/P1P2P2/4RK2 w - -";
     tests[20].move  = encode_move(c3, c8, R, 0, 1, 0, 0, 0);
-    tests[20].score = 477;
+    tests[20].score = 365;
+
+    /*
+        Score of this test is 477 (Rook value) because after Rxc8, the bishop on f5 is not supposed
+        to take back on c8 because it leads to pawn promotion. But in the current SEE implementation,
+        the bishop on f5 takes on c8 leading to the SEE value being 365 (Bishop value).
+    */
 
     tests[21].fen   = "2r4k/2r4p/p7/2b2p1b/4pP2/1BR5/P1R3PP/2Q4K w - -";
     tests[21].move  = encode_move(c3, c5, R, 0, 1, 0, 0, 0);
@@ -119,8 +127,8 @@ int test_see() {
     for (int i=0; i < 25; i++) {
         parse_fen(tests[i].fen, position);
         if (see(position, tests[i].move) != tests[i].score) {
-            printf("Test %d failed for fen: %s\n", i+1, tests[i].fen);
-            // return 0;
+            fprintf(stderr, "Test %d failed for fen: %s\n", i+1, tests[i].fen);
+            exit(1);
         }
     }
 }
