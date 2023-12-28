@@ -191,6 +191,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
     sort_moves(move_list, 0, pos);
 
     for (int count = 0; count < move_list->count; count++) {
+        if (see(pos, move_list->moves[count]) < 0) continue;
         struct copy_pos qcopy;
         copy_board(pos, &qcopy);
         pos->ply++;
