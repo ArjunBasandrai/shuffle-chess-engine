@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include "bit_manipulation.h"
+#include "board.h"
 #include "moves_list.h"
 
 char promoted_pieces[] = {
@@ -11,6 +13,16 @@ char promoted_pieces[] = {
     [b] = 'b',
     [n] = 'n'
 };
+
+int get_captured_piece(int move, s_board *pos) {
+    int target_square = get_move_target(move);
+    for (int i = (pos->side^1)*6; i <= K + (pos->side^1)*6; i++) {
+        if (get_bit(pos->bitboards[i], target_square)) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 void print_move(int move) {
     if (promoted_pieces[get_move_promoted(move)]) {

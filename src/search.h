@@ -6,6 +6,7 @@
 #include "moves_list.h"
 #include "movegen.h"
 #include "evaluation.h"
+#include "see.h"
 #include "transposition_table.h"
 #include "gettime.h"
 
@@ -190,6 +191,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
     sort_moves(move_list, 0, pos);
 
     for (int count = 0; count < move_list->count; count++) {
+        if (see(pos, move_list->moves[count]) < 0) continue;
         struct copy_pos qcopy;
         copy_board(pos, &qcopy);
         pos->ply++;
@@ -332,6 +334,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
     int moves_searched = 0;
 
     for (int count = 0; count < move_list->count; count++) {
+        if (see(pos, move_list->moves[count]) < -17 * depth * depth) continue;
         struct copy_pos ncopy;
         copy_board(pos, &ncopy);
         pos->ply++;

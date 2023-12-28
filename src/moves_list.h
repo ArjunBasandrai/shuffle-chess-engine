@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board.h"
 #include "board_constants.h"
 
 #define encode_move(source,target,piece,promoted,capture,double,enpassant,castling) \
@@ -21,6 +22,8 @@ typedef struct {
 #define get_move_double(move) (move & 0x200000)
 #define get_move_enpassant(move) (move & 0x400000)
 #define get_move_castling(move) (move & 0x800000)
+
+int get_captured_piece(int move, s_board *pos);
 
 static inline void add_move(moves *move_list, int move) {
     move_list->moves[move_list->count] = move;

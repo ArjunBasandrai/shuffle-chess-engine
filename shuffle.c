@@ -13,6 +13,8 @@
 #include "src/movegen.h"
 #include "src/moves_list.h"
 #include "src/perft.h"
+#include "src/see.h"
+#include "src/see_test.h"
 #include "src/pre_calculated_tables.h"
 #include "src/transposition_table.h"
 #include "src/uci.h"
@@ -48,9 +50,7 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        parse_fen("8/R7/5k1P/5p2/p1p2P2/Pr1pPK1p/1P1P4/r7 b - -", position);
-        print_board(position);
-        evaluate(position);
+        test_see();
     } else {
         uci_loop(position, info);
         free(transposition_table);

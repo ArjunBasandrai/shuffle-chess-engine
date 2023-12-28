@@ -46,6 +46,8 @@ SRCS = src/bit_manipulation.c \
 		src/pre_calculated_tables.c \
 		src/random_unsigned.c \
 		src/search.c \
+		src/see.c \
+		src/see_test.c \
 		src/gettime.c \
 		src/transposition_table.c \
 		src/uci.c \
