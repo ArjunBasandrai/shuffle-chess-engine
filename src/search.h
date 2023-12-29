@@ -265,14 +265,40 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
     int legal_moves=0;
 
+    int prune = !in_check && !pv_node;
+    
     // Reverse Futility Pruning
     int eval = evaluate(pos);
-    if (depth <= 6 && eval - 80 * depth >= beta) {
+    if (prune && depth <= 6 && eval - 80 * depth >= beta) {
       return (eval + beta) / 2;
     }
 
+    // Razoring
+    if (prune && depth <= 3) {
+        score = eval + 125;
+        int new_score;
+
+        if (score < beta) {
+            if (depth == 1) {
+                new_score = quiescence(alpha, beta, pos, info);
+
+                return (new_score > score) ? new_score : score;
+            }
+
+            score += 175;
+
+            if (score < beta && depth <= 2) {
+                new_score = quiescence(alpha, beta, pos, info);
+
+                if (new_score < beta) {
+                    return (new_score > score) ? new_score : score;
+                }
+            }
+        }
+    }
+
     // Null Move Pruning
-    if (depth >= 3 && !in_check && pos->ply) {
+    if (prune && depth >= 3 && pos->ply) {
         struct copy_pos nmp;
         copy_board(pos, &nmp);
 
@@ -297,30 +323,6 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
         if (score >= beta) {
             return beta;
-        }
-    }
-
-    // Razoring
-    if (!pv_node && !in_check && depth <= 3) {
-        score = eval + 125;
-        int new_score;
-
-        if (score < beta) {
-            if (depth == 1) {
-                new_score = quiescence(alpha, beta, pos, info);
-
-                return (new_score > score) ? new_score : score;
-            }
-
-            score += 175;
-
-            if (score < beta && depth <= 2) {
-                new_score = quiescence(alpha, beta, pos, info);
-
-                if (new_score < beta) {
-                    return (new_score > score) ? new_score : score;
-                }
-            }
         }
     }
 
