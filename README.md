@@ -37,7 +37,7 @@ git clone https://github.com/ArjunBasandrai/shuffle-chess-engine.git
 
 ### Directions to run
 
-- Go to the `bin/Windows` or `bin/MacOS` directory depending on your oprating system and locate the latest executable file
+- Go to the `bin/Windows` or `bin/MacOS` directory depending on your operating system and locate the latest executable file
 - Open the executable file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or [Cute Chess GUI](https://cutechess.com/)
 - Set any time control of choice
 - Have fun!
