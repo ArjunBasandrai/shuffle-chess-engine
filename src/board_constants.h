@@ -106,6 +106,9 @@ extern U64 file_behind_mask[64];
 
 extern int get_rank[64];
 
+extern int square_color[64];
+extern U64 light_squares;
+
 extern char engine_name[];
 
 typedef struct {

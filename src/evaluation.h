@@ -13,7 +13,7 @@
 #define U64 unsigned long long
 #endif
 
-extern const int double_pawn_penalty[2];
+extern const int doubled_pawn_penalty[2][8];
 extern const int unsupported_pawn_penalty[2];
 extern const int isolated_pawn_penalty[2][8];
 extern const int connected_pawn_bonus[2][64];
@@ -25,6 +25,10 @@ extern const int passed_pawn_free_advance;
 extern const int passed_pawn_partial_advance;
 extern const int passed_pawn_defended;
 extern const int passed_pawn_partial_defended;
+
+extern const int knight_outpost[2][64];
+extern const int bishop_outpost[2][64];
+extern const int bishop_pawns_on_color[2];
 
 extern const int rook_semi_open_file_score;
 extern const int rook_open_file_score[2];
@@ -75,7 +79,9 @@ static inline int evaluate(s_board *pos) {
         bitboard = pos->bitboards[bb_piece];
 
         while (bitboard) {
-            int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0;
+            int doubled = 0, isolated = 0, passed = 0, connected = 0, unsupported = 0, most_adv = 0, pawns_on_color = 0;;
+            int n_outpost[2] = { 0, 0 };
+            int b_outpost[2] = { 0, 0 };
             U64 backward = 0;
 
             piece = bb_piece;
@@ -91,10 +97,11 @@ static inline int evaluate(s_board *pos) {
                     score_endgame += positional_score[endgame][PAWN][square];
 
                     // double pawn penalty
-                    doubled = count_bits(pos->bitboards[P] & file_mask[square]);
-                    if (doubled > 1) {
-                        score_opening += (doubled - 1) * double_pawn_penalty[opening];
-                        score_endgame += (doubled - 1) * double_pawn_penalty[endgame];
+                    doubled = pos->bitboards[P] & file_ahead_mask[square];
+                    if (doubled) {
+                        int file = get_file(square);
+                        score_opening -= doubled_pawn_penalty[opening][file] / rank_distance(square, most_advanced(file, white));
+                        score_endgame -= doubled_pawn_penalty[endgame][file] / rank_distance(square, most_advanced(file, white));
                     }
                     
                     // isolated pawn penalty
@@ -220,13 +227,60 @@ static inline int evaluate(s_board *pos) {
                 case N:
                     // positional score
                     score_opening += positional_score[opening][KNIGHT][square];
-                    score_endgame += positional_score[endgame][KNIGHT][square]; 
+                    score_endgame += positional_score[endgame][KNIGHT][square];
+
+                    // knight outpost bonus
+                    if (!(pos->bitboards[p] & (white_passed_mask[square] & isolated_mask[square]))) {
+                        n_outpost[opening] = knight_outpost[opening][square];
+                        n_outpost[endgame] = knight_outpost[endgame][square];
+                        if (n_outpost[opening]) {
+                            if (mask_pawn_attacks(square, white) & pos->bitboards[P]) {
+                                n_outpost[opening] += n_outpost[opening] / 2;
+                                n_outpost[endgame] += n_outpost[endgame] / 2;
+                            }
+                            if (!pos->bitboards[n] && !(pos->bitboards[b]) & color(square)) {
+                                n_outpost[opening] += knight_outpost[opening][square];
+                                n_outpost[endgame] += knight_outpost[endgame][square];
+                            }
+                            score_opening += n_outpost[opening] * 2;
+                            score_endgame += n_outpost[endgame] * 2;
+                        }
+                    } 
 
                     break;
                 case B: 
                     // positional score
                     score_opening += positional_score[opening][BISHOP][square];
                     score_endgame += positional_score[endgame][BISHOP][square]; 
+
+                    // bishop outpost bonus
+                    if (!(pos->bitboards[p] & (white_passed_mask[square] & isolated_mask[square]))) {
+                        b_outpost[opening] = bishop_outpost[opening][square];
+                        b_outpost[endgame] = bishop_outpost[endgame][square];
+                        if (b_outpost[opening]) {
+                            if (mask_pawn_attacks(square, white) & pos->bitboards[P]) {
+                                b_outpost[opening] += b_outpost[opening] / 2;
+                                b_outpost[endgame] += b_outpost[endgame] / 2;
+                            }
+                            if (!pos->bitboards[b] && !(pos->bitboards[n]) & color(square)) {
+                                b_outpost[opening] += bishop_outpost[opening][square];
+                                b_outpost[endgame] += bishop_outpost[endgame][square];
+                            }
+                            score_opening += b_outpost[opening] * 2;
+                            score_endgame += b_outpost[endgame] * 2;
+                        }
+                    } 
+
+                    // bishop pawns on color penalty
+                    if (count_bits(pos->bitboards[B]) == 1) {
+                        if (light_squares & (1ULL << square)) {
+                            pawns_on_color = count_bits(pos->bitboards[P] & light_squares);
+                        } else {
+                            pawns_on_color = count_bits(pos->bitboards[P] & ~light_squares);
+                        }
+                        score_opening -= bishop_pawns_on_color[opening] * pawns_on_color;
+                        score_endgame -= bishop_pawns_on_color[endgame] * pawns_on_color;
+                    }
 
                     // mobility score
                     score_opening += (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];
@@ -250,7 +304,6 @@ static inline int evaluate(s_board *pos) {
                             score_endgame += rook_semi_open_file_score;
                         }
                     }
-
 
                     break;
                 
@@ -294,10 +347,11 @@ static inline int evaluate(s_board *pos) {
                     score_endgame -= positional_score[endgame][PAWN][mirror_score[square]]; 
 
                     // double pawn penalty
-                    doubled = count_bits(pos->bitboards[p] & file_mask[square]);
-                    if (doubled > 1) {
-                        score_opening -= (doubled - 1) * double_pawn_penalty[opening];
-                        score_endgame -= (doubled - 1) * double_pawn_penalty[endgame];
+                    doubled = pos->bitboards[p] & file_behind_mask[square];
+                    if (doubled) {
+                        int file = get_file(square);
+                        score_opening += doubled_pawn_penalty[opening][file] / rank_distance(square, most_advanced(file, black));
+                        score_endgame += doubled_pawn_penalty[endgame][file] / rank_distance(square, most_advanced(file, black));
                     }
 
                     // isolated pawn penalty
@@ -425,12 +479,59 @@ static inline int evaluate(s_board *pos) {
                     score_opening -= positional_score[opening][KNIGHT][mirror_score[square]];
                     score_endgame -= positional_score[endgame][KNIGHT][mirror_score[square]];
 
+                    // knight outpost bonus
+                    if (!(pos->bitboards[P] & (black_passed_mask[square] & isolated_mask[square]))) {
+                        n_outpost[opening] = knight_outpost[opening][square];
+                        n_outpost[endgame] = knight_outpost[endgame][square];
+                        if (n_outpost[opening]) {
+                            if (mask_pawn_attacks(square, black) & pos->bitboards[p]) {
+                                n_outpost[opening] += n_outpost[opening] / 2;
+                                n_outpost[endgame] += n_outpost[endgame] / 2;
+                            }
+                            if (!pos->bitboards[N] && !(pos->bitboards[B]) & color(square)) {
+                                n_outpost[opening] += knight_outpost[opening][square];
+                                n_outpost[endgame] += knight_outpost[endgame][square];
+                            }
+                            score_opening -= n_outpost[opening] * 2;
+                            score_endgame -= n_outpost[endgame] * 2;
+                        }
+                    } 
+
                     break;
                 
                 case b: 
                     // positional score
                     score_opening -= positional_score[opening][BISHOP][mirror_score[square]];
                     score_endgame -= positional_score[endgame][BISHOP][mirror_score[square]];
+
+                    // bishop outpost bonus
+                    if (!(pos->bitboards[P] & (black_passed_mask[square] & isolated_mask[square]))) {
+                        b_outpost[opening] = bishop_outpost[opening][square];
+                        b_outpost[endgame] = bishop_outpost[endgame][square];
+                        if (b_outpost[opening]) {
+                            if (mask_pawn_attacks(square, black) & pos->bitboards[p]) {
+                                b_outpost[opening] += b_outpost[opening] / 2;
+                                b_outpost[endgame] += b_outpost[endgame] / 2;
+                            }
+                            if (!pos->bitboards[B] && !(pos->bitboards[N]) & color(square)) {
+                                b_outpost[opening] += bishop_outpost[opening][square];
+                                b_outpost[endgame] += bishop_outpost[endgame][square];
+                            }
+                            score_opening -= b_outpost[opening] * 2;
+                            score_endgame -= b_outpost[endgame] * 2;
+                        }
+                    }
+
+                    // bishop pawns on color penalty
+                    if (count_bits(pos->bitboards[b]) == 1) {
+                        if (light_squares & (1ULL << square)) {
+                            pawns_on_color = count_bits(pos->bitboards[p] & light_squares);
+                        } else {
+                            pawns_on_color = count_bits(pos->bitboards[p] & ~light_squares);
+                        }
+                        score_opening += bishop_pawns_on_color[opening] * pawns_on_color;
+                        score_endgame += bishop_pawns_on_color[endgame] * pawns_on_color;
+                    }
 
                     // mobility score
                     score_opening -= (count_bits(get_bishop_attacks(square, pos->occupancies[both])) - bishop_unit) * bishop_mobility[opening];

@@ -271,4 +271,13 @@ void init_evaluation_masks() {
             }
         }
     }
+
+    // init square color mask
+
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j <8; j++) {
+            square_color[i * 8 + j] = (i + j) % 2;
+        }
+    }
+
 }

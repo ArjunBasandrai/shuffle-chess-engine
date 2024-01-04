@@ -50,7 +50,8 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        test_see();
+        print_bitboard(color(a4));
+        print_bitboard(color(c1));
     } else {
         uci_loop(position, info);
         free(transposition_table);

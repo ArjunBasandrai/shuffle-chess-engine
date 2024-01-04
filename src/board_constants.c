@@ -250,5 +250,8 @@ int get_rank[64] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
+int square_color[64];
+U64 light_squares = 0xaa55aa55aa55aa55ULL;
+
 s_options engine_options[1];
 char engine_name[] = "Shuffle";
