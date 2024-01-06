@@ -3,6 +3,18 @@
 #include <stdlib.h>
 #include <time.h>
 
+#if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+#ifndef WINDOWS
+#define WINDOWS
+#include <windows.h>
+#endif
+#elif defined(__APPLE__)
+#ifndef MACOS
+#define MACOS
+#include <unistd.h>
+#endif
+#endif
+
 #include "../bit_manipulation.h"
 #include "../board_constants.h"
 #include "../moves_list.h"
@@ -31,7 +43,35 @@ const int poly_promotions[] = {
 void init_poly_book() {
     srand(time(NULL));
     engine_options->use_book = 0;
-    FILE *pFile = fopen("../../src/polyglot/polyglot_opening_books/shuffle.bin", "rb");
+
+    char exe_path[MAX_PATH];
+    #ifdef WINDOWS
+    GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    #else
+    readlink("/proc/self/exe", exe_path, MAX_PATH);
+    #endif
+    char *dir_path = NULL;
+    dir_path = strrchr(exe_path, '/');
+    if (dir_path == NULL) {
+        dir_path = strrchr(exe_path, '\\');  // Check for Windows path separator
+    }
+
+    if (dir_path != NULL) {
+        *(dir_path + 1) = '\0';
+    } else {
+        perror("Error: No directory separator found in path");
+    }
+
+    size_t length = dir_path - exe_path;
+    char *path = (char*)malloc(length + 1);
+    strncpy(path, exe_path, length);
+    path[length] = '\0';
+
+    char relative_path[MAX_PATH];
+    strcpy(relative_path, path);
+    strcat(relative_path, "\\shuffle.bin");
+
+    FILE *pFile = fopen(relative_path, "rb");
     if (pFile == NULL) {
         perror("No PolyGlot book found");
         return;
