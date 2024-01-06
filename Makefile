@@ -3,10 +3,6 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
-ifndef v
-$(error Please specify the version number)
-endif
-
 DISTDIR = dist
 SRCDIR = src
 
@@ -34,13 +30,18 @@ SRCS = src/bit_manipulation.c \
 		src/polyglot/polybook.c \
 		src/threading/tinycthread.c 
 		
-all: __windows_compile
+all: __check_version __windows_compile
 
-windows: __windows_compile
+windows: __check_version __windows_compile
 
-apple_intel: __apple_intel_compile
+apple_intel: __check_version __apple_intel_compile
 
-apple_arm: __apple_arm_compile
+apple_arm: __check_version __apple_arm_compile
+
+__check_version:
+	ifndef v
+		$(error Please specify the version number)
+	endif
 
 __windows_compile:
 	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
@@ -61,11 +62,21 @@ dist:
 	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
 	@rm -rf "$(DISTDIR)"
 
-distcheck: dist
+distcheck_apple: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
 	@echo "Building..."
-	@cd $(DISTDIR) && $(MAKE) v=5_0_0
+	@cd $(DISTDIR) && $(MAKE) apple_arm v=test
+	@cd $(DISTDIR) && $(MAKE) clean
+	@rm -rf $(DISTDIR)
+	@rm -f $(DISTDIR).tar.gz
+	@echo "Test Successful!!"
+
+distcheck_windows: dist
+	@echo "Checking distribution tarball..."
+	@tar -xzf $(DISTDIR).tar.gz
+	@echo "Building..."
+	@cd $(DISTDIR) && $(MAKE) windows v=test
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
