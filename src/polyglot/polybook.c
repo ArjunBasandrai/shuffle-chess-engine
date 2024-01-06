@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -44,11 +45,11 @@ void init_poly_book() {
     srand(time(NULL));
     engine_options->use_book = 0;
 
-    char exe_path[MAX_PATH];
+    char exe_path[260];
     #ifdef WINDOWS
-    GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+    GetModuleFileNameA(NULL, exe_path, 260);
     #else
-    readlink("/proc/self/exe", exe_path, MAX_PATH);
+    readlink("/proc/self/exe", exe_path, 260);
     #endif
     char *dir_path = NULL;
     dir_path = strrchr(exe_path, '/');
@@ -67,7 +68,7 @@ void init_poly_book() {
     strncpy(path, exe_path, length);
     path[length] = '\0';
 
-    char relative_path[MAX_PATH];
+    char relative_path[260];
     strcpy(relative_path, path);
     strcat(relative_path, "\\shuffle.bin");
 
