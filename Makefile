@@ -4,7 +4,7 @@ ENGINE = shuffle
 C = $(ENGINE).c
 
 ifndef v
-$(error Please specify the version number)
+v=test
 endif
 
 DISTDIR = dist
@@ -65,7 +65,7 @@ distcheck_apple: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
 	@echo "Building..."
-	@cd $(DISTDIR) && $(CC) -Ofast -arch arm64 -o shuffle_test $(C) $(SRCS)
+	@cd $(DISTDIR) && $(MAKE) apple_arm
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
@@ -75,7 +75,7 @@ distcheck_windows: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
 	@echo "Building..."
-	@cd $(DISTDIR) && $(CC) -Ofast -o shuffle_test.exe $(C) $(SRCS)
+	@cd $(DISTDIR) && $(MAKE) windows
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
