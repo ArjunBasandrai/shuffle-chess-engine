@@ -65,7 +65,7 @@ distcheck_apple: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
 	@echo "Building..."
-	@cd $(DISTDIR) && $(MAKE) apple_arm v=test
+	@cd $(DISTDIR) && $(CC) -Ofast -arch arm64 -o shuffle_test $(C) $(SRCS)
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
@@ -75,7 +75,7 @@ distcheck_windows: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
 	@echo "Building..."
-	@cd $(DISTDIR) && $(MAKE) windows v=test
+	@cd $(DISTDIR) && $(CC) -Ofast -o shuffle_test.exe $(C) $(SRCS)
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
