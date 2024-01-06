@@ -9,9 +9,9 @@
 #define WINDOWS
 #include <windows.h>
 #endif
-#elif defined(__APPLE__)
-#ifndef MACOS
-#define MACOS
+#else
+#ifndef UNIX
+#define UNIX
 #include <unistd.h>
 #endif
 #endif
