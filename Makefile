@@ -3,6 +3,10 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
+ifndef v
+$(error Please specify the version number)
+endif
+
 DISTDIR = dist
 SRCDIR = src
 
@@ -30,18 +34,13 @@ SRCS = src/bit_manipulation.c \
 		src/polyglot/polybook.c \
 		src/threading/tinycthread.c 
 		
-all: __check_version __windows_compile
+all: __windows_compile
 
-windows: __check_version __windows_compile
+windows: __windows_compile
 
-apple_intel: __check_version __apple_intel_compile
+apple_intel: __apple_intel_compile
 
-apple_arm: __check_version __apple_arm_compile
-
-__check_version:
-	ifndef v
-		$(error Please specify the version number)
-	endif
+apple_arm: __apple_arm_compile
 
 __windows_compile:
 	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
