@@ -3,30 +3,21 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
-ifdef os
-	ifeq ($(os), MacOS)
-		TEST_EXE = $(ENGINE)
-	endif
-else
-	TEST_EXE = $(ENGINE).exe
-endif
-
 ifdef v
 	ifdef os
 		ifeq ($(os), MacOS)
-			EXE = bin/$(os)/v$(v)
+			EXE = shuffle_$(v)
 			R_FLAGS = -Ofast -arch arm64
 		else
-			EXE = bin/$(os)/v$(v).exe
+			EXE = shuffle_$(v).exe
 			R_FLAGS = -Ofast
 		endif
 	else
-		EXE = bin/Windows/v$(v).exe
+		EXE = shuffle_$(v).exe
 		R_FLAGS = -Ofast
 	endif
 else
-	EXE = $(TEST_EXE)
-	R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
+$(error Please specify the version number)
 endif
 
 DISTDIR = dist
@@ -56,21 +47,11 @@ SRCS = src/bit_manipulation.c \
 		src/polyglot/polybook.c \
 		src/threading/tinycthread.c 
 		
-all: __release_compile
+all: __compile
 
-debug: __debug_compile __debug_run
-
-__debug_compile:
-	$(CC) $(R_FLAGS) -o $(TEST_EXE) $(C) $(SRCS)
-
-__release_compile:
+__compile:
+	@echo "Compiling $(EXE)..."
 	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
-
-__debug_run:
-	./$(TEST_EXE)
-
-__run:
-	./$(EXE)
 
 dist:
 	@echo "Building distribution tarball..."
