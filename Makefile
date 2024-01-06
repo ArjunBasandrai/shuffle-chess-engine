@@ -64,6 +64,7 @@ dist:
 distcheck: dist
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
+	@echo "Building..."
 	@cd $(DISTDIR) && $(MAKE) v=5_0_0
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
