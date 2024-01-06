@@ -3,20 +3,7 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
-ifdef v
-	ifdef os
-		ifeq ($(os), MacOS)
-			EXE = shuffle_$(v)
-			R_FLAGS = -Ofast -arch arm64
-		else
-			EXE = shuffle_$(v).exe
-			R_FLAGS = -Ofast
-		endif
-	else
-		EXE = shuffle_$(v).exe
-		R_FLAGS = -Ofast
-	endif
-else
+ifndef v
 $(error Please specify the version number)
 endif
 
@@ -47,11 +34,22 @@ SRCS = src/bit_manipulation.c \
 		src/polyglot/polybook.c \
 		src/threading/tinycthread.c 
 		
-all: __compile
+all: __windows_compile
 
-__compile:
-	@echo "Compiling $(EXE)..."
-	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
+windows: __windows_compile
+
+apple_intel: __apple_intel_compile
+
+apple_arm: __apple_arm_compile
+
+__windows_compile:
+	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
+
+__apple_intel_compile:
+	$(CC) -Ofast -arch x86_64 -o shuffle_$(v) $(C) $(SRCS)
+
+__apple_arm_compile:
+	$(CC) -Ofast -arch arm64 -o shuffle_$(v) $(C) $(SRCS)
 
 dist:
 	@echo "Building distribution tarball..."
