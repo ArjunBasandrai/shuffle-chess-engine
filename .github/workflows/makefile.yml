@@ -7,7 +7,7 @@ on:
     branches: "*"
 
 jobs:
-  build:
+  windows:
 
     runs-on: windows-latest
 
@@ -18,4 +18,16 @@ jobs:
       run: choco install make
 
     - name: Run distcheck
-      run: make distcheck
+      run: make distcheck_windows
+  macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: choco install make
+
+    - name: Run distcheck
+      run: make distcheck_apple
