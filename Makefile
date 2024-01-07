@@ -38,14 +38,14 @@ all: __windows_compile
 
 windows: __windows_compile
 
-apple_intel: __apple_intel_compile
+linux: __liux_compile
 
 apple_arm: __apple_arm_compile
 
 __windows_compile:
 	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
 
-__apple_intel_compile:
+__linux_compile:
 	$(CC) -Ofast -arch x86_64 -o shuffle_$(v) $(C) $(SRCS)
 
 __apple_arm_compile:
@@ -72,10 +72,19 @@ dist_apple:
 	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
 	@rm -rf "$(DISTDIR)"
 
+dist_linux:
+	@echo "Building distribution tarball..."
+	@mkdir -p "$(DISTDIR)"
+	@cp -r "$(SRCDIR)/" "$(DISTDIR)/"
+	@cp shuffle.c "$(DISTDIR)/"
+	@cp Makefile "$(DISTDIR)/"
+	@cp README.md "$(DISTDIR)/"
+	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
+	@rm -rf "$(DISTDIR)"
+
 distcheck_windows: dist_windows
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
-	@echo "Building..."
 	@cd $(DISTDIR) && $(MAKE) windows
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
@@ -85,8 +94,16 @@ distcheck_windows: dist_windows
 distcheck_apple: dist_apple
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
-	@echo "Building..."
 	@cd $(DISTDIR) && $(MAKE) apple_arm
+	@cd $(DISTDIR) && $(MAKE) clean
+	@rm -rf $(DISTDIR)
+	@rm -f $(DISTDIR).tar.gz
+	@echo "Test Successful!!"
+
+distcheck_linux: dist_linux
+	@echo "Checking distribution tarball..."
+	@tar -xzf $(DISTDIR).tar.gz
+	@cd $(DISTDIR) && $(MAKE) linux
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz

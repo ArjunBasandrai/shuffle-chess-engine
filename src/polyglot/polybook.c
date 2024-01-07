@@ -70,7 +70,11 @@ void init_poly_book() {
 
     char relative_path[260];
     strcpy(relative_path, path);
+    #ifdef WINDOWS
     strcat(relative_path, "\\shuffle.bin");
+    #else
+    strcat(relative_path, "/shuffle.bin");
+    #endif
 
     FILE *pFile = fopen(relative_path, "rb");
     if (pFile == NULL) {

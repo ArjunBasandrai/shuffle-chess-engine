@@ -28,3 +28,12 @@ jobs:
 
     - name: Run distcheck
       run: make distcheck_apple
+  linux:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run distcheck
+      run: make distcheck_apple

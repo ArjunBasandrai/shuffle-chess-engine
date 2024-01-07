@@ -7,6 +7,7 @@
 #ifndef UNIX
 #define UNIX
 #include <sys/time.h>
+#include <stddef.h>
 #endif
 #endif
 
