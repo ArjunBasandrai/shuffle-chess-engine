@@ -76,8 +76,7 @@ dist_linux:
 	@echo "Building distribution tarball..."
 	@mkdir -p "$(DISTDIR)"
 	@mkdir -p "$(DISTDIR)/$(SRCDIR)/"
-	@cp -r "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)"
-	@ls 
+	@cp -a "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)"
 	@cp shuffle.c "$(DISTDIR)/"
 	@cp Makefile "$(DISTDIR)/"
 	@cp README.md "$(DISTDIR)/"
