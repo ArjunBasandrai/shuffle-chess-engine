@@ -75,9 +75,10 @@ dist_apple:
 dist_linux:
 	@echo "Building distribution tarball..."
 	@mkdir -p "$(DISTDIR)"
-	@mkdir -p "$(DISTDIR)/$(SRCDIR)/"
+	@cd "$(DISTDIR)" && mkdir -p "$(SRCDIR)"
+	@cd .. 
 	@cp -a "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)/"
-	@cd "$(DISTDIR)/"
+	@cd "$(DISTDIR)"
 	@ls 
 	@cd ../..
 	@cp shuffle.c "$(DISTDIR)/"
