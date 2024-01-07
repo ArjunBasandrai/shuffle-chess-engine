@@ -75,7 +75,8 @@ dist_apple:
 dist_linux:
 	@echo "Building distribution tarball..."
 	@mkdir -p "$(DISTDIR)"
-	@cp -r "$(SRCDIR)/" "$(DISTDIR)/"
+	@mkdir -p "$(DISTDIR)/$(SRCDIR)"
+	@cp -r "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)"
 	@cp shuffle.c "$(DISTDIR)/"
 	@cp Makefile "$(DISTDIR)/"
 	@cp README.md "$(DISTDIR)/"
