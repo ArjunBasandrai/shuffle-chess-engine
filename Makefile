@@ -78,7 +78,7 @@ dist_linux:
 	@cd "$(DISTDIR)" && mkdir -p "$(SRCDIR)"
 	@cd .. 
 	@cp -a "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)/"
-	@cd "$(DISTDIR)"
+	@cd "$(DISTDIR)/$(SRCDIR)"
 	@ls 
 	@cd ../..
 	@cp shuffle.c "$(DISTDIR)/"
