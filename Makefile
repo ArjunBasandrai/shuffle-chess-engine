@@ -77,6 +77,8 @@ dist_linux:
 	@mkdir -p "$(DISTDIR)"
 	@mkdir -p "$(DISTDIR)/$(SRCDIR)"
 	@cp -r "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)"
+	@cd "$(DISTDIR)/$(SRCDIR)" && ls 
+	@cd ../..
 	@cp shuffle.c "$(DISTDIR)/"
 	@cp Makefile "$(DISTDIR)/"
 	@cp README.md "$(DISTDIR)/"
