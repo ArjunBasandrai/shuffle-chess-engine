@@ -94,7 +94,7 @@ distcheck_windows: dist_windows
 distcheck_apple: dist_apple
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
-	@cd $(DISTDIR) && $(MAKE) apple_arm
+	@cd $(DISTDIR) && $(MAKE) apple
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz
