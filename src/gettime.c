@@ -1,9 +1,14 @@
 #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+#ifndef WINDOWS
 #define WINDOWS
 #include <windows.h>
-#elif defined(__APPLE__)
-#define MACOS
+#endif
+#else
+#ifndef UNIX
+#define UNIX
 #include <sys/time.h>
+#include <stddef.h>
+#endif
 #endif
 
 #include "gettime.h"

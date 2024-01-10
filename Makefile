@@ -3,30 +3,8 @@ ENGINE = shuffle
 
 C = $(ENGINE).c
 
-ifdef os
-	ifeq ($(os), MacOS)
-		TEST_EXE = $(ENGINE)
-	endif
-else
-	TEST_EXE = $(ENGINE).exe
-endif
-
-ifdef v
-	ifdef os
-		ifeq ($(os), MacOS)
-			EXE = bin/$(os)/v$(v)
-			R_FLAGS = -Ofast -arch arm64
-		else
-			EXE = bin/$(os)/v$(v).exe
-			R_FLAGS = -Ofast
-		endif
-	else
-		EXE = bin/Windows/v$(v).exe
-		R_FLAGS = -Ofast
-	endif
-else
-	EXE = $(TEST_EXE)
-	R_FLAGS = -fsanitize=address -Ofast -fno-omit-frame-pointer
+ifndef v
+v=test
 endif
 
 DISTDIR = dist
@@ -56,23 +34,24 @@ SRCS = src/bit_manipulation.c \
 		src/polyglot/polybook.c \
 		src/threading/tinycthread.c 
 		
-all: __release_compile
+all: __windows_compile
 
-debug: __debug_compile __debug_run
+windows: __windows_compile
 
-__debug_compile:
-	$(CC) $(R_FLAGS) -o $(TEST_EXE) $(C) $(SRCS)
+linux: __linux_compile
 
-__release_compile:
-	$(CC) $(R_FLAGS) -o $(EXE) $(C) $(SRCS)
+apple_arm: __apple_arm_compile
 
-__debug_run:
-	./$(TEST_EXE)
+__windows_compile:
+	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
 
-__run:
-	./$(EXE)
+__linux_compile:
+	$(CC) -Ofast -arch x86_64 -o shuffle_$(v) $(C) $(SRCS)
 
-dist:
+__apple_arm_compile:
+	$(CC) -Ofast -arch arm64 -o shuffle_$(v) $(C) $(SRCS)
+
+dist_windows:
 	@echo "Building distribution tarball..."
 	@mkdir -p "$(DISTDIR)"
 	@cp -r "$(SRCDIR)/" "$(DISTDIR)/"
@@ -82,10 +61,49 @@ dist:
 	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
 	@rm -rf "$(DISTDIR)"
 
-distcheck: dist
+dist_apple:
+	@echo "Building distribution tarball..."
+	@mkdir -p "$(DISTDIR)"
+	@mkdir -p "$(DISTDIR)/$(SRCDIR)"
+	@cp -r "$(SRCDIR)/" "$(DISTDIR)/$(SRCDIR)/"
+	@cp shuffle.c "$(DISTDIR)/"
+	@cp Makefile "$(DISTDIR)/"
+	@cp README.md "$(DISTDIR)/"
+	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
+	@rm -rf "$(DISTDIR)"
+
+dist_linux:
+	@echo "Building distribution tarball..."
+	@mkdir -p "$(DISTDIR)"
+	@cp -r "$(SRCDIR)" "$(DISTDIR)/$(SRCDIR)/"
+	@cp shuffle.c "$(DISTDIR)/"
+	@cp Makefile "$(DISTDIR)/"
+	@cp README.md "$(DISTDIR)/"
+	@tar -czf $(DISTDIR).tar.gz "$(DISTDIR)"
+	@rm -rf "$(DISTDIR)"
+
+distcheck_windows: dist_windows
 	@echo "Checking distribution tarball..."
 	@tar -xzf $(DISTDIR).tar.gz
-	@cd $(DISTDIR) && $(MAKE) all
+	@cd $(DISTDIR) && $(MAKE) windows
+	@cd $(DISTDIR) && $(MAKE) clean
+	@rm -rf $(DISTDIR)
+	@rm -f $(DISTDIR).tar.gz
+	@echo "Test Successful!!"
+
+distcheck_apple: dist_apple
+	@echo "Checking distribution tarball..."
+	@tar -xzf $(DISTDIR).tar.gz
+	@cd $(DISTDIR) && $(MAKE) apple_arm
+	@cd $(DISTDIR) && $(MAKE) clean
+	@rm -rf $(DISTDIR)
+	@rm -f $(DISTDIR).tar.gz
+	@echo "Test Successful!!"
+
+distcheck_linux: dist_linux
+	@echo "Checking distribution tarball..."
+	@tar -xzf $(DISTDIR).tar.gz
+	@cd $(DISTDIR) && $(MAKE) linux
 	@cd $(DISTDIR) && $(MAKE) clean
 	@rm -rf $(DISTDIR)
 	@rm -f $(DISTDIR).tar.gz

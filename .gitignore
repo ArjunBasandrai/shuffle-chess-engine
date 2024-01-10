@@ -1,8 +1,12 @@
-shuffle.exe
-shuffle.exp
-shuffle.lib
-shuffle.pdb
+*.exe
+*.exp
+*.lib
+*.pdb
+*.bin
 shuffle
+
+# binaries folder
+bin
 
 # engine versions folder
 versions
