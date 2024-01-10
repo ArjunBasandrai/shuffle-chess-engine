@@ -29,27 +29,42 @@
 
 ## Instructions
 
-### Directions to install
+
+
+### Directions to run
+
+- Go to the [Releases](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases) page and install the binaries for your operating system
+- Open the binary in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or [Cute Chess GUI](https://cutechess.com/)
+- Set any time control of choice
+- Have fun!
+
+#### Using Polyglot book (optional)
+
+- Install the `shuffle.bin` polyglot book from the [Releases](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases) page or use any polyglot book of your choice and rename it to `shuffle.bin`
+- Keep the book in the same directory as the binary to use it for openings
+
+### Directions to build
+
+Type the following command in the terminal to create a fresh build for your system - 
 
 ```
 git clone https://github.com/ArjunBasandrai/shuffle-chess-engine.git
 ```
-
-### Directions to run
-
-- Go to the `bin/Windows` or `bin/MacOS` directory depending on your operating system and locate the latest executable file
-- Open the executable file in any UCI based GUI like [Arena GUI](http://www.playwitharena.de/) or [Cute Chess GUI](https://cutechess.com/)
-- Set any time control of choice
-- Have fun!
-
-### Directions to build
-
-- Type the following command in the terminal to create a fresh build for your system
+#### Windows
 ```
-make v=<executable-name-without-extension> os=<your-os>
+make windows v=<version-suffix>
 ```
-- the `<your-os>` parameter can be either `Windows` or `MacOS`
-- Once compilation is completed, the executable can be found at `bin/<your-os>/<executable-name>`
+#### MacOS (only ARM CPUs)
+```
+make apple v=<version-suffix>
+```
+#### Linux
+```
+make linux v=<version-suffix>
+```
+Once compilation is completed, the executable can be found in the root directory as `shuffle_<version_suffix>`
+
+<br>
 
 ## Contributors
 
@@ -70,9 +85,8 @@ make v=<executable-name-without-extension> os=<your-os>
 [Coding Adventures: Chess Bot](https://www.youtube.com/watch?v=U4ogK0MIzqk&t=1007s&pp=ygUWY2hlc3MgZW5naW5lIHNlYmFzdGlhbg%3D%3D) by Sebastian Lague
 
 ## License
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![License](http://img.shields.io/:license-gpl3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)
 
 ## Note
-- Shuffle is currently not compatible with Linux machines.
 - If you're in India and using the Jio Network, you may experience difficulties viewing the images in this file. Please consider switching to a different network provider or utilizing a VPN to access the images
 
