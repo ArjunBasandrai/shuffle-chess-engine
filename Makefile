@@ -38,7 +38,7 @@ all: __windows_compile
 
 windows: __windows_compile
 
-linux: __liux_compile
+linux: __linux_compile
 
 apple_arm: __apple_arm_compile
 
@@ -75,7 +75,7 @@ dist_apple:
 dist_linux:
 	@echo "Building distribution tarball..."
 	@mkdir -p "$(DISTDIR)"
-	@cp -r "$(SRCDIR)/" "$(DISTDIR)/"
+	@cp -r "$(SRCDIR)" "$(DISTDIR)/$(SRCDIR)/"
 	@cp shuffle.c "$(DISTDIR)/"
 	@cp Makefile "$(DISTDIR)/"
 	@cp README.md "$(DISTDIR)/"

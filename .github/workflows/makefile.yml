@@ -36,4 +36,4 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Run distcheck
-      run: make distcheck_apple
+      run: make distcheck_linux
