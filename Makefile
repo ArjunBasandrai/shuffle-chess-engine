@@ -40,7 +40,7 @@ windows: __windows_compile
 
 linux: __linux_compile
 
-apple_arm: __apple_arm_compile
+apple: __apple_arm_compile
 
 __windows_compile:
 	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
