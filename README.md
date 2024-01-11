@@ -41,7 +41,7 @@
 #### Using Polyglot book (optional)
 
 - Install the `shuffle.bin` polyglot book from the [Releases](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases) page or use any polyglot book of your choice and rename it to `shuffle.bin`
-- Keep the book in the same directory as the binary to use it for openings
+- Keep the book in the same directory from which you are running the bianry
 
 ### Directions to build
 
