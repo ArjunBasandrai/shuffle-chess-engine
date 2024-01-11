@@ -4,18 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
-#ifndef WINDOWS
-#define WINDOWS
-#include <windows.h>
-#endif
-#else
-#ifndef UNIX
-#define UNIX
-#include <unistd.h>
-#endif
-#endif
-
 #include "../bit_manipulation.h"
 #include "../board_constants.h"
 #include "../moves_list.h"
@@ -45,38 +33,7 @@ void init_poly_book() {
     srand(time(NULL));
     engine_options->use_book = 0;
 
-    char exe_path[260];
-    #ifdef WINDOWS
-    GetModuleFileNameA(NULL, exe_path, 260);
-    #else
-    readlink("/proc/self/exe", exe_path, 260);
-    #endif
-    char *dir_path = NULL;
-    dir_path = strrchr(exe_path, '/');
-    if (dir_path == NULL) {
-        dir_path = strrchr(exe_path, '\\');  // Check for Windows path separator
-    }
-
-    if (dir_path != NULL) {
-        *(dir_path + 1) = '\0';
-    } else {
-        perror("Error: No directory separator found in path");
-    }
-
-    size_t length = dir_path - exe_path;
-    char *path = (char*)malloc(length + 1);
-    strncpy(path, exe_path, length);
-    path[length] = '\0';
-
-    char relative_path[260];
-    strcpy(relative_path, path);
-    #ifdef WINDOWS
-    strcat(relative_path, "\\shuffle.bin");
-    #else
-    strcat(relative_path, "/shuffle.bin");
-    #endif
-
-    FILE *pFile = fopen(relative_path, "rb");
+    FILE *pFile = fopen("shuffle.bin", "rb");
     if (pFile == NULL) {
         perror("No PolyGlot book found");
         return;
