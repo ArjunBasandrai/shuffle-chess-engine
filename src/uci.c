@@ -246,7 +246,6 @@ void uci_loop(s_board *pos, s_info *info) {
 
         else if (strncmp(input, "ucinewgame", 10) == 0) { 
             parse_position("position startpos", pos); 
-            engine_options->use_book = 1;
             clear_transposition_table(pos);
         }
 
@@ -289,7 +288,7 @@ void uci_loop(s_board *pos, s_info *info) {
             info->threads = threads;
         }
 
-        else if (!strncmp(input, "setoption name Book value ", 26)) {
+        else if (!strncmp(input, "setoption name OwnBook value ", 26)) {
             char *ptr = NULL;
             ptr = strstr(input, "true");
             if (ptr != NULL) {
