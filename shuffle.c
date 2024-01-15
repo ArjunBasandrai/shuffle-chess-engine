@@ -55,7 +55,7 @@ int main(){
         double min = infinity;
         s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt");
         printf("Read files\n");
-        tune(positions, 0.1, 754006, position, info);
+        tune(positions, 1.2, 754006, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);
