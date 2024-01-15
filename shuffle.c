@@ -15,6 +15,7 @@
 #include "src/perft.h"
 #include "src/see.h"
 #include "src/see_test.h"
+#include "src/texel/texel.h"
 #include "src/pre_calculated_tables.h"
 #include "src/transposition_table.h"
 #include "src/uci.h"
@@ -47,11 +48,14 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
-        print_bitboard(color(a4));
-        print_bitboard(color(c1));
+        double x;
+        double min = infinity;
+        s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt");
+        printf("Read files\n");
+        tune(positions, 0.1, 754006, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);

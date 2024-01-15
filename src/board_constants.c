@@ -91,7 +91,7 @@ const int material_score[2][12] =
 const int opening_phase_score = 6192;
 const int endgame_phase_score = 518;
 
-const int positional_score[2][6][64] = {
+int positional_score[2][6][64] = {
     //pawn
     0,   0,   0,   0,   0,   0,  0,   0,
     98, 134,  61,  95,  68, 126, 34, -11,

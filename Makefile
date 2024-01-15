@@ -26,6 +26,7 @@ SRCS = src/bit_manipulation.c \
 		src/search.c \
 		src/see.c \
 		src/see_test.c \
+		src/texel/texel.c \
 		src/gettime.c \
 		src/transposition_table.c \
 		src/uci.c \
