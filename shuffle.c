@@ -48,14 +48,15 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
         double x;
         double min = infinity;
-        s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt");
-        printf("Read files\n");
-        tune(positions, 1.2, 754006, position, info);
+        int counter = 0;
+        s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt", &counter);
+        printf("Read %d positions\n", counter);
+        tune(positions, .7, counter, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);

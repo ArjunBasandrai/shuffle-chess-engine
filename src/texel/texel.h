@@ -18,6 +18,6 @@ typedef struct {
     int thread_id;
 } s_texel_thread_data;
 
-s_texel* read_files(char *fen_path, char* score_path);
+s_texel* read_files(char *fen_path, char* score_path, int* counter);
 double get_error(s_texel* positions, int num_positions, double K);
 void tune(s_texel* positions, double K, int num_positions, s_board* position, s_info* info);
