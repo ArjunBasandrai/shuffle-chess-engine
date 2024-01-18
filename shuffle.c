@@ -48,7 +48,7 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 0;
+    int debug = 1;
 
     if (debug) {
         double x;
