@@ -57,7 +57,7 @@ s_texel* read_files(char *fen_path, char* score_path, int *counter) {
         (*counter)++;
     }
 
-    positions  = positions_start;
+    positions = positions_start;
 
     fclose(f);
     fclose(s);
@@ -81,7 +81,10 @@ int get_thread_error(void* arg) {
         parse_fen(data->positions[i].fen, position);
         // score = quiescence(-infinity, infinity, position, info);
         score = evaluate(position);
-        sigmoid_result = (double)1 / (1 + pow(10, - data->K * score / 400.0));
+        if (position->side == black) {
+            score = -score;
+        }
+        sigmoid_result = (double)1 / (1 + pow(exp(1), - data->K * score));
         data->error[data->thread_id] += pow(data->positions[i].result - sigmoid_result, 2);
     }
     return 0;
@@ -165,10 +168,10 @@ void tune(s_texel* positions, double K, int num_positions, s_board* position, s_
     double gradients[2][6][64];
     double gradient, error_param, rate, delta;
 
-    const double a = 0.8;
+    const double a = 0.3;
     const double b1 = 0.9;
     const double b2 = 0.999;
-    const double epsilon = 1.0e-8;
+    const double epsilon = 1.0e-5;
     double m[2][6][64];
     double v[2][6][64];
 
@@ -214,7 +217,7 @@ void tune(s_texel* positions, double K, int num_positions, s_board* position, s_
                     gradient = gradients[i][j][k];
                     m[i][j][k] = (b1 * m[i][j][k] + (1.0 - b1) * gradient) / (1 - pow(b1, epoch));
                     v[i][j][k] = (b2 * v[i][j][k] + (1.0 - b2) * gradient * gradient) / (1 - pow(b2, epoch));
-                    rate = a * sqrt(1.0 - pow(b2, epoch)) / (1.0 - pow(b1, epoch));
+                    rate = a; // * (1.0 - pow(b2, epoch)) / (1.0 - pow(b1, epoch));
                     delta = rate * m[i][j][k] / (sqrt(v[i][j][k]) + epsilon);
                     positional_score[i][j][k] -= delta;
                 }

@@ -51,12 +51,30 @@ int main(){
     int debug = 1;
 
     if (debug) {
-        double x;
-        double min = infinity;
         int counter = 0;
         s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt", &counter);
         printf("Read %d positions\n", counter);
-        tune(positions, .7, counter, position, info);
+        double K;
+        double start = 0.0, end = 10, step = 1.0;
+        double curr = start, error;
+        double best = get_error(positions, counter, start);
+        for (int i = 0; i < 10; i++) {
+            curr = start - step;
+            while (curr < end) {
+                curr += step;
+                error = get_error(positions, counter, curr);
+                if (error < best) {
+                    best = error;
+                    start = curr;
+                }
+            }
+            end = start + step;
+            start -= step;
+            step /= 10;
+        }
+        K = start;
+        printf("Best K: %f\n", K);
+        tune(positions, 0.1, counter, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);
