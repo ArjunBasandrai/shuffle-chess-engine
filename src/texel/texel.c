@@ -11,6 +11,7 @@
 #include "../threading/tinycthread.h"
 
 #define THREADS 15
+#define PATIENCE 3
 
 s_texel* read_files(char *fen_path, char* score_path, int *counter) {
     FILE *f = fopen(fen_path, "r");
@@ -44,9 +45,9 @@ s_texel* read_files(char *fen_path, char* score_path, int *counter) {
 
     while (fgets(buffer, 1024, f) != NULL) {
         parse_fen(buffer, position);
-        if (evaluate(position) != quiescence(-infinity, infinity, position, info)) {
-            continue;
-        }
+        // if (evaluate(position) != quiescence(-infinity, infinity, position, info)) {
+        //     continue;
+        // }
         buffer[strcspn(buffer, "\n")] = '\0';
         positions->fen = (char*)malloc(1024 * sizeof(char));
         strcpy(positions->fen,buffer);
@@ -171,7 +172,7 @@ void tune(s_texel* positions, double K, int num_positions, s_board* position, s_
     const double a = 0.3;
     const double b1 = 0.9;
     const double b2 = 0.999;
-    const double epsilon = 1.0e-5;
+    const double epsilon = 1.0e-8;
     double m[2][6][64];
     double v[2][6][64];
 
@@ -217,7 +218,7 @@ void tune(s_texel* positions, double K, int num_positions, s_board* position, s_
                     gradient = gradients[i][j][k];
                     m[i][j][k] = (b1 * m[i][j][k] + (1.0 - b1) * gradient) / (1 - pow(b1, epoch));
                     v[i][j][k] = (b2 * v[i][j][k] + (1.0 - b2) * gradient * gradient) / (1 - pow(b2, epoch));
-                    rate = a; // * (1.0 - pow(b2, epoch)) / (1.0 - pow(b1, epoch));
+                    rate = a * (1.0 - pow(b2, epoch)) / (1.0 - pow(b1, epoch));
                     delta = rate * m[i][j][k] / (sqrt(v[i][j][k]) + epsilon);
                     positional_score[i][j][k] -= delta;
                 }
@@ -233,7 +234,7 @@ void tune(s_texel* positions, double K, int num_positions, s_board* position, s_
 
         save_params(epoch);
 
-        if (epoch % 10 == 0) {
+        if (epoch % PATIENCE == 0) {
             if (current_error < best_error) {
                 best_error = current_error;
             } else {

@@ -48,7 +48,7 @@ int main(){
     info->threads = 1;
     init_all(position);
 
-    int debug = 1;
+    int debug = 0;
 
     if (debug) {
         int counter = 0;
@@ -74,7 +74,7 @@ int main(){
         }
         K = start;
         printf("Best K: %f\n", K);
-        tune(positions, 0.1, counter, position, info);
+        tune(positions, K, counter, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);
