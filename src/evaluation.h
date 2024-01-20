@@ -13,37 +13,36 @@
 #define U64 unsigned long long
 #endif
 
-extern const int doubled_pawn_penalty[2][8];
-extern const int unsupported_pawn_penalty[2];
-extern const int isolated_pawn_penalty[2][8];
-extern const int connected_pawn_bonus[2][64];
-extern const int backward_pawn_penalty[2][8];
+extern int doubled_pawn_penalty[2][8];
+extern int unsupported_pawn_penalty[2];
+extern int isolated_pawn_penalty[2][8];
+extern int connected_pawn_bonus[2][64];
+extern int backward_pawn_penalty[2][8];
 
-extern const int passed_pawn[8];
-extern const int passed_pawn_base[2];
-extern const int passed_pawn_free_advance;
-extern const int passed_pawn_partial_advance;
-extern const int passed_pawn_defended;
-extern const int passed_pawn_partial_defended;
+extern int passed_pawn[8];
+extern int passed_pawn_base[2];
+extern int passed_pawn_free_advance;
+extern int passed_pawn_partial_advance;
+extern int passed_pawn_defended;
+extern int passed_pawn_partial_defended;
 
-extern const int knight_outpost[2][64];
-extern const int bishop_outpost[2][64];
-extern const int bishop_pawns_on_color[2];
+extern int knight_outpost[2][64];
+extern int bishop_outpost[2][64];
+extern int bishop_pawns_on_color[2];
 
-extern const int rook_semi_open_file_score;
-extern const int rook_open_file_score[2];
+extern int rook_semi_open_file_score;
+extern int rook_open_file_score[2];
 
-extern const int king_open_file_penalty[8];
-extern const int king_semi_open_file_penalty[8];
-extern const int pawn_defects[2][8];
+extern int king_open_file_penalty[8];
+extern int king_semi_open_file_penalty[8];
+extern int pawn_defects[2][8];
 
-static const int bishop_unit = 4;
-static const int queen_unit = 9;
+extern int bishop_unit;
+extern int queen_unit;
+extern int bishop_mobility[2];
+extern int queen_mobility[2];
 
-static const int bishop_mobility[2] = {5, 6};
-static const int queen_mobility[2] = {1, 2};
-
-extern const int king_shield_bonus;
+extern int king_shield_bonus;
 
 static inline int get_game_phase_score(s_board *pos) {
     int white_piece_scores=0, black_piece_scores=0;
