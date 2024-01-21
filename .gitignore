@@ -16,3 +16,7 @@ versions
 .VSCodeCounter
 
 .DS_Store
+
+*.txt
+data.pgn
+*.epd

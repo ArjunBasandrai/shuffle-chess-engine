@@ -73,7 +73,7 @@ enum { opening, endgame, middlegame };
 
 enum { PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING };
 
-extern const int positional_score[2][6][64];
+extern int positional_score[2][6][64];
 extern const int mirror_score[128];
 
 static int mvv_lva[12][12] = {

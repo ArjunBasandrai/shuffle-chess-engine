@@ -26,6 +26,7 @@ SRCS = src/bit_manipulation.c \
 		src/search.c \
 		src/see.c \
 		src/see_test.c \
+		src/texel/texel.c \
 		src/gettime.c \
 		src/transposition_table.c \
 		src/uci.c \
@@ -46,7 +47,7 @@ __windows_compile:
 	$(CC) -Ofast -o shuffle_$(v).exe $(C) $(SRCS)
 
 __linux_compile:
-	$(CC) -Ofast -arch x86_64 -o shuffle_$(v) $(C) $(SRCS)
+	$(CC) -Ofast -lm -arch x86_64 -o shuffle_$(v) $(C) $(SRCS)
 
 __apple_arm_compile:
 	$(CC) -Ofast -arch arm64 -o shuffle_$(v) $(C) $(SRCS)

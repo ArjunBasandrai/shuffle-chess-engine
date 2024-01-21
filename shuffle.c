@@ -15,6 +15,7 @@
 #include "src/perft.h"
 #include "src/see.h"
 #include "src/see_test.h"
+#include "src/texel/texel.h"
 #include "src/pre_calculated_tables.h"
 #include "src/transposition_table.h"
 #include "src/uci.h"
@@ -50,8 +51,10 @@ int main(){
     int debug = 0;
 
     if (debug) {
-        print_bitboard(color(a4));
-        print_bitboard(color(c1));
+        int counter = 0;
+        s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt", &counter);
+        printf("Read %d positions\n", counter);
+        tune(positions, counter, position, info);
     } else {
         uci_loop(position, info);
         free(transposition_table);
