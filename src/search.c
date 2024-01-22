@@ -9,6 +9,8 @@
 #include "polyglot/polykeys.h"
 #include "threading/tinycthread.h"
 
+#define ASP_WIN_D 10
+
 int movetime = -1;
 int m_time = -1;
 int inc = 0;
@@ -37,21 +39,41 @@ void iterative_deepen(s_search_worker_data* worker_data) {
     
     int alpha = -infinity;
     int beta = infinity;
-    int print = 0;
+    int print = 0, delta;
     for (int current_depth = 1; current_depth <= worker_data->info->depth; current_depth++) {
         
-        worker_data->pos->follow_pv = 1;
-        score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0);
-        if (worker_data->info->stopped == 1) break;
+        delta = ASP_WIN_D;
 
-        if ((score <= alpha) || (score >= beta)) {
+        if (current_depth > 4) {
+            alpha = score - delta;
+            beta = score + delta;
+        } else {
             alpha = -infinity;
             beta = infinity;
-            continue;
         }
 
-        alpha = score - 50;
-        beta = score + 50;
+        while (1) {
+            worker_data->pos->follow_pv = 1;
+            score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0);
+            if (worker_data->info->stopped == 1) break;
+
+            if (score > alpha && score < beta) break;
+
+            if (score <= alpha) {
+                beta = (alpha + beta) / 2;
+                alpha = max(-mate_value, alpha - delta);
+            }
+
+            else if (score >= beta) {
+                beta = min(mate_value, beta + delta);
+            }
+
+            else {
+                break;
+            }
+
+            delta = delta + delta / 2;
+        }
 
         if (worker_data->thread_id == 0 && worker_data->info->print_info == 1) {
             print = 1;
