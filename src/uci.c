@@ -4,8 +4,8 @@
 
 #include "uci.h"
 
-#include "board_constants.h"
 #include "moves_list.h"
+#include "bench.h"
 #include "movegen.h"
 #include "search.h"
 #include "fen.h"
@@ -260,6 +260,11 @@ void uci_loop(s_board *pos, s_info *info) {
         else if (strncmp(input, "quit", 4) == 0) {
             join_search_thread(info);
             break;
+        }
+
+        else if (strncmp(input, "bench", 5) == 0) {
+            bench(pos, info);
+            continue;
         }
 
         else if (strncmp(input, "uci", 3) == 0) { 

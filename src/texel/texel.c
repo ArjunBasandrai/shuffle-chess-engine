@@ -48,6 +48,7 @@ s_texel* read_files(char *fen_path, char* score_path, int *counter) {
     position->age = 0;
     info->quit = 0;
     info->threads = 1;
+    info->print_info = 0;
 
     while (fgets(buffer, 1024, f) != NULL) {
         parse_fen(buffer, position);
@@ -83,6 +84,7 @@ int get_thread_error(void* arg) {
     position->age = 0;
     info->quit = 0;
     info->threads = 1;
+    info->print_info = 0;
     // printf("Thread %d started...\n", data->thread_id);
     for (int i = data->start_idx; i < data->end_idx; i++) {
         parse_fen(data->positions[i].fen, position);

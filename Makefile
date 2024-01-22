@@ -12,6 +12,7 @@ SRCDIR = src
 
 SRCS = src/bit_manipulation.c \
 		src/board.c \
+		src/bench.c \
 		src/board_constants.c \
 		src/magic_numbers.c \
 		src/evaluation.c \
