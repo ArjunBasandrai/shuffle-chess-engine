@@ -22,6 +22,7 @@ typedef struct {
     int depth;
     U64 nodes;
     int threads;
+    int print_info;
 } s_info;
 
 typedef struct {

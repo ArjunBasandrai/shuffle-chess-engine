@@ -53,7 +53,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
         alpha = score - 50;
         beta = score + 50;
 
-        if (worker_data->thread_id == 0) {
+        if (worker_data->thread_id == 0 && worker_data->info->print_info == 1) {
             print = 1;
         }
 
@@ -80,7 +80,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
 int start_worker_thread(void *data) {
     s_search_worker_data *worker_data = (s_search_worker_data*)data;
     iterative_deepen(worker_data);
-    if (worker_data->thread_id == 0) {
+    if (worker_data->thread_id == 0 && worker_data->info->print_info == 1) {
         printf("bestmove ");
         print_move(worker_data->pos->pv_table[0][0]);
         printf("\n");

@@ -5,6 +5,7 @@
 #include "src/bit_manipulation.h"
 #include "src/board_constants.h"
 #include "src/board.h"
+#include "src/bench.h"
 #include "src/evaluation.h"
 #include "src/fen.h"
 #include "src/magic_num_generator.h"
@@ -21,7 +22,6 @@
 #include "src/uci.h"
 #include "src/zobrist.h"
 #include "src/polyglot/polykeys.h"
-
 
 #ifndef U64
 #define U64 unsigned long long
@@ -46,6 +46,7 @@ int main(){
     position->age = 0;
     info->quit = 0;
     info->threads = 1;
+    info->print_info = 1;
     init_all(position);
 
     int debug = 0;
