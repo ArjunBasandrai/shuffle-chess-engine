@@ -39,7 +39,7 @@ void init_all(s_board *pos) {
 }
 
 // Main driver
-int main(){
+int main(int argc, char *argv[]){
     s_board position[1];
     s_info info[1];
     position->enpassant = no_sq;
@@ -49,8 +49,18 @@ int main(){
     info->print_info = 1;
     init_all(position);
 
-    int debug = 0;
+    if (argc > 1) {
+        // if argument "bench" is passed
+        if (strcmp(argv[1], "bench") == 0) {
+            bench(position, info);
+            free(transposition_table);
+            clean_poly_book();
+            return 0;
+        }
+    }
 
+    int debug = 0;
+    // 25703396 nodes 8567798 nps
     if (debug) {
         int counter = 0;
         s_texel* positions = read_files("src/texel/fen.txt", "src/texel/result.txt", &counter);
