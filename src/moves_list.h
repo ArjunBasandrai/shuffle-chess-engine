@@ -3,11 +3,9 @@
 #include "board.h"
 #include "board_constants.h"
 
-#define encode_move(source,target,piece,promoted,capture,double,enpassant,castling) \
-    (source) | (target << 6) | \
-    (piece << 12) | (promoted << 16) | \
-    (capture << 20) | (double << 21) | \
-    (enpassant << 22) | (castling << 23)
+static inline int encode_move(int source,int target,int piece,int promoted,int capture,int double_pawn,int enpassant,int castling) {
+    return ((source) | (target << 6) | (piece << 12) | (promoted << 16) | (capture << 20) | (double_pawn << 21) | (enpassant << 22) | (castling << 23));
+}
 
 typedef struct {
     int moves[256];

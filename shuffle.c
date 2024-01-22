@@ -36,6 +36,14 @@ void init_all(s_board *pos) {
     init_evaluation_masks();
     init_transposition_table(64, pos);
     init_poly_book();
+
+    for (int i = 0; i < max_ply; i++) {
+        pos->pv_length[i] = 0;
+        pos->repetitions_table[i] = 0;
+        for (int j = 0; j < max_ply; j++) {
+            pos->pv_table[i][j] = 0;
+        }
+    }
 }
 
 // Main driver

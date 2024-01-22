@@ -36,7 +36,6 @@ int search_position_thread(void *data) {
 void iterative_deepen(s_search_worker_data* worker_data) {
     
     int score = 0;
-    
     int alpha = -infinity;
     int beta = infinity;
     int print = 0, delta;
@@ -47,15 +46,12 @@ void iterative_deepen(s_search_worker_data* worker_data) {
         if (current_depth > 4) {
             alpha = score - delta;
             beta = score + delta;
-        } else {
-            alpha = -infinity;
-            beta = infinity;
-        }
+        } 
 
         while (1) {
             worker_data->pos->follow_pv = 1;
-            score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0);
             if (worker_data->info->stopped == 1) break;
+            score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0);
 
             if (score > alpha && score < beta) break;
 
@@ -67,11 +63,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
             else if (score >= beta) {
                 beta = min(mate_value, beta + delta);
             }
-
-            else {
-                break;
-            }
-
+;
             delta = delta + delta / 2;
         }
 
@@ -91,7 +83,6 @@ void iterative_deepen(s_search_worker_data* worker_data) {
                 for (int count = 0; count < worker_data->pos->pv_length[0]; count++)
                 {
                     print_move(worker_data->pos->pv_table[0][count]);
-                    // printf(" ");
                 }
                 printf("\n");
             }
