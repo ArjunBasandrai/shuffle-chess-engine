@@ -72,7 +72,7 @@ void bench(s_board* pos, s_info* info) {
         clear_transposition_table(pos);
         init_transposition_table(64, pos);
         parse_fen(fens[i], pos);
-        score = negamax(-infinity, infinity, BENCH_DEPTH, pos, info, 0);
+        score = negamax(-infinity, infinity, BENCH_DEPTH, pos, info, 0, 1);
         nodes += info->nodes;
     }
     int t = (get_time_ms() - time) / 1000;

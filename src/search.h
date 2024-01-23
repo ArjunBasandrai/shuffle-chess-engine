@@ -1,5 +1,7 @@
 #pragma once
 
+#include <assert.h>
+
 #include "board_constants.h"
 #include "bit_manipulation.h"
 #include "board.h"
@@ -228,7 +230,7 @@ static inline int quiescence(int alpha, int beta, s_board *pos, s_info *info) {
     return alpha;
 }
 
-static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *info, int from_nmp) {
+static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *info, int from_nmp, int pv_node) {
     int score;
 
     int best_move = 0;
@@ -238,8 +240,6 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
     if (pos->ply && is_repetition(pos) || pos->fifty >= 100 || is_insufficient_material(pos)) {
         return draw_score;
     }
-
-    int pv_node = (beta - alpha > 1);
 
     // read hash from transposition table if not root ply and not a pv node
     if (pos->ply && (score = read_hash_entry(alpha, beta, &best_move, depth, pos)) != no_hash_entry && !pv_node) {
@@ -315,7 +315,7 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
         pos->hash_key ^= side_key;
 
-        score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos, info, 1);
+        score = -negamax(-beta, -beta + 1, depth - 1 - 2, pos, info, 1, 0);
 
         pos->ply--;
         pos->repetition_index--;
@@ -353,41 +353,19 @@ static inline int negamax(int alpha, int beta, int depth, s_board *pos, s_info *
 
         legal_moves++;
 
-        if (moves_searched == 0) {
-            score = -negamax(-beta, -alpha, depth - 1, pos, info, 0);
+        if (moves_searched >= full_depth_moves && depth >= reduction_limit && in_check == 0
+            && get_move_capture(move_list->moves[count]) == 0
+            && get_move_promoted(move_list->moves[count]) == 0)
+        {
+            score = -negamax(-alpha - 1, -alpha, depth - 2, pos, info, 0, 0);
+            if (score > alpha)
+                score = -negamax(-alpha - 1, -alpha, depth - 1, pos, info, 0, 0);
         }
-        
-        else {
-            if (
-                moves_searched >= full_depth_moves &&
-                depth >= reduction_limit &&
-                in_check == 0 && 
-                get_move_capture(move_list->moves[count]) == 0 &&
-                get_move_promoted(move_list->moves[count]) == 0
-                ) {
-                score = -negamax(-alpha - 1, -alpha, depth - 2, pos, info, 0);
-                }
-            
-            else {score = alpha + 1;}
-            
-            // if found a better move during LMR
-            if (score > alpha) {
-                /* Once you've found a move with a score that is between alpha and beta,
-                the rest of the moves are searched with the goal of proving that they are all bad.
-                It's possible to do this a bit faster than a search that worries that one
-                of the remaining moves might be good. */
-                score = -negamax(-alpha - 1, -alpha, depth-1, pos, info, 0);
-            
-                /* If the algorithm finds out that it was wrong, and that one of the
-                subsequent moves was better than the first PV move, it has to search again,
-                in the normal alpha-beta manner.  This happens sometimes, and it's a waste of time,
-                but generally not often enough to counteract the savings gained from doing the
-                "bad move proof" search referred to earlier. */
-                if((score > alpha) && (score < beta)) {
-                    score = -negamax(-beta, -alpha, depth-1, pos, info, 0);
-                }
-            }
-        }
+        else if (!pv_node || moves_searched > 0)
+            score = -negamax(-alpha - 1, -alpha, depth - 1, pos, info, 0, 0);
+
+        if (pv_node && (moves_searched == 0 || score > alpha))
+            score = -negamax(-beta, -alpha, depth - 1, pos, info, 0, 1);
         
         pos->ply--;
         pos->repetition_index--;

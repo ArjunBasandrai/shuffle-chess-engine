@@ -41,7 +41,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
     for (int current_depth = 1; current_depth <= worker_data->info->depth; current_depth++) {
         
         worker_data->pos->follow_pv = 1;
-        score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0);
+        score = negamax(alpha, beta, current_depth, worker_data->pos, worker_data->info, 0, 1);
         if (worker_data->info->stopped == 1) break;
 
         if ((score <= alpha) || (score >= beta)) {
