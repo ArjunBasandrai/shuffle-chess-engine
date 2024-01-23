@@ -9,7 +9,7 @@
 #include "polyglot/polykeys.h"
 #include "threading/tinycthread.h"
 
-#define ASP_WIN_D 25
+#define ASP_WIN_D 40
 
 int movetime = -1;
 int m_time = -1;
@@ -43,7 +43,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
 
         delta = ASP_WIN_D;
 
-        if (current_depth > 4) {
+        if (current_depth > 6) {
             alpha = max(-infinity, score - delta);
             beta = min(infinity, score + delta);
         } 
@@ -64,7 +64,7 @@ void iterative_deepen(s_search_worker_data* worker_data) {
                 beta = min(infinity, beta + delta);
             }
 
-            delta += delta / 2;
+            delta *= 2;
         }
 
         if (worker_data->thread_id == 0 && worker_data->info->print_info == 1) {
