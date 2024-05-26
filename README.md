@@ -25,7 +25,8 @@
 #### [CCRL Blitz](https://www.computerchess.org.uk/ccrl/404/)
 | Version | ELO |
 | :-----: | :-: |
-| [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) | [2146](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit) |
+| [version 1.2.1](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v1.2.1) | [2048](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?match_length=30&each_game=1&print=Details&each_game=1&eng=Shuffle%201.2.1%2064-bit#Shuffle_1_2_1_64-bit) |
+| [version 5.2.0](https://github.com/ArjunBasandrai/shuffle-chess-engine/releases/tag/v5.2.0) | [2173](https://www.computerchess.org.uk/ccrl/404/cgi/engine_details.cgi?print=Details&each_game=1&eng=Shuffle%205.2.0%2064-bit#Shuffle_5_2_0_64-bit) |
 
 ## Instructions
 
